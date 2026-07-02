@@ -41,12 +41,9 @@ model Article {
   chapter String? // 第一章
   body    String  @db.Text // 純文字全文（款項以換行合併，供搜尋/顯示）
   items   Json // 結構化款項陣列（string[]）
-  version Int     @default(20) // = session，供跨屆 diff
-  tsv     Unsupported("tsvector")? // 應用端斷詞後寫入（Phase 2）
-
-  // embedding Unsupported("vector(1536)")?
-  // ↑ pgvector 語意檢索（可選）。待確認 Zeabur PG image 支援 pgvector 後再開啟
-  //   （ARCHITECTURE.md §5 開放問題 1）。關鍵字查詢不受影響。
+  version   Int                        @default(20) // = session，供跨屆 diff
+  tsv       Unsupported("tsvector")? // 應用端斷詞後寫入（Phase 2）
+  embedding Unsupported("vector(384)")? // 語意向量：@xenova multilingual-e5-small（Phase 2 可選層）
 
   @@unique([lawId, number])
   @@index([lawId])
