@@ -23,6 +23,7 @@ model Law {
   currentType   String? // 修正 / 訂定
   preamble      String?            @db.Text
   sourceFile    String? // 原始 PDF 檔名，供人工覆核
+  chapters      Json? // 章結構完整標題陣列，如 [{title:"第一章 總則"}]；資料保真存完整，顯示層再排版
   articles      Article[]
   amendments    AmendmentHistory[]
   scheduleRules ScheduleRule[]

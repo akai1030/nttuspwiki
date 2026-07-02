@@ -54,6 +54,7 @@ async function main() {
         currentType: law.current_type,
         preamble: law.preamble || null,
         sourceFile: law.file,
+        chapters: law.chapters.length ? law.chapters : undefined,
         articles: {
           create: law.articles.map((a) => ({
             number: a.number,

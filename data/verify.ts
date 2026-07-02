@@ -152,6 +152,13 @@ async function checkDb(laws: JsonLaw[]) {
         mismatches += 1;
         add("fail", `sourceFile 不符：${jl.number}（人工覆核回溯 PDF 的線索）`);
       }
+      // 章結構完整標題（DB 無章時存 null，JSON 為 []，正規化後比對）
+      const dbChapters = JSON.stringify(dl.chapters ?? []);
+      const jsonChapters = JSON.stringify(jl.chapters ?? []);
+      if (dbChapters !== jsonChapters) {
+        mismatches += 1;
+        add("fail", `章結構不符：${jl.number}《${jl.name}》`);
+      }
       if ((dl.preamble ?? null) !== (jl.preamble || null)) {
         mismatches += 1;
         add("fail", `前言不符：${jl.number}《${jl.name}》`);
@@ -230,7 +237,7 @@ async function checkDb(laws: JsonLaw[]) {
     if (mismatches === 0)
       add(
         "pass",
-        `全部 ${laws.length} 部 / ${EXPECTED.articles} 條逐字比對一致（body/items/條名/章/前言/沿革/類別/版本欄位/sourceFile）`
+        `全部 ${laws.length} 部 / ${EXPECTED.articles} 條逐字比對一致（body/items/條名/章/章結構/前言/沿革/類別/版本欄位/sourceFile）`
       );
   } catch (e) {
     add("fail", `DB 連線或查詢失敗：${e instanceof Error ? e.message : String(e)}`);
