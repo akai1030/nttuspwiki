@@ -83,6 +83,7 @@ interface DiffItem {
   name: string | null;
   segs: Seg[];
   substantive: boolean; // 差異含數字/拉丁 → 需人工看
+  glued: boolean; // 差異只是 PDF 多一個裸數字（款號黏在中文後，DB 已正確切款）→ 檢查器誤報，非資料問題
 }
 
 function checkLaw(law: JsonLaw, allPdfs: string[]): { pdf: boolean; passB: number; total: number; diffs: DiffItem[] } {
@@ -115,15 +116,18 @@ function checkLaw(law: JsonLaw, allPdfs: string[]): { pdf: boolean; passB: numbe
 
     const segs = lcsDiff(bodyB, windowB);
     if (!segs) {
-      diffs.push({ no: a.number, name: a.name || null, segs: [{ t: "-", s: "（條文過長，未做字元 diff）" }], substantive: true });
+      diffs.push({ no: a.number, name: a.name || null, segs: [{ t: "-", s: "（條文過長，未做字元 diff）" }], substantive: true, glued: false });
       continue;
     }
     // 去掉「純尾端 +」（window 尾巴殘留，非實質差異）
     const meaningful = segs.filter((s, idx) => !(s.t === "+" && idx === segs.length - 1 && !/[0-9A-Za-z㐀-鿿]/.test(s.s)));
     const changed = meaningful.filter((s) => s.t !== "=");
     if (changed.length === 0) { passB++; continue; }
-    const substantive = changed.some((s) => [...s.s].some((c) => isIdeo(c) || isNumOrLatin(c)));
-    diffs.push({ no: a.number, name: a.name || null, segs: meaningful, substantive });
+    // 誤報型：差異只有「PDF 多出的裸數字」（PDF 款號黏在中文後、DB 已用「N. 」正確切款，
+    // 正規化把 DB 的標記去掉卻去不掉 PDF 的黏字）→ 非資料問題。
+    const glued = changed.every((s) => s.t === "+" && /^\d{1,3}$/.test(s.s));
+    const substantive = !glued && changed.some((s) => [...s.s].some((c) => isIdeo(c) || isNumOrLatin(c)));
+    diffs.push({ no: a.number, name: a.name || null, segs: meaningful, substantive, glued });
   }
   return { pdf: true, passB, total: law.articles.length, diffs };
 }
@@ -156,6 +160,7 @@ function main() {
   const lines: string[] = [];
   const substantiveItems: string[] = [];
   const cosmeticLaws: string[] = [];
+  const gluedItems: string[] = [];
 
   for (const law of laws) {
     const r = checkLaw(law, allPdfs);
@@ -163,14 +168,16 @@ function main() {
     passB += r.passB;
     if (r.diffs.length === 0) continue;
     const sub = r.diffs.filter((d) => d.substantive);
-    const cos = r.diffs.filter((d) => !d.substantive);
+    const glu = r.diffs.filter((d) => d.glued);
+    const cos = r.diffs.filter((d) => !d.substantive && !d.glued);
     lines.push(`### ${law.number}《${law.name}》`);
     for (const d of r.diffs) {
-      const tag = d.substantive ? "⚠️數字/拉丁" : "標點";
+      const tag = d.glued ? "款號·PDF黏字(DB已正確)" : d.substantive ? "⚠️數字/拉丁" : "標點";
       lines.push(`- §${d.no}${d.name ? `（${d.name}）` : ""} [${tag}]：${renderSegs(d.segs)}`);
     }
     lines.push("");
     if (sub.length) substantiveItems.push(`${law.number}: ${sub.map((d) => "§" + d.no).join(" ")}`);
+    if (glu.length) gluedItems.push(`${law.number}: ${glu.map((d) => "§" + d.no).join(" ")}`);
     if (cos.length) cosmeticLaws.push(law.number);
   }
 
@@ -180,7 +187,8 @@ function main() {
   head.push("> 前提：Level A 已 768/768 全過 → 中文字零差異。以下只可能是標點樣式或數字/拉丁差異。");
   head.push("");
   head.push(`- 條文：${total}　Level B 完全一致：**${passB} / ${total}**`);
-  head.push(`- 需人工看（含數字/拉丁差異）：${substantiveItems.length ? substantiveItems.join("；") : "無"}`);
+  head.push(`- 🚩 需人工看（含數字/拉丁差異）：${substantiveItems.length ? substantiveItems.join("；") : "無"}`);
+  head.push(`- 款號·PDF黏字（DB 已正確切款，屬檢查器誤報）：${gluedItems.length ? gluedItems.join("；") : "無"}`);
   head.push(`- 僅標點樣式小差的法規：${cosmeticLaws.length ? cosmeticLaws.join(", ") : "無"}`);
   head.push("");
   head.push(passB === total ? "✅ Level B 亦全數逐字一致。" : "ℹ️ 差異清單如下（多為 PDF 抽取的標點樣式，數字/拉丁另標）。");
