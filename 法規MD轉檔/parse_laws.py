@@ -9,6 +9,13 @@
 """
 import sys, os, re, json, subprocess, glob
 
+# pdftotext 輸出 UTF-8；Windows 中文 locale 預設用 cp950 解碼會爆，強制 UTF-8。
+# 同時把本行程式的 stdout 轉 UTF-8，避免 print 中文分類名時 UnicodeEncodeError。
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+except Exception:
+    pass
+
 SESSION_DIR = sys.argv[1]
 OUT_DIR      = sys.argv[2]
 SESSION_LABEL= sys.argv[3]   # e.g. "第20屆"
@@ -22,14 +29,67 @@ def roc_to_iso(y,m,d):
     except: return None
 
 def pdftext(path):
-    return subprocess.run(["pdftotext","-raw",path,"-"],capture_output=True,text=True).stdout
+    return subprocess.run(
+        ["pdftotext","-raw",path,"-"],
+        capture_output=True, text=True, encoding="utf-8"
+    ).stdout
 
 CH_NUM = "一二三四五六七八九十百"
-RE_CHAPTER = re.compile(r'^第[%s]+章\s*(.*)$' % CH_NUM)
-RE_SECTION = re.compile(r'^第[%s]+節\s*(.*)$' % CH_NUM)
-RE_ARTICLE = re.compile(r'^第\s*(\d+)(?:[-–](\d+))?\s*條\s*(.*)$')
+CH_DIGIT = {'一':1,'二':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9,'零':0,'兩':2}
+
+def cn2int(s):
+    """中文數字→int（支援條號/章號範圍，如 一、十八、二十四、一百零一）。無法解析回 None。"""
+    s = s.replace(" ", "")
+    if not s: return None
+    section, num = 0, 0
+    for ch in s:
+        if ch in CH_DIGIT:
+            num = CH_DIGIT[ch]
+        elif ch == '十':
+            section += (num or 1) * 10; num = 0
+        elif ch == '百':
+            section += (num or 1) * 100; num = 0
+        else:
+            return None
+    total = section + num
+    return total if total > 0 else None
+
+# CJK 標記允許數字字元間夾空白：部分 PDF 的 pdftotext 會輸出「第 一 條」「第 一 章」，
+# 舊版 regex 只認無空格 + 阿拉伯數字，導致中文數字條號（2.5/2.6/4.3）整批漏進前言。
+_CN = "[" + CH_NUM + "]"
+RE_CHAPTER = re.compile(r'^第\s*(%s(?:\s*%s)*)\s*章\s*(.*)$' % (_CN, _CN))
+RE_SECTION = re.compile(r'^第\s*(%s(?:\s*%s)*)\s*節\s*(.*)$' % (_CN, _CN))
+RE_ARTICLE_AR = re.compile(r'^第\s*(\d+)(?:\s*[-–]\s*(\d+))?\s*條\s*(.*)$')
+RE_ARTICLE_CN = re.compile(
+    r'^第\s*(%s(?:\s*%s)*)\s*條(?:\s*之\s*(%s(?:\s*%s)*))?\s*(.*)$' % (_CN, _CN, _CN, _CN)
+)
 RE_ITEM    = re.compile(r'^(?:(\d+)|([%s]+)、)\s*(.*)$' % CH_NUM)
 RE_HISTLINE= re.compile(r'^民國\s*\d+\s*年')
+
+def match_article(s, arabic_mode=True):
+    """辨識條文標頭，回傳 (條號字串, 該行剩餘文字) 或 None。
+    阿拉伯（第 1 條）與中文（第 一 條、第 一 條之一）皆支援；中文一律轉阿拉伯字串，
+    與其餘法規的條號格式（"1"/"3-1"）一致。
+
+    arabic_mode=True 時**不**辨識中文條號標頭：因為一部法規的條號體例是一致的，
+    只要它用阿拉伯數字當條號（35 部如此），文中的「第五十一條」「第二條」必為引用，
+    不得誤切成條文（否則內文引用被換行到行首會產生假條）。只有全無阿拉伯條號的
+    法規（2.5/2.6/4.3）才 arabic_mode=False，啟用中文條號標頭辨識。"""
+    m = RE_ARTICLE_AR.match(s)
+    if m:
+        num = m.group(1) + (f"-{m.group(2)}" if m.group(2) else "")
+        return num, m.group(3)
+    if arabic_mode:
+        return None
+    m = RE_ARTICLE_CN.match(s)
+    if m:
+        main = cn2int(m.group(1))
+        if main is None:
+            return None
+        sub = cn2int(m.group(2)) if m.group(2) else None
+        num = f"{main}-{sub}" if sub else f"{main}"
+        return num, m.group(3)
+    return None
 
 def parse_history(lines):
     """把沿革多行合併，逐筆解析"""
@@ -108,11 +168,15 @@ def parse_law(path):
     txt=pdftext(path)
     lines=[l for l in txt.split("\n")]
 
-    # 找出正文起點（第一個 前言 / 第一章 / 第 1 條）
+    # 條號模式：有任何阿拉伯條號標頭 → 阿拉伯模式（中文「第X條」全當引用）。
+    # 只有全無阿拉伯條號的法規才啟用中文條號標頭辨識，避免內文引用被誤切成條。
+    arabic_mode = any(RE_ARTICLE_AR.match(l.strip()) for l in lines)
+
+    # 找出正文起點（第一個 前言 / 章 / 條），跳過標題與沿革
     body_start=None
     for i,l in enumerate(lines):
         s=l.strip()
-        if re.match(r'^前\s*言', s) or RE_CHAPTER.match(s) or re.match(r'^第\s*1\s*條', s):
+        if re.match(r'^前\s*言', s) or RE_CHAPTER.match(s) or match_article(s, arabic_mode):
             body_start=i; break
     header = lines[1:body_start] if body_start else []
     # 用整個表頭區（含被 PDF 折行的續行）合併後再切筆，避免尾巴被吃掉
@@ -133,25 +197,26 @@ def parse_law(path):
         if not s:
             i+=1; continue
         mc=RE_CHAPTER.match(s)
-        ma=RE_ARTICLE.match(s)
+        ma=match_article(s, arabic_mode)
         if re.match(r'^前\s*言', s):
             i+=1
             # 收集前言直到第一章/條
             while i<len(lines):
                 s2=lines[i].strip()
-                if RE_CHAPTER.match(s2) or RE_ARTICLE.match(s2): break
+                if RE_CHAPTER.match(s2) or match_article(s2, arabic_mode): break
                 if s2: preamble.append(s2)
                 i+=1
             continue
         if mc:
             if cur_article: articles.append(cur_article); cur_article=None
-            cur_chapter=mc.group(0).split()[0]  # 第X章
+            # 正規化為「第<中文數字>章」（去空格），與其餘法規的 chapter 標籤格式一致
+            cur_chapter="第"+mc.group(1).replace(" ","")+"章"
             chapters.append({"title": s})
             i+=1; continue
         if ma:
             if cur_article: articles.append(cur_article)
-            num = ma.group(1) + (f"-{ma.group(2)}" if ma.group(2) else "")
-            rest = ma.group(3).strip()
+            num = ma[0]
+            rest = ma[1].strip()
             # 條名 heuristic：短且不含句號 → 條名；否則當條文
             aname, first_body = "", []
             if rest and (len(rest)<=18 and "。" not in rest and "，" not in rest[:3]):
