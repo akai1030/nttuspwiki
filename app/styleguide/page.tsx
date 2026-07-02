@@ -10,6 +10,7 @@ import { LawRow } from "@/components/LawRow";
 import { SectionHead } from "@/components/SectionHead";
 import { ArticleBlock, Xref } from "@/components/ArticleBlock";
 import { AmendmentTimeline } from "@/components/AmendmentTimeline";
+import { SiteHeader } from "@/components/SiteHeader";
 import {
   SAMPLE_ROWS,
   CATEGORY_COUNTS,
@@ -22,8 +23,8 @@ import {
 } from "./fixtures";
 
 export const metadata: Metadata = {
-  title: "Styleguide · 書院光 · 國立臺東大學學生會法規系統",
-  robots: { index: false, follow: false },
+  title: "設計語言・書院光｜國立臺東大學學生會法規系統",
+  description: "「書院光」設計語言：暖白紙底、靛藍一色、明體撐骨——色彩、字體、字級、間距與元件規範。",
 };
 
 /* ── 頁內小工具（僅供本頁展示）───────────────────────── */
@@ -92,17 +93,17 @@ function TypeSpec({
 
 export default function Styleguide() {
   return (
-    <main className="mx-auto max-w-wrap px-wrap-sm py-section-sm hero:px-wrap hero:py-section">
+    <>
+      <SiteHeader />
+      <main className="mx-auto max-w-wrap px-wrap-sm py-section-sm hero:px-wrap hero:py-section">
       {/* 標頭 */}
       <header className="mb-16 border-b-2 border-ink pb-8">
         <div className="font-ui text-eyebrow font-medium uppercase tracking-kicker text-accent">
-          Design System · 書院光 · v1.0
+          Design Language · 書院光
         </div>
-        <h1 className="mt-3 font-serif text-h2">{copy.nav.brand}</h1>
+        <h1 className="mt-3 font-serif text-h2">設計語言・書院光</h1>
         <p className="mt-4 max-w-reader font-sans text-lede text-lede-ink">
-          Phase 1 設計 tokens 與基礎元件展示頁。所有色彩／字級／間距皆取自{" "}
-          <code className="font-mono text-code text-accent">styles/tokens.css</code>
-          ，元件不硬編（CLAUDE.md 設計不漂移）。
+          「書院光」是本站的視覺語言——暖白紙底、靛藍一色、明體撐骨，莊重而不官僚。以下彙整全站共用的色彩、字體、字級、間距與元件，作為系統導覽與設計依據。
         </p>
       </header>
 
@@ -391,12 +392,13 @@ export default function Styleguide() {
 
       <footer className="border-t border-line py-12">
         <div className="flex flex-wrap justify-between gap-3">
-          <span className="font-sans text-code text-meta">{copy.foot.zh}（styleguide）</span>
+          <span className="font-sans text-code text-meta">{copy.foot.zh}</span>
           <span className="font-mono text-[11.5px] tracking-wide text-meta tnum">
             {copy.foot.en}
           </span>
         </div>
       </footer>
-    </main>
+      </main>
+    </>
   );
 }

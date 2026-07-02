@@ -70,16 +70,19 @@ export function ArticleBlock({
   items,
   body,
   notes,
+  action,
   id,
   className,
 }: {
   number: string;
   name?: string;
-  /** 結構化款項（string[]）；與 body 擇一。 */
-  items?: string[];
+  /** 結構化款項；每款可為純字串或含 <Xref/> 的節點（內文參照）。與 body 擇一。 */
+  items?: ReactNode[];
   /** 自由內文（可含 <Xref/>）；items 未給時使用。 */
   body?: ReactNode;
   notes?: ArticleNote[];
+  /** §號下方的操作槽（如複製引用），hover 浮現。 */
+  action?: ReactNode;
   id?: string;
   className?: string;
 }) {
@@ -89,13 +92,20 @@ export function ArticleBlock({
     <article
       id={anchorId}
       className={cn(
-        "grid grid-cols-[52px_minmax(0,1fr)] gap-x-[22px] gap-y-2 rd:grid-cols-[52px_minmax(0,1fr)_208px]",
+        "group/art grid grid-cols-[52px_minmax(0,1fr)] gap-x-[22px] gap-y-2 rd:grid-cols-[52px_minmax(0,1fr)_208px]",
         "mb-[30px] scroll-mt-[70px]",
         className
       )}
     >
-      <div className="pt-1.5 font-mono text-code font-medium text-accent tnum">
-        §{number}
+      <div className="pt-1.5">
+        {/* §號同時是本條永久連結（點擊把 #art-N 帶進網址列）。 */}
+        <a
+          href={`#${anchorId}`}
+          className="font-mono text-code font-medium text-accent tnum"
+        >
+          §{number}
+        </a>
+        {action && <div className="mt-1.5">{action}</div>}
       </div>
 
       <div className="min-w-0">

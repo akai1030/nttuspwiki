@@ -51,6 +51,8 @@ const config: Config = {
         "warn-ink": "var(--warn-ink)",
         "body-ink": "var(--body-ink)",
         "lede-ink": "var(--lede-ink)",
+        "paper-blur": "var(--paper-blur)",
+        glyph: "var(--glyph)",
       },
       fontFamily: {
         serif: "var(--serif)",

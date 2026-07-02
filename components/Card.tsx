@@ -8,11 +8,14 @@ import { cn } from "@/lib/cn";
 export function Card({
   label,
   title,
+  titleAs: TitleTag = "h3",
   children,
   className,
 }: {
   label?: ReactNode;
   title?: ReactNode;
+  /** 標題的標題層級（預設 h3）；呼叫端依所在段落的 h2/h3 脈絡指定，避免跳階（WCAG 1.3.1）。 */
+  titleAs?: "h2" | "h3" | "h4";
   children: ReactNode;
   className?: string;
 }) {
@@ -27,7 +30,7 @@ export function Card({
             </span>
           )}
           {title != null && (
-            <h4 className="ml-auto font-serif text-h4">{title}</h4>
+            <TitleTag className="ml-auto font-serif text-h4">{title}</TitleTag>
           )}
         </div>
       )}

@@ -50,6 +50,8 @@
   --body-ink: #33332b;      /* 條文正文墨色（比 --ink 略暖，長讀較舒服） */
   --lede-ink: #43433c;      /* 導言墨色 */
   --stroke: rgba(23, 24, 28, 0.3); /* hero 英文外框字描邊 */
+  --paper-blur: rgba(251, 250, 246, 0.86); /* sticky 頂列半透明底（= --paper @86%，配 backdrop-blur；原型 .top） */
+  --glyph: rgba(23, 24, 28, 0.045); /* hero 大「法」浮水印（= --ink @4.5%） */
 
   /* ── 字體家族 ───────────────────────────── */
   --serif: "Noto Serif TC", serif;
