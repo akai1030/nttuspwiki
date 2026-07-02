@@ -10,7 +10,9 @@
     "typecheck": "tsc --noEmit",
     "db:migrate": "prisma migrate dev",
     "db:seed": "prisma db seed",
-    "db:verify": "tsx data/verify.ts"
+    "db:verify": "tsx data/verify.ts",
+    "fidelity:source": "tsx data/fidelity/source-check.ts",
+    "fidelity:levelB": "tsx data/fidelity/levelB-check.ts"
   },
   "prisma": {
     "seed": "tsx data/seed.ts"

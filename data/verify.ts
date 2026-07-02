@@ -1,7 +1,7 @@
 /**
  * Phase 0-4 資料保真驗證（PROMPTS.md 0-4）：把關 PDF→MD/JSON→DB 不轉錯。
  *
- *   1) 計數：38 部 / 733 條 + 五類分佈 + 每部條數與 JSON 一致
+ *   1) 計數：38 部 / 768 條 + 五類分佈 + 每部條數與 JSON 一致
  *   2) 逐條逐字比對：DB.Article ↔ JSON（body / items / 條名 / 章 / 沿革 / 前言）
  *   3) 健康檢查：U+FFFD 亂碼、空白條文、條號跳號/重複、款項異常
  *   4) 回源抽查：用 parse_laws.py（同源，需 pdftotext）重抽，隨機 20 條比對
@@ -21,6 +21,10 @@ import {
   loadLaws,
   type JsonLaw,
 } from "./shared";
+import { cjkStream } from "./fidelity/canonicalize";
+
+// 允許用 PDFTOTEXT 環境變數指定含 CJK 支援的 pdftotext（與 parse_laws.py / source-check.ts 一致）。
+const PDFTOTEXT = process.env.PDFTOTEXT || "pdftotext";
 
 // tsx 不像 Prisma 會自動載入 .env；DB 段的 process.env.DATABASE_URL 檢查在 import
 // PrismaClient 之前，故在此主動載入（.env 不存在時略過，DB 段會照常標記 skip）。
@@ -366,7 +370,7 @@ const STORE_STUB_EXIT = 9009;
 function checkSource(laws: JsonLaw[]) {
   const add = section("4. 回源比對（PDF 同源重抽 · 全量）");
 
-  const hasPdftotext = spawnSync("pdftotext", ["-v"], { encoding: "utf8" });
+  const hasPdftotext = spawnSync(PDFTOTEXT, ["-v"], { encoding: "utf8" });
   if (hasPdftotext.error || hasPdftotext.status === STORE_STUB_EXIT) {
     add(
       "skip",
@@ -397,6 +401,25 @@ function checkSource(laws: JsonLaw[]) {
 
   const reparsed = loadLaws(path.join(outDir, "法規結構化-第20屆.json"));
   const reByNumber = new Map(reparsed.map((l) => [l.number, l]));
+
+  // ★ CJK 能力守門：若重抽出來幾乎沒有中文，而現存 JSON 有大量中文，代表這台的 pdftotext
+  //   缺 CJK CMap（工具問題），不是資料漂移。此時 skip，避免把工具問題假報成資料失敗。
+  const reCjk = reparsed.reduce(
+    (s, l) => s + l.articles.reduce((a, ar) => a + cjkStream(articleBody(ar.items)).length, 0),
+    0
+  );
+  const jsonCjk = laws.reduce(
+    (s, l) => s + l.articles.reduce((a, ar) => a + cjkStream(articleBody(ar.items)).length, 0),
+    0
+  );
+  if (jsonCjk > 0 && reCjk < jsonCjk * 0.5) {
+    add(
+      "skip",
+      `此環境的 pdftotext 抽不出中文（重抽中文字 ${reCjk} vs 現存 ${jsonCjk}）→ 缺 CJK CMap，回源無法比對。` +
+        `裝含 poppler-data 的 poppler，或用 PDFTOTEXT=<路徑> 指定 CJK 版後重跑。2026-07-02 §4 曾全量通過（見 git）。`
+    );
+    return;
+  }
 
   // 重抽已自動化，全量比對與抽 20 條成本相同 → 直接比對 38 部 law 層欄位 + 全部條文
   //（涵蓋前言/沿革/章結構/條名/章名/款項，0 條法規也在 law 層被涵蓋）

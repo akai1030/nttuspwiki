@@ -1,0 +1,98 @@
+/* ─────────────────────────────────────────────────────────────
+   styles/tokens.css · 設計語言「書院光」的唯一真理來源
+   全數取自 DESIGN-SYSTEM.md（v1.0，2026-07-03 鎖定）＝ prototype/law-codex-v4*.html
+   ─ 顏色/字級/間距只從這裡取，元件與頁面不得硬編（CLAUDE.md 設計不漂移）。
+   ─ Tailwind（tailwind.config.ts）把這些變數命名為 utility；元件只用 utility class。
+   ───────────────────────────────────────────────────────────── */
+
+:root {
+  /* ── 基底面 ─────────────────────────────── */
+  --ink: #17181c;        /* 主文字、深色標籤 */
+  --paper: #fbfaf6;      /* 頁面暖白底 */
+  --paper2: #f1efe7;     /* 次級面（閱讀區、hover） */
+  --cloud: #e8e9e4;      /* 更淡分隔面 */
+
+  /* ── 強調（唯一主色：靛藍 cobalt）───────── */
+  --accent: #243fb5;     /* 連結、當前態、主按鈕、參照 */
+  --accent-soft: #3b54c8;/* hover */
+  --accent2: #c7442e;    /* 磚紅：警示 / 沿革標記，少量 */
+
+  /* ── 文字階層 ───────────────────────────── */
+  --muted: #807f78;      /* 次要色。對 --paper 僅 3.85:1 → 只可用於 ≥24px 大字或非文字用途；小字一律用 --meta 以上 */
+  --meta: #5c5b54;       /* 小字專用（對比 ≥4.5:1，勿更淺） */
+
+  /* ── 線 ─────────────────────────────────── */
+  --line: rgba(23, 24, 28, 0.14);
+  --line-soft: rgba(23, 24, 28, 0.07);
+
+  /* ── 五類分類識別色（只用於分類標籤／圓點）── */
+  --cat-charter: #243fb5; /* 最高章程 */
+  --cat-legis: #17181c;   /* 立法 */
+  --cat-exec: #c7442e;    /* 行政 */
+  --cat-judic: #5b3e9b;   /* 司法（紫） */
+  --cat-elect: #1f7a54;   /* 選舉（松綠） */
+
+  /* ── 語意（檢核／時程邊註）──────────────── */
+  --ok: #0f6e56;
+  --warn: #993c1d;
+  --sch: #0f6e56;
+  --ref: #243fb5;
+
+  /* ── 表面色（原型裡出現、於此升格為 token，避免元件硬編）── */
+  --ref-surface: #f4f6ff;   /* 參照預覽卡底（.side / .prev / .anchor 系列） */
+  --ref-border: #d5ddff;    /* 參照預覽卡框 */
+  --ref-ink: #39468a;       /* 參照預覽卡文字（藍系深字，對比達標） */
+  --toc-on: #eef1ff;        /* 目錄／連結當前態底 */
+  --warn-surface: #fdeee9;  /* 檢核「有疑慮」判定 pill 底（磚紅系） */
+  --warn-border: #f0c3b6;
+  --warn-ink: #a8341f;      /* 磚紅系深字 */
+  --sch-line: #1f9e75;      /* 時程邊註左邊色 */
+  --body-ink: #33332b;      /* 條文正文墨色（比 --ink 略暖，長讀較舒服） */
+  --lede-ink: #43433c;      /* 導言墨色 */
+  --stroke: rgba(23, 24, 28, 0.3); /* hero 英文外框字描邊 */
+
+  /* ── 字體家族 ───────────────────────────── */
+  --serif: "Noto Serif TC", serif;
+  --sans: "Noto Sans TC", sans-serif;
+  --ui: "Space Grotesk", "Noto Sans TC", sans-serif;
+  --mono: "Geist Mono", monospace;
+
+  /* ── 字級（DESIGN-SYSTEM §2；clamp=響應式）── */
+  --fs-hero-org: clamp(30px, 5.4vw, 76px);
+  --fs-hero-sys: clamp(56px, 10.5vw, 154px);
+  --fs-hero-en: clamp(20px, 3.2vw, 46px);
+  --fs-h2: clamp(28px, 4vw, 44px);
+  --fs-h4: 21px;
+  --fs-law-title: 40px;
+  --fs-art-name: 19px;
+  --fs-art-body: 17px;
+  --fs-lede: 16px;
+  --fs-body: 16px;
+  --fs-meta: 12.5px;
+  --fs-eyebrow: 11.5px;
+  --fs-code: 13px;
+  --fs-bignum: 32px;
+  --fs-row-num: 22px;
+  --fs-cat-label: 18px;
+  --fs-chap: 15px;
+  --fs-chip: 11px;
+  --fs-nav: 14px;
+  --fs-brand: 16px;
+  --fs-row-name: 20px;      /* LawRow 法規名（原 text-[20px] 硬編，升格為 token） */
+  --fs-cat-en: 11px;        /* 分類列英文小標（拉丁標籤，§2.1 允許 ≥11px） */
+  --fs-note-label: 12.5px;  /* 邊註標籤（中文小字）。依 §2.1「中文小字 ≥12.5px」，取代原型 10.5px */
+  --fs-note: 12.5px;        /* 邊註內文（中文小字）。依 §2.1 ≥12.5px，取代原型 12px */
+
+  /* ── 間距 / 容器（DESIGN-SYSTEM §3，8pt 系統）── */
+  --sp-section: 118px;      /* 區塊上下 padding（桌機） */
+  --sp-section-sm: 60px;    /* 區塊上下 padding（手機） */
+  --sp-wrap-pad: 44px;      /* 容器左右 padding（桌機） */
+  --sp-wrap-pad-sm: 22px;   /* 容器左右 padding（手機） */
+  --sp-card: 30px;          /* 卡片 padding */
+  --wrap-max: 1180px;       /* 一般容器最大寬 */
+  --wrap-max-reader: 1320px;/* 閱讀頁容器最大寬 */
+  --reader-max: 730px;      /* 單欄閱讀框最大寬 */
+
+  /* ── 圓角（本設計以直角為主，僅小處微圓）── */
+  --radius-sm: 3px;
+}

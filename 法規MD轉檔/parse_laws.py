@@ -28,9 +28,18 @@ def roc_to_iso(y,m,d):
         return f"{int(y)+1911:04d}-{int(m):02d}-{int(d):02d}"
     except: return None
 
+# 抽取引擎：預設 pdftotext(-raw)；PDF_ENGINE=pymupdf 改用 PyMuPDF（內建 CJK CMap，缺 poppler-data
+# 的機器也抽得出中文；與 data/fidelity/extract_pdf.py 同一引擎，可重現 CJK 抽取）。
+PDFTOTEXT = os.environ.get("PDFTOTEXT", "pdftotext")
+PDF_ENGINE = os.environ.get("PDF_ENGINE", "pdftotext")
+
 def pdftext(path):
+    if PDF_ENGINE == "pymupdf":
+        import fitz  # PyMuPDF
+        doc = fitz.open(path)
+        return "\n".join(page.get_text("text") for page in doc)
     return subprocess.run(
-        ["pdftotext","-raw",path,"-"],
+        [PDFTOTEXT,"-raw",path,"-"],
         capture_output=True, text=True, encoding="utf-8"
     ).stdout
 
@@ -63,7 +72,9 @@ RE_ARTICLE_AR = re.compile(r'^第\s*(\d+)(?:\s*[-–]\s*(\d+))?\s*條\s*(.*)$')
 RE_ARTICLE_CN = re.compile(
     r'^第\s*(%s(?:\s*%s)*)\s*條(?:\s*之\s*(%s(?:\s*%s)*))?\s*(.*)$' % (_CN, _CN, _CN, _CN)
 )
-RE_ITEM    = re.compile(r'^(?:(\d+)|([%s]+)、)\s*(.*)$' % CH_NUM)
+# 阿拉伯款號後必須接「.」「、」或空白才算款標記——否則像「45%、10%。」這種續行數字會被
+# 誤切成款（1.15 §2 的 bug）。同時把「.」「、」一併吃進標記，避免「1.」型 PDF 產生「1. . 內文」重複點號。
+RE_ITEM    = re.compile(r'^(?:(\d+)(?:[.、]\s*|\s+)|([%s]+)、\s*)(.*)$' % CH_NUM)
 RE_HISTLINE= re.compile(r'^民國\s*\d+\s*年')
 
 def match_article(s, arabic_mode=True):
