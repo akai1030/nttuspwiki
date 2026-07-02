@@ -12,12 +12,15 @@
     "db:seed": "prisma db seed",
     "db:verify": "tsx data/verify.ts",
     "fidelity:source": "tsx data/fidelity/source-check.ts",
-    "fidelity:levelB": "tsx data/fidelity/levelB-check.ts"
+    "fidelity:levelB": "tsx data/fidelity/levelB-check.ts",
+    "search:index": "tsx lib/search/build-index.ts",
+    "refs:build": "tsx lib/references/build.ts"
   },
   "prisma": {
     "seed": "tsx data/seed.ts"
   },
   "dependencies": {
+    "@node-rs/jieba": "^2.0.1",
     "@prisma/client": "^6.5.0",
     "next": "^14.2.5",
     "react": "^18.3.1",
