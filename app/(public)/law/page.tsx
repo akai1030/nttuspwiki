@@ -26,7 +26,13 @@ function lawMeta(l: LawIndexItem): string {
 }
 
 export default async function LawIndexPage() {
-  const groups = await getLawIndex();
+  // 對 DB 失敗有韌性：一律回 200（維持部署健康/路由），DB 暫時不可用時顯示降級訊息、不 500。
+  let groups: Awaited<ReturnType<typeof getLawIndex>> = [];
+  try {
+    groups = await getLawIndex();
+  } catch {
+    /* runtime DB 暫時不可用 */
+  }
 
   return (
     <>
@@ -44,6 +50,10 @@ export default async function LawIndexPage() {
         <div className="mb-14 max-w-reader">
           <SearchBox />
         </div>
+
+        {groups.length === 0 && (
+          <p className="font-sans text-lede text-lede-ink">{copy.indexPage.loadError}</p>
+        )}
 
         {groups.map((g) => {
           const slug = categorySlug(g.en);

@@ -79,6 +79,7 @@ export const copy = {
     articlesSuffix: "條",
     citesSuffix: "處參照",
     mother: "母法",
+    loadError: "法規清單暫時無法載入，請稍後再試。",
   },
 
   // 全文檢索頁

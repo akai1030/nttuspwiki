@@ -15,7 +15,15 @@ import { Button } from "@/components/Button";
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const [stats, categories] = await Promise.all([getStats(), getCategorySummary()]);
+  // 對 DB 失敗有韌性：首頁一律回 200（維持部署健康檢查通過、路由不被移除），
+  // DB 暫時不可用時統計與分類降級隱藏、不杜撰數字。DB 正常則照常帶入真值。
+  let stats: Awaited<ReturnType<typeof getStats>> | null = null;
+  let categories: Awaited<ReturnType<typeof getCategorySummary>> = [];
+  try {
+    [stats, categories] = await Promise.all([getStats(), getCategorySummary()]);
+  } catch {
+    /* runtime DB 暫時不可用：維持頁面可用、降級呈現 */
+  }
   const c = copy.landing;
 
   return (
@@ -51,26 +59,28 @@ export default async function Home() {
             <p className="mt-5 font-serif text-h4 text-lede-ink">{copy.home.subtitle}</p>
             <p className="mt-6 max-w-[520px] font-sans text-lede text-lede-ink">{copy.home.lede}</p>
 
-            <dl className="mt-11 flex flex-wrap gap-x-10 gap-y-6">
-              <div>
-                <dt className="font-ui text-bignum text-ink tnum">
-                  <span className="text-accent">{stats.laws}</span>
-                </dt>
-                <dd className="mt-1 font-sans text-caption text-meta">{copy.home.stats.laws}</dd>
-              </div>
-              <div>
-                <dt className="font-ui text-bignum text-ink tnum">
-                  <span className="text-accent">{stats.articles}</span>
-                </dt>
-                <dd className="mt-1 font-sans text-caption text-meta">{copy.home.stats.articles}</dd>
-              </div>
-              <div>
-                <dt className="font-ui text-bignum text-ink tnum">
-                  第<span className="text-accent">{stats.session}</span>屆
-                </dt>
-                <dd className="mt-1 font-sans text-caption text-meta">{copy.home.stats.current}</dd>
-              </div>
-            </dl>
+            {stats && (
+              <dl className="mt-11 flex flex-wrap gap-x-10 gap-y-6">
+                <div>
+                  <dt className="font-ui text-bignum text-ink tnum">
+                    <span className="text-accent">{stats.laws}</span>
+                  </dt>
+                  <dd className="mt-1 font-sans text-caption text-meta">{copy.home.stats.laws}</dd>
+                </div>
+                <div>
+                  <dt className="font-ui text-bignum text-ink tnum">
+                    <span className="text-accent">{stats.articles}</span>
+                  </dt>
+                  <dd className="mt-1 font-sans text-caption text-meta">{copy.home.stats.articles}</dd>
+                </div>
+                <div>
+                  <dt className="font-ui text-bignum text-ink tnum">
+                    第<span className="text-accent">{stats.session}</span>屆
+                  </dt>
+                  <dd className="mt-1 font-sans text-caption text-meta">{copy.home.stats.current}</dd>
+                </div>
+              </dl>
+            )}
           </div>
 
           {/* 純視覺捲動提示：拉丁用 mono、中文用 sans(≥12.5px)；對輔助技術隱藏。 */}
