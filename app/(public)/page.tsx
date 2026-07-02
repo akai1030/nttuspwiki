@@ -10,7 +10,10 @@ import { CategoryRow } from "@/components/Tag";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
 
-// 首頁統計由 DB 帶入（不硬編）。資料靜態 → 建置期預算染，公開唯讀、零 token。
+// 首頁統計由 DB 帶入（不硬編）。改 request 時渲染：部署環境的 DATABASE_URL 於 runtime 才可用，
+// 建置期不連 DB（避免 SSG 在 Zeabur build 期連不到 DB 而整個 build 失敗）。公開唯讀、零 token。
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const [stats, categories] = await Promise.all([getStats(), getCategorySummary()]);
   const c = copy.landing;

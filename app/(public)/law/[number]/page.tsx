@@ -7,7 +7,6 @@ import { categoryConfig } from "@/lib/categories";
 import { categorySlug, formatROC, chapterPrefix, shortLawName } from "@/lib/format";
 import {
   getReaderData,
-  getAllLawNumbers,
   type ReaderData,
   type ReaderArticle,
   type ArticleRef,
@@ -19,18 +18,11 @@ import { AmendmentTimeline } from "@/components/AmendmentTimeline";
 import { CopyCite } from "@/components/CopyCite";
 import { Chip } from "@/components/Tag";
 
-// 建置期一次讀 DB、靜態生成 38 部（SSG）。同一 request 內 metadata 與 page 共用（cache 去重）。
-const loadReader = cache(getReaderData);
+// request 時渲染：建置期不連 DB（DATABASE_URL 於部署 runtime 才可用，避免 SSG 在 build 期連不到 DB 使整個 build 失敗）。
+// 同一 request 內 metadata 與 page 共用查詢（cache 去重）。
+export const dynamic = "force-dynamic";
 
-export async function generateStaticParams() {
-  try {
-    const numbers = await getAllLawNumbers();
-    return numbers.map((number) => ({ number }));
-  } catch {
-    // 建置期若一時連不到 DB，回空集合：頁面改 on-demand 生成（dynamicParams 預設 true），不阻斷部署。
-    return [];
-  }
-}
+const loadReader = cache(getReaderData);
 
 export async function generateMetadata({
   params,

@@ -13,6 +13,9 @@ export const metadata: Metadata = {
   description: copy.indexPage.lede,
 };
 
+// request 時渲染：建置期不連 DB（DATABASE_URL 於部署 runtime 才可用）。公開唯讀、零 token。
+export const dynamic = "force-dynamic";
+
 /** 索引列 meta：`31 條 · 修正 2024·09·19 · 引用 6 處`（皆真實 DB 值）。 */
 function lawMeta(l: LawIndexItem): string {
   const parts: string[] = [`${l.articleCount} ${copy.indexPage.articlesSuffix}`];
