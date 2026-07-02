@@ -1,0 +1,6 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Phase 1 依 DESIGN-SYSTEM.md 產出 styles/tokens.css 後在此 @import。
+   在那之前不寫任何自訂色彩/字級（設計不漂移原則）。 */

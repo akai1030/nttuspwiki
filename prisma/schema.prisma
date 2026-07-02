@@ -1,0 +1,158 @@
+// 資料模型依 ARCHITECTURE.md「1. 統一資料模型」+ 2B + 2C。
+// 變更模型請先對照 ARCHITECTURE.md，不要自行擴充範圍。
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ── 法規結構（查詢／檢核／時程 共用）──
+
+model Law {
+  id            String             @id @default(cuid())
+  category      String // 最高章程 / 行政 / 立法 / 司法 / 選舉
+  number        String // "0.0" "1.10"
+  name          String
+  session       Int // 屆別，現行=20
+  isCurrent     Boolean            @default(true)
+  currentDate   DateTime?
+  currentType   String? // 修正 / 訂定
+  preamble      String?            @db.Text
+  sourceFile    String? // 原始 PDF 檔名，供人工覆核
+  articles      Article[]
+  amendments    AmendmentHistory[]
+  scheduleRules ScheduleRule[]
+
+  @@unique([session, number])
+  @@index([category])
+}
+
+model Article {
+  id      String  @id @default(cuid())
+  lawId   String
+  law     Law     @relation(fields: [lawId], references: [id])
+  number  String // "16" "3-1"
+  name    String? // 條名
+  chapter String? // 第一章
+  body    String  @db.Text // 純文字全文（款項以換行合併，供搜尋/顯示）
+  items   Json // 結構化款項陣列（string[]）
+  version Int     @default(20) // = session，供跨屆 diff
+  tsv     Unsupported("tsvector")? // 應用端斷詞後寫入（Phase 2）
+
+  // embedding Unsupported("vector(1536)")?
+  // ↑ pgvector 語意檢索（可選）。待確認 Zeabur PG image 支援 pgvector 後再開啟
+  //   （ARCHITECTURE.md §5 開放問題 1）。關鍵字查詢不受影響。
+
+  @@unique([lawId, number])
+  @@index([lawId])
+}
+
+model AmendmentHistory {
+  id          String   @id @default(cuid())
+  lawId       String
+  law         Law      @relation(fields: [lawId], references: [id])
+  date        DateTime
+  roc         String // "113.09.19"
+  sessionTerm String? // 屆別
+  action      String // 修正 / 訂定 / 新增
+  text        String   @db.Text
+
+  @@index([lawId])
+}
+
+model LawReference {
+  id            String  @id @default(cuid())
+  fromLawId     String
+  fromArticleNo String?
+  toLawName     String // 被引用法規名（可能語料外，如《大學法》）
+  toLawId       String? // 可解析到語料內時才有
+  toArticleNo   String?
+  kind          String // cite / 準用 / 牴觸 / 另訂
+  raw           String // 原文片段
+
+  @@index([fromLawId])
+  @@index([toLawId])
+}
+
+// ── 時程管理（2C）──
+
+enum ScheduleType {
+  RECURRING
+  RELATIVE
+  ABSOLUTE
+}
+
+model ScheduleRule {
+  id          String          @id @default(cuid())
+  lawId       String
+  law         Law             @relation(fields: [lawId], references: [id])
+  articleNo   String // 來源條號，可回溯法源
+  title       String // 人類可讀：「議會常會（每月一次）」
+  type        ScheduleType
+  rrule       String? // RECURRING：RRULE/cron，如每月
+  anchorEvent String? // RELATIVE：錨定事件碼，如 MEETING_OPEN / PROPOSAL_PASSED
+  offsetValue Int? // RELATIVE：3 / 14 / 30
+  offsetUnit  String? // day / workday / month / hour
+  direction   String? // before / after
+  fixedMonth  Int? // ABSOLUTE：7
+  fixedDay    Int? // ABSOLUTE：1
+  audience    String? // 議會 / 行政中心 / 財委會…
+  rawClause   String          @db.Text
+  verified    Boolean         @default(false) // 人工確認過才啟用
+  events      ScheduleEvent[]
+}
+
+model ScheduleEvent {
+  id        String       @id @default(cuid())
+  ruleId    String
+  rule      ScheduleRule @relation(fields: [ruleId], references: [id])
+  title     String
+  dueAt     DateTime
+  anchorAt  DateTime? // RELATIVE：錨定事件實際發生時間
+  status    String       @default("scheduled")
+  reminders Reminder[]
+}
+
+model Reminder {
+  id      String        @id @default(cuid())
+  eventId String
+  event   ScheduleEvent @relation(fields: [eventId], references: [id])
+  channel String // inapp / email / gcal / line
+  fireAt  DateTime
+  sentAt  DateTime?
+  target  String? // email 位址 / LINE group id
+}
+
+// ── 合法性檢核（2B）──
+
+model ComplianceCheck {
+  id              String   @id @default(cuid())
+  userId          String?
+  inputType       String // proposal / activity_budget / freeform
+  inputText       String   @db.Text
+  fileUrl         String? // R2
+  mode            String // rule_only（免費層）/ llm（加強層）
+  model           String? // 走 LLM 時記錄用哪個（gemini-flash / claude-sonnet-5…）
+  matchedArticles Json // 檢索對照撈到的相關條文 + 命中理由
+  ruleFlags       Json // 規則清單觸發的旗標
+  verdict         String? // compliant / concerns / non_compliant / insufficient（rule_only 時可為 null）
+  confidence      Float?
+  citations       Json // [{lawId, articleNo, quote, relation}]
+  concerns        Json
+  reviewedBy      String? // 人工覆核留痕（人在迴路）
+  createdAt       DateTime @default(now())
+}
+
+// ── 幹部帳號（email 白名單，勿上重型 auth）──
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  role      String   @default("officer") // admin / officer / viewer
+  createdAt DateTime @default(now())
+}
