@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>臺東大學學生會 · 法規總覽（v2.1 · 書院光 · 小字精修）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&family=Noto+Serif+TC:wght@400;500;600;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#17181C; --paper:#FBFAF6; --paper2:#F1EFE7; --cloud:#E8E9E4;
+  --accent:#243FB5; --accent2:#C7442E; --muted:#807F78; --meta:#5C5B54; --line:rgba(23,24,28,.14); --line-soft:rgba(23,24,28,.07);
+  --serif:"Noto Serif TC",serif; --sans:"Noto Sans TC",sans-serif;
+  --ui:"Geist","Noto Sans TC",sans-serif; --mono:"Geist Mono",monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans); color:var(--ink); background:var(--paper); -webkit-font-smoothing:antialiased; line-height:1.75; overflow-x:hidden}
+/* 小字微排版規則：數字/日期/代碼一律 tabular + slashed zero */
+.mono,.num,.tnum{font-feature-settings:"tnum" 1,"zero" 1}
+.wrap{max-width:1180px; margin:0 auto; padding:0 44px}
+
+/* top */
+.top{position:sticky; top:0; z-index:20; display:flex; justify-content:space-between; align-items:center; padding:16px 44px;
+  background:rgba(251,250,246,.86); backdrop-filter:blur(8px); border-bottom:1px solid var(--line-soft)}
+.top .brand{font-family:var(--serif); font-weight:700; font-size:17px; letter-spacing:.01em}
+.top .brand i{color:var(--accent); font-style:normal}
+.top nav{display:flex; gap:26px; font-family:var(--sans); font-size:14px; font-weight:500}
+.top nav a{color:var(--ink); text-decoration:none; opacity:.72} .top nav a:hover{opacity:1; color:var(--accent)}
+.top .cta{font-family:var(--ui); font-size:12.5px; font-weight:500; letter-spacing:.02em; border:1px solid var(--ink); padding:8px 16px; text-decoration:none; color:var(--ink)}
+
+/* hero */
+.hero{display:grid; grid-template-columns:1.05fr .95fr; gap:0; border-bottom:1px solid var(--line); min-height:82vh}
+.hero .L{padding:96px 60px 60px 44px; display:flex; flex-direction:column; justify-content:center; border-right:1px solid var(--line)}
+.hero .R{padding:60px 44px 60px 56px; display:flex; flex-direction:column; justify-content:center; background:var(--paper2)}
+.hero .kick{font-family:var(--sans); font-weight:500; font-size:13px; letter-spacing:.04em; color:var(--accent); margin-bottom:22px}
+.hero h1{font-family:var(--serif); font-weight:900; font-size:clamp(46px,6.6vw,104px); line-height:1.0; letter-spacing:.01em}
+.hero h1 em{font-style:normal; color:var(--accent)}
+.hero .en{font-family:var(--ui); font-weight:500; font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--meta); margin-top:20px; font-feature-settings:"tnum" 1}
+.hero .lede{max-width:440px; margin-top:26px; font-size:16px; color:#43433c; line-height:1.95}
+.stat{display:flex; gap:16px; align-items:baseline; padding:16px 0; border-bottom:1px solid var(--line-soft)}
+.stat .num{font-family:var(--ui); font-weight:700; font-size:44px; letter-spacing:-.02em; min-width:128px; font-feature-settings:"tnum" 1,"zero" 1}
+.stat .num em{font-style:normal; color:var(--accent)}
+.stat .lab{font-family:var(--sans); font-size:13px; color:var(--meta); line-height:1.65}
+.stat:first-child{border-top:1px solid var(--line-soft)}
+
+/* section head */
+.sh{display:flex; align-items:flex-end; gap:16px; margin:0 0 40px; padding-top:12px}
+.sh .no{font-family:var(--mono); font-weight:500; font-size:13px; color:var(--accent); font-feature-settings:"tnum" 1}
+.sh h2{font-family:var(--serif); font-weight:700; font-size:clamp(26px,3.4vw,40px)}
+.sh .ln{flex:1; height:1px; background:var(--line); margin-bottom:10px}
+.sh .en{font-family:var(--ui); font-weight:500; font-size:11.5px; color:var(--meta); letter-spacing:.13em; text-transform:uppercase; margin-bottom:9px}
+
+/* index */
+.index{padding:110px 0}
+.catrow{display:flex; align-items:center; gap:12px; margin:40px 0 6px}
+.catrow .kj{font-family:var(--serif); font-weight:700; font-size:22px}
+.catrow .en{font-family:var(--ui); font-weight:500; font-size:11px; color:var(--meta); letter-spacing:.12em; text-transform:uppercase}
+.catrow .ct{margin-left:auto; font-family:var(--sans); font-size:12.5px; color:var(--meta); font-feature-settings:"tnum" 1}
+.catrow .dot{width:9px; height:9px; background:var(--accent)}
+.catrow.k2 .dot{background:var(--ink)} .catrow.k3 .dot{background:var(--accent2)}
+.row{display:grid; grid-template-columns:76px 1fr auto; align-items:center; gap:22px; padding:18px 10px; text-decoration:none; color:var(--ink);
+  border-bottom:1px solid var(--line-soft); transition:.22s}
+.row:hover{background:var(--paper2); transform:translateX(6px)}
+.row .n{font-family:var(--mono); font-weight:500; font-size:21px; color:var(--muted); font-feature-settings:"tnum" 1,"zero" 1}
+.row:hover .n{color:var(--accent)}
+.row .nm{font-family:var(--serif); font-size:19px; font-weight:500}
+.row .mt{font-family:var(--sans); font-size:12.5px; color:var(--meta); margin-top:3px; font-feature-settings:"tnum" 1; letter-spacing:.005em}
+.row .go{font-family:var(--sans); font-weight:500; font-size:12.5px; color:var(--accent); opacity:0} .row:hover .go{opacity:1}
+
+/* reader */
+.read{padding:110px 0; background:var(--paper2)}
+.reader{max-width:720px; margin:0 auto; background:var(--paper); border:1px solid var(--line); padding:60px 66px; position:relative}
+.reader::before{content:""; position:absolute; left:0; top:0; width:5px; height:100%; background:var(--accent)}
+.reader .tag{font-family:var(--ui); font-weight:500; font-size:12px; letter-spacing:.06em; color:var(--accent); text-transform:uppercase; font-feature-settings:"tnum" 1}
+.reader h3{font-family:var(--serif); font-weight:900; font-size:36px; margin:12px 0 8px}
+.reader .sub{font-family:var(--sans); font-size:12.5px; color:var(--meta); padding-bottom:22px; border-bottom:1px solid var(--line); font-feature-settings:"tnum" 1; letter-spacing:.005em}
+.chap{font-family:var(--serif); font-weight:700; font-size:15px; letter-spacing:.32em; color:var(--accent); margin:34px 0 16px}
+.art{display:grid; grid-template-columns:58px 1fr; gap:18px; margin-bottom:24px}
+.art .an{font-family:var(--mono); font-weight:500; font-size:12.5px; color:var(--muted); padding-top:7px; font-feature-settings:"tnum" 1}
+.art .at{font-family:var(--serif); font-weight:600; font-size:18px; margin-bottom:5px}
+.art .ab{font-family:var(--serif); font-size:17px; line-height:2.1; color:#33332b}
+.xref{color:var(--accent); border-bottom:1px solid var(--accent); text-decoration:none}
+.side{background:#f4f6ff; border:1px solid #d5ddff; padding:11px 14px; margin-top:12px; font-family:var(--sans); font-size:13px; color:#39468a; line-height:1.75}
+.side b{font-family:var(--sans); font-weight:700; font-size:12px; display:block; margin-bottom:2px; color:var(--accent)}
+
+/* tools */
+.feat{padding:110px 0}
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:24px}
+.card{border:1px solid var(--line); padding:28px; background:var(--paper)}
+.card .ch{display:flex; align-items:baseline; gap:10px; margin-bottom:16px; padding-bottom:14px; border-bottom:1px solid var(--line-soft)}
+.card .cn{font-family:var(--sans); font-weight:700; font-size:12.5px; color:var(--accent)}
+.card h4{font-family:var(--serif); font-weight:600; font-size:20px; margin-left:auto}
+.vd{display:inline-block; font-family:var(--sans); font-weight:500; font-size:12.5px; padding:5px 12px; background:#fdeee9; color:#a8341f; border:1px solid #f0c3b6; margin-bottom:14px; font-feature-settings:"tnum" 1}
+.cite{border-left:2px solid var(--accent); padding:2px 0 2px 12px; margin-bottom:11px}
+.cite .cl{font-family:var(--sans); font-weight:500; font-size:11.5px; color:var(--meta); margin-bottom:2px; font-feature-settings:"tnum" 1}
+.cite .cx{font-family:var(--serif); font-size:15px; line-height:1.65}
+.tl{display:flex; align-items:baseline; gap:12px; padding:10px 0; border-bottom:1px solid var(--line-soft)}
+.tl .dd{font-family:var(--mono); font-weight:500; font-size:16px; min-width:56px; font-feature-settings:"tnum" 1,"zero" 1}
+.tl .tt{font-family:var(--serif); font-size:15px; flex:1}
+.tl .src{font-family:var(--sans); font-size:11.5px; color:var(--meta); font-feature-settings:"tnum" 1}
+.anchor{background:#eef1ff; padding:10px 12px; margin-bottom:12px; font-family:var(--sans); font-weight:500; font-size:13px; color:#39468a; border:1px solid #d5ddff; font-feature-settings:"tnum" 1}
+
+.foot{border-top:1px solid var(--line); padding:50px 0; color:var(--meta)}
+.foot .wrap{display:flex; justify-content:space-between; flex-wrap:wrap; gap:14px}
+.foot .zh{font-family:var(--sans); font-size:13px}
+.foot .en{font-family:var(--mono); font-size:11.5px; letter-spacing:.04em; font-feature-settings:"tnum" 1}
+
+@media(max-width:860px){
+  .wrap{padding:0 22px} .top{padding:14px 22px} .top nav{display:none}
+  .hero{grid-template-columns:1fr} .hero .L{padding:60px 22px 40px; border-right:none} .hero .R{padding:40px 22px; border-top:1px solid var(--line)}
+  .grid2{grid-template-columns:1fr} .reader{padding:38px 24px}
+}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="brand">臺東學生會<i>·</i>法典</div>
+  <nav><a href="#index">總覽</a><a href="#read">閱讀</a><a href="#feat">檢核・時程</a></nav>
+  <a class="cta" href="#">幹部登入</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="L">
+    <div class="kick">國立臺東大學學生會 · 自治法規</div>
+    <h1>學生會<br><em>法規</em>總覽</h1>
+    <div class="en">Student Association Codex — 20th</div>
+    <p class="lede">三十八部自治法規，整理成一部查得到、讀得懂、對照得起來的數位法典。逐條可溯源、逐次修正有跡可循。</p>
+  </div>
+  <div class="R">
+    <div class="stat"><div class="num"><em>38</em></div><div class="lab">部現行法規<br>五類編排</div></div>
+    <div class="stat"><div class="num"><em>733</em></div><div class="lab">條條文<br>全文可檢索</div></div>
+    <div class="stat"><div class="num"><em>43</em></div><div class="lab">處跨法引用<br>可點擊跳轉</div></div>
+    <div class="stat"><div class="num"><em>20</em>th</div><div class="lab">第二十屆<br>現行版本</div></div>
+  </div>
+</section>
+
+<!-- index -->
+<section class="index" id="index">
+  <div class="wrap">
+    <div class="sh"><span class="no">01</span><h2>法規總覽</h2><div class="ln"></div><span class="en">Index</span></div>
+
+    <div class="catrow"><span class="dot"></span><span class="kj">最高章程</span><span class="en">Charter</span><span class="ct">3 部</span></div>
+    <a class="row" href="#read"><span class="n">0.0</span><div><div class="nm">國立臺東大學學生會組織章程</div><div class="mt">60 條 · 修正 2024·09·19 · 母法</div></div><span class="go">閱讀 →</span></a>
+
+    <div class="catrow k2"><span class="dot"></span><span class="kj">立法</span><span class="en">Legislative</span><span class="ct">10 部</span></div>
+    <a class="row" href="#read"><span class="n">2.0</span><div><div class="nm">學生議會組織及實行準則</div><div class="mt">30 條 · 修正 2024·09·19 · 引用 6 處</div></div><span class="go">閱讀 →</span></a>
+    <a class="row" href="#read"><span class="n">2.3</span><div><div class="nm">學生議會暨常會職權行使法</div><div class="mt">60 條 · 修正 2024·09·19 · 三讀程序</div></div><span class="go">閱讀 →</span></a>
+
+    <div class="catrow k3"><span class="dot"></span><span class="kj">行政</span><span class="en">Executive</span><span class="ct">20 部</span></div>
+    <a class="row" href="#read"><span class="n">1.1</span><div><div class="nm">學生會預算法</div><div class="mt">54 條 · 修正 2024·09·19 · 預備金 · 收支平衡</div></div><span class="go">閱讀 →</span></a>
+  </div>
+</section>
+
+<!-- reader -->
+<section class="read" id="read">
+  <div class="wrap">
+    <div class="sh"><span class="no">02</span><h2>條文閱讀</h2><div class="ln"></div><span class="en">Reader</span></div>
+    <div class="reader">
+      <div class="tag">立法 · 2.0</div>
+      <h3>學生議會組織及實行準則</h3>
+      <div class="sub">30 條　·　第20屆現行　·　最近修正 民國 113.09.19</div>
+      <div class="chap">第 三 章　開會及會期</div>
+      <div class="art"><div class="an">§9</div><div><div class="at">會期</div><div class="ab">一屆任期即為完整之會期，自七月一日起至隔年六月三十日止。</div></div></div>
+      <div class="art"><div class="an">§10</div><div><div class="at">會議之種類</div>
+        <div class="ab">一、常會：每個月由議長召開一次，唯寒、暑假例外。<br>二、臨時會：因議案需要，由議長主動召開或經全體議員五分之二連署召開之。</div>
+        <div class="side"><b>時程規則 · 自動抽取</b>「常會每月一次」已排入行事曆；開議前 14 日公告等法定期限自動往回推算並提醒。</div></div></div>
+      <div class="art"><div class="an">§15</div><div><div class="at">會議公開原則</div>
+        <div class="ab">學生議會會議應公開，且於開議十四日前公告後舉行，並依 <a class="xref" href="#">《職權行使法》第 8 條</a> 所定程序辦理。不得舉行祕密會議。</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- tools -->
+<section class="feat" id="feat">
+  <div class="wrap">
+    <div class="sh"><span class="no">03</span><h2>檢核與時程</h2><div class="ln"></div><span class="en">Tools</span></div>
+    <div class="grid2">
+      <div class="card">
+        <div class="ch"><span class="cn">合法性檢核</span><h4>對照報告</h4></div>
+        <div class="vd">◆ 有疑慮 · 信心 中 · 引用 3 條</div>
+        <div class="cite"><div class="cl">職權行使法 §8</div><div class="cx">法律修正案應經三讀 — 提案未載明三讀安排。</div></div>
+        <div class="cite"><div class="cl">議會組織準則 §5</div><div class="cx">議會對預算不得提出增加支出之提議 — 調高預備金上限恐牴觸。</div></div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="cn">時程排定</span><h4>法定期限</h4></div>
+        <div class="anchor">◈ 設定：10 月常會 = 10/15（錨定事件）</div>
+        <div class="tl"><span class="dd">10/01</span><span class="tt">公告會議</span><span class="src">組織準則 §15</span></div>
+        <div class="tl"><span class="dd">10/05</span><span class="tt">施政方針送達</span><span class="src">職權行使法 §17</span></div>
+        <div class="tl"><span class="dd">10/08</span><span class="tt">聯合質詢登記</span><span class="src">職權行使法 §19</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="foot"><div class="wrap"><span class="zh">國立臺東大學學生會 · 法規總覽（原型 v2.1 · 書院光 · 小字精修）</span><span class="en">NTTU · 2026</span></div></footer>
+
+</body>
+</html>

@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>動效實驗室 · 六組配方</title>
+<style>
+  /* ── tokens ─────────────────────────────── */
+  :root{
+    --bg:#15171C;          /* 霧夜 */
+    --panel:#1C1F25;       /* 暗房 */
+    --stage:#13151A;       /* 光桌 */
+    --line:#2A2E36;        /* 霧線 */
+    --ink:#EAE8E1;         /* 相紙 */
+    --dim:#969CA8;         /* 霧灰 */
+    --accent:#D9A854;      /* 燈琥珀 */
+    --easeOut:cubic-bezier(0.16, 1, 0.3, 1);   /* 急起緩停 */
+    --spring:cubic-bezier(0.34, 1.56, 0.64, 1);/* 過衝回彈（假彈簧） */
+    --serif:Georgia,"Noto Serif TC","Songti TC",serif;
+    --sans:"Noto Sans TC","PingFang TC",system-ui,sans-serif;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg);color:var(--ink);
+    font-family:var(--sans);font-size:15px;line-height:1.6;
+    padding:clamp(20px,4vw,48px);
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ── header ─────────────────────────────── */
+  header{
+    display:flex;align-items:flex-end;justify-content:space-between;
+    gap:16px;flex-wrap:wrap;margin-bottom:28px;
+    padding-bottom:20px;border-bottom:1px solid var(--line);
+  }
+  h1{font-family:var(--serif);font-weight:600;font-size:clamp(26px,4vw,34px);letter-spacing:.04em}
+  .sub{color:var(--dim);font-size:13px;margin-top:6px}
+  .sub code{font-family:var(--mono);color:var(--ink);font-size:12px}
+  button{
+    font-family:var(--sans);font-size:13px;color:var(--ink);
+    background:transparent;border:1px solid var(--line);border-radius:6px;
+    padding:7px 14px;cursor:pointer;
+    transition:border-color .2s var(--easeOut),color .2s var(--easeOut);
+  }
+  button:hover{border-color:var(--accent);color:var(--accent)}
+  button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  /* ── grid & card ────────────────────────── */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:20px}
+  .card{
+    background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:18px 18px 14px;display:flex;flex-direction:column;gap:14px;
+  }
+  .head{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:start}
+  .no{font-family:var(--serif);font-size:26px;color:var(--accent);line-height:1.1}
+  .tt h2{font-size:16px;font-weight:600;letter-spacing:.02em}
+  .use{display:block;color:var(--dim);font-size:12px;margin-top:2px}
+  .replay{padding:5px 10px;font-size:12px;border-radius:6px}
+
+  .stage{
+    background:var(--stage);border:1px solid var(--line);border-radius:8px;
+    padding:20px;min-height:150px;
+    display:flex;align-items:center;justify-content:center;overflow:hidden;
+  }
+
+  /* spec 列：時長底下那條琥珀線的長度 = 毫秒 × 0.1px，長度即時間 */
+  .spec{
+    font-family:var(--mono);font-size:11.5px;color:var(--dim);
+    display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;
+  }
+  .spec b{color:var(--ink);font-weight:500}
+  .sep{color:var(--line)}
+  .dur{position:relative;color:var(--ink)}
+  .dur::after{
+    content:'';position:absolute;left:0;bottom:-4px;height:2px;
+    width:calc(var(--ms) * .1px);background:var(--accent);border-radius:1px;
+  }
+
+  details.code{border-top:1px dashed var(--line);padding-top:10px}
+  details.code summary{
+    cursor:pointer;font-size:12px;color:var(--dim);list-style:none;user-select:none;
+  }
+  details.code summary::before{content:'▸ ';color:var(--accent)}
+  details.code[open] summary::before{content:'▾ '}
+  .codewrap{position:relative;margin-top:10px}
+  .copy{position:absolute;top:8px;right:8px;font-size:11px;padding:4px 9px}
+  pre{
+    font-family:var(--mono);font-size:11.5px;line-height:1.7;color:#C9CDD6;
+    background:var(--stage);border:1px solid var(--line);border-radius:8px;
+    padding:14px;overflow-x:auto;white-space:pre;
+  }
+
+  /* ════ 01 Fade-up 入場 ════ */
+  .stack{width:100%;max-width:280px;display:flex;flex-direction:column;gap:12px}
+  .sk{border-radius:5px;background:linear-gradient(90deg,#2E333D,#262A32)}
+  .sk.t{height:20px;width:62%}
+  .sk.l{height:11px;width:100%}
+  .sk.l.s{width:78%}
+  .sk.b{height:32px;width:118px;background:var(--accent);opacity:.9;margin-top:4px}
+
+  @keyframes fadeUp{
+    from{opacity:0;transform:translateY(20px)}
+    to  {opacity:1;transform:translateY(0)}
+  }
+  .fadeup{opacity:0}
+  .fadeup.run{animation:fadeUp .7s var(--easeOut) both}
+  .stack .fadeup:nth-child(2).run{animation-delay:90ms}
+  .stack .fadeup:nth-child(3).run{animation-delay:180ms}
+  .stack .fadeup:nth-child(4).run{animation-delay:270ms}
+
+  /* ════ 02 緩動對照 ════ */
+  .lanes{display:flex;gap:10px;width:100%;justify-content:space-around}
+  .lane{display:flex;flex-direction:column;align-items:center;gap:10px;flex:1}
+  .track{position:relative;height:104px;width:100%;display:flex;justify-content:center}
+  .dot{
+    position:absolute;bottom:auto;top:0;width:18px;height:18px;border-radius:50%;
+    background:var(--accent);
+  }
+  .lab{font-family:var(--mono);font-size:11px;color:var(--ink);text-align:center;line-height:1.5}
+  .lab i{display:block;font-style:normal;color:var(--dim);font-size:10.5px}
+
+  @keyframes rise{
+    from{opacity:0;transform:translateY(86px)}
+    to  {opacity:1;transform:translateY(0)}
+  }
+  .rise{opacity:0}
+  .rise.run{animation:rise .9s both}
+  .rise.eo.run{animation-timing-function:var(--easeOut)}
+  .rise.li.run{animation-timing-function:linear}
+  .rise.sp.run{animation-timing-function:var(--spring)}
+
+  /* ════ 03 霧化入場 ════ */
+  .photo{
+    position:relative;width:100%;height:150px;border-radius:8px;overflow:hidden;
+    background:
+      radial-gradient(120% 90% at 18% 0%, rgba(217,168,84,.22), transparent 55%),
+      radial-gradient(95% 85% at 82% 100%, rgba(127,150,170,.30), transparent 62%),
+      linear-gradient(180deg,#242A35,#171A20);
+  }
+  .photo figcaption{
+    position:absolute;left:16px;bottom:12px;
+    font-family:var(--serif);font-size:15px;letter-spacing:.35em;color:var(--ink);
+  }
+  @keyframes blurIn{
+    from{opacity:0;filter:blur(16px);transform:scale(1.05)}
+    to  {opacity:1;filter:blur(0);transform:scale(1)}
+  }
+  .blurin{opacity:0}
+  .blurin.run{animation:blurIn .9s var(--easeOut) both}
+
+  /* ════ 04 Spring 彈跳 ════ */
+  .pills{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  .pill{
+    font-size:13px;padding:8px 16px;border-radius:999px;
+    border:1px solid var(--line);color:var(--ink);white-space:nowrap;
+  }
+  .pill.hot{background:var(--accent);color:#15171C;border-color:var(--accent);font-weight:600}
+  @keyframes pop{
+    from{opacity:0;transform:scale(.8) translateY(10px)}
+    to  {opacity:1;transform:scale(1) translateY(0)}
+  }
+  .pop{opacity:0}
+  .pop.run{animation:pop .6s var(--spring) both}
+  .pills .pop:nth-child(2).run{animation-delay:60ms}
+  .pills .pop:nth-child(3).run{animation-delay:120ms}
+
+  /* ════ 05 Hover 微反饋 ════ */
+  .hoverrow{display:flex;gap:12px;width:100%}
+  .hcard{
+    flex:1;background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:14px 12px;min-width:0;
+    transition:transform .2s var(--easeOut),
+               box-shadow .2s var(--easeOut),
+               border-color .2s var(--easeOut);
+  }
+  .hcard b{display:block;font-size:13px;font-weight:600}
+  .hcard span{font-size:11.5px;color:var(--dim)}
+  .hcard:hover{
+    transform:translateY(-3px);
+    box-shadow:0 10px 24px rgba(0,0,0,.38);
+    border-color:var(--accent);
+  }
+  .hint{font-size:11.5px;color:var(--dim);text-align:center;margin-top:8px}
+
+  /* ════ 06 捲動觸發 ════ */
+  .scrollbox{
+    width:100%;height:190px;overflow-y:auto;border-radius:8px;
+    display:flex;flex-direction:column;gap:10px;padding:4px 6px 4px 2px;
+    scrollbar-width:thin;scrollbar-color:var(--line) transparent;
+  }
+  .row{
+    flex:none;background:var(--panel);border:1px solid var(--line);border-radius:7px;
+    padding:13px 14px;font-size:13px;
+  }
+  .row small{color:var(--dim);font-family:var(--mono);margin-right:10px}
+  .endnote{flex:none;text-align:center;color:var(--dim);font-size:11.5px;padding:8px 0 4px}
+  .reveal{
+    opacity:0;transform:translateY(24px);
+    transition:opacity .7s var(--easeOut),transform .7s var(--easeOut);
+  }
+  .reveal.in{opacity:1;transform:none}
+
+  /* ── footer ─────────────────────────────── */
+  footer{
+    margin-top:28px;padding-top:18px;border-top:1px solid var(--line);
+    color:var(--dim);font-size:13px;
+  }
+  footer .rule b{color:var(--ink)}
+  footer details{margin-top:10px}
+  footer summary{cursor:pointer;font-size:12px}
+  footer summary::before{content:'▸ ';color:var(--accent)}
+  footer details[open] summary::before{content:'▾ '}
+  footer pre{margin-top:10px}
+
+  /* 無障礙：使用者若偏好減少動態，全部直接落在最終狀態 */
+  @media (prefers-reduced-motion: reduce){
+    .fadeup,.rise,.blurin,.pop,
+    .fadeup.run,.rise.run,.blurin.run,.pop.run{
+      animation:none!important;opacity:1!important;transform:none!important;filter:none!important;
+    }
+    .reveal{opacity:1!important;transform:none!important;transition:none!important}
+    .hcard{transition:none}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>動效實驗室</h1>
+    <p class="sub">六組配方 · 每組附六參數 spec 與可複製 CSS · 開 DevTools 改 <code>--easeOut</code> / 時長即可實驗 · spec 裡琥珀線長度＝實際毫秒</p>
+  </div>
+  <button id="replayAll">↺ 全部重播</button>
+</header>
+
+<main class="grid">
+
+  <!-- 01 ─────────────────────────────────── -->
+  <section class="card">
+    <div class="head">
+      <span class="no">01</span>
+      <div class="tt"><h2>Fade-up 入場</h2><span class="use">九成內容的工作馬 · 林事／參詳這類工具型網站的預設鍵</span></div>
+      <button class="replay" data-replay>↺</button>
+    </div>
+    <div class="stage">
+      <div class="stack">
+        <div class="sk t anim fadeup"></div>
+        <div class="sk l anim fadeup"></div>
+        <div class="sk l s anim fadeup"></div>
+        <div class="sk b anim fadeup"></div>
+      </div>
+    </div>
+    <div class="spec">
+      <b>載入</b><span class="sep">▸</span>opacity＋translateY <b>20px</b><span class="sep">▸</span><span class="dur" style="--ms:700">700ms</span><span class="sep">▸</span>ease-out<span class="sep">▸</span>stagger <b>90ms</b>
+    </div>
+    <details class="code"><summary>CSS</summary>
+      <div class="codewrap"><button class="copy" data-copy="c1">複製</button>
+<pre id="c1">@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fadeup { opacity: 0; }
+.fadeup.run {
+  animation: fadeUp .7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+/* 子元素魚貫進場：每個晚 90ms */
+.fadeup:nth-child(2).run { animation-delay: 90ms; }
+.fadeup:nth-child(3).run { animation-delay: 180ms; }
+.fadeup:nth-child(4).run { animation-delay: 270ms; }</pre>
+      </div>
+    </details>
+  </section>
+
+  <!-- 02 ─────────────────────────────────── -->
+  <section class="card">
+    <div class="head">
+      <span class="no">02</span>
+      <div class="tt"><h2>緩動對照</h2><span class="use">同參數只換曲線 · 感受「質感」到底藏在哪</span></div>
+      <button class="replay" data-replay>↺</button>
+    </div>
+    <div class="stage">
+      <div class="lanes">
+        <div class="lane">
+          <div class="track"><div class="dot anim rise eo"></div></div>
+          <span class="lab">ease-out<i>有人把它放下</i></span>
+        </div>
+        <div class="lane">
+          <div class="track"><div class="dot anim rise li"></div></div>
+          <span class="lab">linear<i>輸送帶</i></span>
+        </div>
+        <div class="lane">
+          <div class="track"><div class="dot anim rise sp"></div></div>
+          <span class="lab">spring<i>有生命</i></span>
+        </div>
+      </div>
+    </div>
+    <div class="spec">
+      <b>載入</b><span class="sep">▸</span>opacity＋translateY <b>86px</b><span class="sep">▸</span><span class="dur" style="--ms:900">900ms</span><span class="sep">▸</span><b>三種曲線</b><span class="sep">▸</span>無 stagger
+    </div>
+    <details class="code"><summary>CSS</summary>
+      <div class="codewrap"><button class="copy" data-copy="c2">複製</button>
+<pre id="c2">/* 質感三兄弟：入場請用前者，linear 只配跑馬燈 */
+--easeOut: cubic-bezier(0.16, 1, 0.3, 1);   /* 急起緩停 */
+--spring:  cubic-bezier(0.34, 1.56, 0.64, 1); /* 過衝回彈 */
+/* linear：等速，入場用它 = 廉價感頭號來源 */
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(86px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.rise.run { animation: rise .9s var(--easeOut) both; }</pre>
+      </div>
+    </details>
+  </section>
+
+  <!-- 03 ─────────────────────────────────── -->
+  <section class="card">
+    <div class="head">
+      <span class="no">03</span>
+      <div class="tt"><h2>霧化入場 Blur-in</h2><span class="use">hero／攝影作品 · 單一元素限定（filter 重繪很貴，列表勿用）</span></div>
+      <button class="replay" data-replay>↺</button>
+    </div>
+    <div class="stage" style="padding:12px">
+      <figure class="photo anim blurin"><figcaption>霧 形 於 光</figcaption></figure>
+    </div>
+    <div class="spec">
+      <b>載入</b><span class="sep">▸</span>opacity＋blur <b>16px→0</b>＋scale <b>1.05→1</b><span class="sep">▸</span><span class="dur" style="--ms:900">900ms</span><span class="sep">▸</span>ease-out<span class="sep">▸</span>單元素
+    </div>
+    <details class="code"><summary>CSS</summary>
+      <div class="codewrap"><button class="copy" data-copy="c3">複製</button>
+<pre id="c3">@keyframes blurIn {
+  from { opacity: 0; filter: blur(16px); transform: scale(1.05); }
+  to   { opacity: 1; filter: blur(0);   transform: scale(1); }
+}
+.blurin { opacity: 0; }
+.blurin.run {
+  animation: blurIn .9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+/* ⚠ filter 觸發重繪：只給 hero 這種單一大元素，
+   低階手機的長列表用了會掉幀 */</pre>
+      </div>
+    </details>
+  </section>
+
+  <!-- 04 ─────────────────────────────────── -->
+  <section class="card">
+    <div class="head">
+      <span class="no">04</span>
+      <div class="tt"><h2>Spring 彈跳</h2><span class="use">活動頁的張力 · badge／CTA／潮界帶這種場合</span></div>
+      <button class="replay" data-replay>↺</button>
+    </div>
+    <div class="stage">
+      <div class="pills">
+        <span class="pill hot anim pop">潮界帶</span>
+        <span class="pill anim pop">海邊的客廳</span>
+        <span class="pill anim pop">LÜCY · LIVE</span>
+      </div>
+    </div>
+    <div class="spec">
+      <b>載入</b><span class="sep">▸</span>opacity＋scale <b>0.8→1</b>＋translateY <b>10px</b><span class="sep">▸</span><span class="dur" style="--ms:600">600ms</span><span class="sep">▸</span>spring<span class="sep">▸</span>stagger <b>60ms</b>
+    </div>
+    <details class="code"><summary>CSS</summary>
+      <div class="codewrap"><button class="copy" data-copy="c4">複製</button>
+<pre id="c4">@keyframes pop {
+  from { opacity: 0; transform: scale(.8) translateY(10px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+.pop { opacity: 0; }
+.pop.run {
+  animation: pop .6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.pop:nth-child(2).run { animation-delay: 60ms; }
+.pop:nth-child(3).run { animation-delay: 120ms; }
+/* 註：CSS 的 spring 是 cubic-bezier 假裝的「單次回彈」，
+   要真物理彈簧（可打斷、多次震盪）才需要 Framer Motion */</pre>
+      </div>
+    </details>
+  </section>
+
+  <!-- 05 ─────────────────────────────────── -->
+  <section class="card">
+    <div class="head">
+      <span class="no">05</span>
+      <div class="tt"><h2>Hover 微反饋</h2><span class="use">150–250ms 區 · 卡片／按鈕的「活著」訊號</span></div>
+      <span></span>
+    </div>
+    <div class="stage" style="flex-direction:column">
+      <div class="hoverrow">
+        <div class="hcard"><b>回報樹況</b><span>3 分鐘完成</span></div>
+        <div class="hcard"><b>物種百科</b><span>127 筆</span></div>
+        <div class="hcard"><b>活動場次</b><span>7/4 出張所</span></div>
+      </div>
+      <p class="hint">hover 我（觸控裝置沒有 hover，行動端要另給 :active 態）</p>
+    </div>
+    <div class="spec">
+      <b>hover</b><span class="sep">▸</span>translateY <b>−3px</b>＋shadow＋border<span class="sep">▸</span><span class="dur" style="--ms:200">200ms</span><span class="sep">▸</span>ease-out<span class="sep">▸</span>回程共用同曲線
+    </div>
+    <details class="code"><summary>CSS</summary>
+      <div class="codewrap"><button class="copy" data-copy="c5">複製</button>
+<pre id="c5">.hcard {
+  transition: transform .2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow .2s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color .2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hcard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .38);
+  border-color: var(--accent);
+}
+/* transition 寫在基底而非 :hover 上，
+   滑開時的「回程」才會一樣順 */</pre>
+      </div>
+    </details>
+  </section>
+
+  <!-- 06 ─────────────────────────────────── -->
+  <section class="card">
+    <div class="head">
+      <span class="no">06</span>
+      <div class="tt"><h2>捲動觸發 Reveal</h2><span class="use">長頁內容區的標配 · IntersectionObserver 進場一次</span></div>
+      <button class="replay" data-replay="scroll">↺</button>
+    </div>
+    <div class="stage" style="padding:12px;align-items:stretch">
+      <div class="scrollbox" id="sbox">
+        <div class="row reveal"><small>§1</small>法規查詢</div>
+        <div class="row reveal"><small>§2</small>合規檢查</div>
+        <div class="row reveal"><small>§3</small>會議提醒</div>
+        <div class="row reveal"><small>§4</small>樹況回報</div>
+        <div class="row reveal"><small>§5</small>減廢儀表板</div>
+        <div class="row reveal"><small>§6</small>德菲法指標</div>
+        <div class="endnote">— 在框內往下捲 · 每列進視口才現身 —</div>
+      </div>
+    </div>
+    <div class="spec">
+      <b>進入視口 35%</b><span class="sep">▸</span>opacity＋translateY <b>24px</b><span class="sep">▸</span><span class="dur" style="--ms:700">700ms</span><span class="sep">▸</span>ease-out<span class="sep">▸</span>只演一次
+    </div>
+    <details class="code"><summary>CSS ＋ JS</summary>
+      <div class="codewrap"><button class="copy" data-copy="c6">複製</button>
+<pre id="c6">.reveal {
+  opacity: 0; transform: translateY(24px);
+  transition: opacity .7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform .7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.in { opacity: 1; transform: none; }
+
+// JS：進視口 35% 就演，演完退訂（只演一次）
+const io = new IntersectionObserver(entries =&gt; {
+  entries.forEach(e =&gt; {
+    if (e.isIntersecting) {
+      e.target.classList.add('in');
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.35 }); // 頁面級用法不需指定 root
+document.querySelectorAll('.reveal').forEach(el =&gt; io.observe(el));</pre>
+      </div>
+    </details>
+  </section>
+
+</main>
+
+<footer>
+  <p class="rule">守則：一頁最多 <b>一套入場＋一套 hover</b>，超過就開始吵。正式環境務必尊重使用者的減少動態偏好——</p>
+  <details><summary>prefers-reduced-motion 全域片段（直接貼進 globals.css）</summary>
+<pre>@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}</pre>
+  </details>
+</footer>
+
+<script>
+(function () {
+  var $$ = function (sel, root) {
+    return Array.prototype.slice.call((root || document).querySelectorAll(sel));
+  };
+
+  // 重播：拔掉 .run → 強制 reflow → 掛回 .run
+  function restart(el) {
+    el.classList.remove('run');
+    void el.offsetWidth;
+    el.classList.add('run');
+  }
+  function playCard(card) { $$('.anim', card).forEach(restart); }
+
+  // ── 06 捲動觸發 ──
+  var sbox = document.getElementById('sbox');
+  var rows = $$('.reveal', sbox);
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      }
+    });
+  }, { root: sbox, threshold: 0.35 });
+
+  function armReveal() {
+    rows.forEach(function (r) { r.classList.remove('in'); io.observe(r); });
+    sbox.scrollTop = 0;
+  }
+
+  // ── 事件委派 ──
+  document.addEventListener('click', function (ev) {
+    var r = ev.target.closest('[data-replay]');
+    if (r) {
+      if (r.getAttribute('data-replay') === 'scroll') { armReveal(); }
+      else { playCard(r.closest('.card')); }
+      return;
+    }
+    var c = ev.target.closest('[data-copy]');
+    if (c) {
+      var pre = document.getElementById(c.getAttribute('data-copy'));
+      var done = function () {
+        c.textContent = '已複製';
+        setTimeout(function () { c.textContent = '複製'; }, 1200);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(pre.innerText).then(done, function () { fallback(pre, c, done); });
+      } else { fallback(pre, c, done); }
+    }
+  });
+
+  function fallback(pre, btn, done) {
+    var range = document.createRange();
+    range.selectNodeContents(pre);
+    var sel = window.getSelection();
+    sel.removeAllRanges(); sel.addRange(range);
+    try { document.execCommand('copy'); done(); }
+    catch (e) { btn.textContent = '請手動選取'; }
+  }
+
+  document.getElementById('replayAll').addEventListener('click', function () {
+    $$('.card').forEach(playCard);
+    armReveal();
+  });
+
+  // 開場：所有入場配方跑一輪
+  window.addEventListener('load', function () {
+    setTimeout(function () {
+      $$('.card').forEach(playCard);
+      armReveal();
+    }, 150);
+  });
+})();
+</script>
+</body>
+</html>

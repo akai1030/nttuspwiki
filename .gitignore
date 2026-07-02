@@ -1,0 +1,20 @@
+# deps / build
+node_modules/
+.next/
+out/
+
+# env & secrets（絕不追蹤）
+.env
+.env.*
+!.env.example
+
+# uploads / logs
+/uploads
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 原始 PDF 公開檢閱資料（約 1.5GB，超出 GitHub 限制；原件保存於 OneDrive 本地）
+01｜公開檢閱資料/
