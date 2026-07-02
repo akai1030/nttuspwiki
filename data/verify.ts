@@ -22,6 +22,14 @@ import {
   type JsonLaw,
 } from "./shared";
 
+// tsx 不像 Prisma 會自動載入 .env；DB 段的 process.env.DATABASE_URL 檢查在 import
+// PrismaClient 之前，故在此主動載入（.env 不存在時略過，DB 段會照常標記 skip）。
+try {
+  process.loadEnvFile();
+} catch {
+  /* 無 .env：DB 逐字比對段會 skip */
+}
+
 // 基準來自 法規MD轉檔/README.md（第20屆語料事實）。
 // 注意：此基準與 JSON 出自同一次解析（循環基準），只能擋「與上次不同」，
 // 擋不住「上次就錯」——所以另有 0 條法規檢查、附條連續性檢查與人工抽對 PDF。
