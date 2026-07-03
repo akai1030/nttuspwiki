@@ -1,13 +1,14 @@
 /**
- * 全文查詢（關鍵字 + 語意，混合排序）。
- * - keyword：斷詞 → tsquery（'simple'）→ tsv @@ query，ts_rank 排序（先 AND 精準，無果再 OR 召回）。
- * - semantic：查詢向量（@xenova e5-small）→ embedding <=> 向量（cosine 距離）排序。
- * - hybrid（預設）：兩路各取候選，用 Reciprocal Rank Fusion（RRF）融合排序。
- * 片段（snippet）在應用端定位命中詞（ts_headline 無法切中文）。全程零 API 費、離線（CLAUDE.md 免費優先）。
+ * 全文查詢（關鍵字：斷詞 → tsquery('simple') → tsv @@ query，ts_rank 排序）。
+ * 先 AND 精準，無果再 OR 召回。片段（snippet）在應用端定位命中詞（ts_headline 無法切中文）。
+ * 全程零 API 費、離線（CLAUDE.md 免費優先）。
+ *
+ * 註：語意層（pgvector + @xenova 本地模型）暫自部署切離以縮小 image（onnxruntime ~1GB）。
+ *     768 條向量仍存於 `Article.embedding`；日後接雲端 embedding（取查詢向量）即可復用，
+ *     參考保留於 `lib/search/embed.ts`（已於 tsconfig 排除、不進 build）。
  */
 import { prisma } from "../db";
 import { segmentForQuery } from "./segment";
-import { embedQuery, toVectorLiteral } from "./embed";
 
 export type SearchMode = "keyword" | "semantic" | "hybrid";
 
@@ -77,48 +78,19 @@ async function keywordCandidates(tokens: string[], limit: number): Promise<Score
   return rows.map((r) => ({ id: r.id, score: Number(r.score) }));
 }
 
-async function semanticCandidates(q: string, limit: number): Promise<Scored[]> {
-  const qv = toVectorLiteral(await embedQuery(q));
-  const rows = await prisma.$queryRawUnsafe<Scored[]>(
-    `SELECT id, 1 - (embedding <=> $1::vector) AS score
-     FROM "Article" WHERE embedding IS NOT NULL
-     ORDER BY embedding <=> $1::vector LIMIT $2`,
-    qv,
-    limit
-  );
-  return rows.map((r) => ({ id: r.id, score: Number(r.score) }));
-}
-
-/** Reciprocal Rank Fusion：融合多個排名（依名次，不依原始分數尺度）。 */
-function rrf(lists: Scored[][], k = 60): Scored[] {
-  const acc = new Map<string, number>();
-  for (const list of lists) {
-    list.forEach((r, i) => acc.set(r.id, (acc.get(r.id) ?? 0) + 1 / (k + i + 1)));
-  }
-  return [...acc.entries()].map(([id, score]) => ({ id, score })).sort((a, b) => b.score - a.score);
-}
-
+/**
+ * 目前一律走關鍵字層（免費、離線、預設）。mode 參數保留供 API 相容；語意/hybrid 尚未於部署啟用，
+ * 一併以關鍵字結果回應（日後接雲端 embedding 再恢復語意路徑）。
+ */
 export async function searchArticles(
   q: string,
   limit = 30,
-  mode: SearchMode = "hybrid"
+  mode: SearchMode = "keyword"
 ): Promise<SearchResult> {
   const tokens = segmentForQuery(q);
   if (!q.trim()) return { query: q, tokens, mode, hits: [] };
 
-  const POOL = Math.max(limit, 50);
-  let ordered: Scored[];
-  if (mode === "keyword") {
-    ordered = (await keywordCandidates(tokens, limit)).slice(0, limit);
-  } else if (mode === "semantic") {
-    ordered = (await semanticCandidates(q, limit)).slice(0, limit);
-  } else {
-    const [kw, sem] = await Promise.all([
-      keywordCandidates(tokens, POOL),
-      semanticCandidates(q, POOL),
-    ]);
-    ordered = rrf([kw, sem]).slice(0, limit);
-  }
+  const ordered = (await keywordCandidates(tokens, limit)).slice(0, limit);
   if (ordered.length === 0) return { query: q, tokens, mode, hits: [] };
 
   const ids = ordered.map((o) => o.id);

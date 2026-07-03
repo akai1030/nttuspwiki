@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { copy } from "@/lib/copy";
-import { cn } from "@/lib/cn";
-import { searchArticles, type SearchMode } from "@/lib/search/query";
+import { searchArticles } from "@/lib/search/query";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SearchBox } from "@/components/SearchBox";
 
-// 檢索用 jieba（native）+ 語意向量，需 Node runtime、逐次動態執行（非預生成）。零 API 費、離線。
+// 檢索用 jieba（native）斷詞 + Postgres 全文檢索，需 Node runtime、逐次動態執行。零 API 費、離線。
+// 註：語意層（pgvector + 本地模型）暫自部署切離以縮小 image；向量仍存於 DB，日後可接雲端 embedding 復用。
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
@@ -15,8 +15,6 @@ export const metadata: Metadata = {
   title: `${copy.searchPage.title}｜${copy.home.org}${copy.home.sys}`,
   description: copy.searchPage.emptyPrompt,
 };
-
-const MODES: SearchMode[] = ["hybrid", "keyword", "semantic"];
 
 /** 命中詞以 accent 標色（不改原字、React 自動轉義，無 XSS）。 */
 function highlight(snippet: string, matched: string[]): ReactNode {
@@ -37,32 +35,18 @@ function highlight(snippet: string, matched: string[]): ReactNode {
 export default async function SearchPage({
   searchParams,
 }: {
-  searchParams: { q?: string; mode?: string };
+  searchParams: { q?: string };
 }) {
   const q = (searchParams.q ?? "").trim();
-  const mode: SearchMode = MODES.includes(searchParams.mode as SearchMode)
-    ? (searchParams.mode as SearchMode)
-    : "hybrid";
 
-  // 語意層（e5 模型載入）若在部署環境失敗，退回免費關鍵字層（永遠可用、零 token）；
-  // 關鍵字層也失敗才顯示錯誤。免費規則層不依賴任何付費/外部服務（CLAUDE.md 免費優先）。
+  // 關鍵字全文檢索（免費、離線、預設）。DB 失敗時顯示錯誤而非 500。
   let result: Awaited<ReturnType<typeof searchArticles>> | null = null;
-  let degraded = false;
   let searchError = false;
   if (q) {
     try {
-      result = await searchArticles(q, 30, mode);
+      result = await searchArticles(q, 30);
     } catch {
-      if (mode !== "keyword") {
-        try {
-          result = await searchArticles(q, 30, "keyword");
-          degraded = true;
-        } catch {
-          searchError = true;
-        }
-      } else {
-        searchError = true;
-      }
+      searchError = true;
     }
   }
 
@@ -82,29 +66,6 @@ export default async function SearchPage({
           <SearchBox defaultValue={q} />
         </div>
 
-        {/* 檢索模式切換（保留 q） */}
-        <div className="mt-4 flex flex-wrap items-center gap-2">
-          {MODES.map((m) => {
-            const on = m === mode;
-            return (
-              <a
-                key={m}
-                href={`/search?q=${encodeURIComponent(q)}&mode=${m}`}
-                aria-current={on ? "true" : undefined}
-                className={cn(
-                  "border px-3 py-[5px] font-sans text-caption leading-none transition-colors",
-                  on
-                    ? "border-accent bg-accent text-white"
-                    : "border-line text-meta hover:border-accent hover:text-accent"
-                )}
-              >
-                {copy.searchPage.modes[m]}
-              </a>
-            );
-          })}
-          <span className="ml-1 font-sans text-caption text-meta">{copy.searchPage.modeHint[mode]}</span>
-        </div>
-
         {/* 結果 */}
         <div className="mt-10">
           {!q ? (
@@ -113,11 +74,6 @@ export default async function SearchPage({
             <p className="font-sans text-lede text-lede-ink">{copy.searchPage.error}</p>
           ) : result && result.hits.length > 0 ? (
             <>
-              {degraded && (
-                <p className="mb-4 border-l-2 border-l-accent2 pl-3 font-sans text-caption text-meta">
-                  {copy.searchPage.degraded}
-                </p>
-              )}
               <div className="mb-6 flex flex-wrap items-baseline gap-x-3 gap-y-1.5">
                 <span className="font-sans text-body text-ink">
                   {copy.searchPage.resultCount(result.hits.length)}
