@@ -148,9 +148,119 @@ model ComplianceCheck {
 // ── 幹部帳號（email 白名單，勿上重型 auth）──
 
 model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String?
+  role         String    @default("officer") // admin / officer / viewer
+  passwordHash String? // scrypt（lib/auth/password.ts）；null＝白名單已建但尚未設密碼，不得登入
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+}
+
+// ── 會議營運模組（Phase 4，見 MEETINGS-MODULE.md）──
+// 幹部後台，全部掛在 (dashboard)/console 之下，需登入。收件人名單屬個資，永不進公開路由。
+
+enum MeetingKind {
+  REGULAR // 常會
+  SPECIAL // 臨時會
+  COMMITTEE // 委員會 / 校級會議代表委員會
+}
+
+enum MeetingStatus {
+  DRAFT // 建置中（尚未發通知）
+  NOTICED // 已發開會通知
+  HELD // 已召開
+  CLOSED // 已結案
+}
+
+model Meeting {
+  id               String            @id @default(cuid())
+  session          Int // 屆別，如 21
+  academicYear     String // 「114學年度第2學期」
+  name             String // 「七月議會臨時會」
+  kind             MeetingKind       @default(REGULAR)
+  meetingAt        DateTime // 會議時間
+  location         String? // 「線上視訊會議室」
+  meetingUrl       String? // Google Meet 連結
+  docNumber        String? // 東議字第1140246號
+  proposalDeadline DateTime? // 提案截止
+  notes            String?           @db.Text // 備註一、二…
+  status           MeetingStatus     @default(DRAFT)
+  createdById      String // User.id（幹部）
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  proposals        Proposal[]
+  agendaItems      AgendaItem[]
+  notices          MeetingNotice[]
+  reminders        MeetingReminder[]
+
+  @@index([session, meetingAt])
+}
+
+model Proposal {
+  id          String   @id @default(cuid())
+  meetingId   String
+  meeting     Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  serialNo    Int // 附件序 / 案號（2、3…）
+  section     String // 報告事項 / 討論事項 / 選舉事項 / 臨時動議
+  title       String // 案由
+  proposer    String? // 提案人 / 提案單位
+  explanation String?  @db.Text // 說明
+  resolution  String?  @db.Text // 決議（會後補）
+  fileUrl     String? // 附件連結（R2 待設定前先用雲端硬碟/URL）
+  order       Int      @default(0)
+
+  @@index([meetingId])
+}
+
+model AgendaItem {
+  id         String  @id @default(cuid())
+  meetingId  String
+  meeting    Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  section    String // 分節（會議規範：報告事項/討論事項/選舉事項/臨時動議…）
+  order      Int
+  title      String
+  body       String? @db.Text
+  proposalId String? // 對應提案時連結，可回溯
+
+  @@index([meetingId])
+}
+
+model Recipient {
   id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  role      String   @default("officer") // admin / officer / viewer
+  session   Int
+  name      String
+  email     String
+  roleTag   String // 議員 / 列席 / 旁聽 / 祕書處
+  active    Boolean  @default(true)
   createdAt DateTime @default(now())
+
+  @@index([session, active])
+}
+
+model MeetingNotice {
+  id           String   @id @default(cuid())
+  meetingId    String
+  meeting      Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  kind         String // notice（開會通知）/ agenda（會議通知含議程）
+  subject      String // 套版生成主旨
+  bodyText     String   @db.Text // 套版生成內文
+  recipientIds Json // 勾選收件人快照（Recipient.id[]）
+  status       String   @default("draft") // draft / sent（sent 僅人工回記，系統不觸發送出）
+  createdById  String
+  createdAt    DateTime @default(now())
+
+  @@index([meetingId])
+}
+
+model MeetingReminder {
+  id         String    @id @default(cuid())
+  meetingId  String
+  meeting    Meeting   @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  offsetDays Int // 會前幾天
+  fireAt     DateTime // meetingAt - offset
+  channel    String    @default("inapp") // inapp（先做）/ email_draft
+  sentAt     DateTime?
+
+  @@index([fireAt])
 }

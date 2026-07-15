@@ -19,7 +19,8 @@
     "fidelity:dom": "tsx data/fidelity/dom-check.ts",
     "search:index": "tsx lib/search/build-index.ts",
     "search:embed": "tsx lib/search/build-embeddings.ts",
-    "refs:build": "tsx lib/references/build.ts"
+    "refs:build": "tsx lib/references/build.ts",
+    "auth:create": "tsx data/create-officer.ts"
   },
   "prisma": {
     "seed": "tsx data/seed.ts"
@@ -27,6 +28,7 @@
   "dependencies": {
     "@node-rs/jieba": "^2.0.1",
     "@prisma/client": "^6.5.0",
+    "jose": "^6.2.3",
     "next": "^14.2.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
