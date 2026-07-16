@@ -5,7 +5,7 @@
  * ⚠️ 這裡的天數是「常用預設」，非法定精確值。實際期限應以《組織章程》《議事規則》為準；
  *    待確認後再把 OFFSETS 對齊法源（見 MEETINGS-MODULE.md）。提案截止優先用會議設定的實際值。
  */
-export type MilestoneAction = "notice" | "agenda" | "remind" | "deadline" | "meeting" | "custom";
+export type MilestoneAction = "notice" | "agenda" | "remind" | "deadline" | "meeting" | "custom" | "law";
 
 export type Milestone = {
   key: string;
@@ -14,6 +14,9 @@ export type Milestone = {
   action: MilestoneAction;
   hint: string;
   id?: string; // 自訂里程碑（委員會等）才有，供刪除
+  source?: string; // 法源引用（law 型），如「各委員會實行細則 §21」
+  sourceHref?: string; // 連回法規原文
+  offsetDays?: number; // 供「加入提醒」用（會前天數）
 };
 
 export type CustomMilestone = { id: string; title: string; at: Date; note: string | null };
@@ -21,10 +24,14 @@ export type CustomMilestone = { id: string; title: string; at: Date; note: strin
 // 會前天數（預設，可調）。
 export const PREP_OFFSETS = { notice: 14, deadline: 10, agenda: 3, remind: 1 } as const;
 
+// 法定委員會期限：程序暨法規委員會應於常會/臨時會「前六日」召開、編擬議程表。
+// 法源：《國立臺東大學學生議會各委員會實行細則》§21（已驗於 DB，資料保真）。
+export const COMMITTEE_LAW_OFFSET = 6;
+
 const DAY = 24 * 60 * 60 * 1000;
 
 export function buildTimeline(
-  m: { meetingAt: Date; proposalDeadline: Date | null },
+  m: { meetingAt: Date; proposalDeadline: Date | null; kind?: string },
   custom: CustomMilestone[] = []
 ): Milestone[] {
   const M = m.meetingAt.getTime();
@@ -35,6 +42,7 @@ export function buildTimeline(
       date: new Date(M - PREP_OFFSETS.notice * DAY),
       action: "notice",
       hint: "生成開會通知，貼到官方信箱寄給議員與列席人員。",
+      offsetDays: PREP_OFFSETS.notice,
     },
     {
       key: "deadline",
@@ -65,6 +73,21 @@ export function buildTimeline(
       hint: "會議當天。",
     },
   ];
+
+  // 法定委員會期限（常會/臨時會才適用；委員會本身不掛）。
+  if (m.kind !== "COMMITTEE") {
+    items.push({
+      key: "committee-law",
+      title: "程序暨法規委員會召開",
+      date: new Date(M - COMMITTEE_LAW_OFFSET * DAY),
+      action: "law",
+      hint: "應於常會、臨時會前六日召開，編擬議程表。",
+      source: "各委員會實行細則 §21",
+      sourceHref: "/law/2.1#art-21",
+      offsetDays: COMMITTEE_LAW_OFFSET,
+    });
+  }
+
   for (const cm of custom) {
     items.push({
       key: `custom-${cm.id}`,

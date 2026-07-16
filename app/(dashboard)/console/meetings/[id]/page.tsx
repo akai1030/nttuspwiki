@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth/guard";
 import { getMeeting, listRecipients } from "@/lib/meetings/queries";
@@ -30,8 +31,36 @@ export const metadata: Metadata = {
 
 const c = copy.meetings;
 const STATUSES = ["DRAFT", "NOTICED", "HELD", "CLOSED"] as const;
-const sectionTitle = "font-serif text-h4";
-const cardCls = "border border-line bg-paper p-card";
+// 分區色（回應「多用顏色、分層」）：左側色條＋同色 eyebrow，讓密集資訊可掃讀。
+const SEC = {
+  timeline: { card: "border border-line border-l-[3px] border-l-accent bg-paper p-card", eb: "text-accent", en: "Timeline" },
+  info: { card: "border border-line border-l-[3px] border-l-accent2 bg-paper p-card", eb: "text-accent2", en: "Info" },
+  reminders: { card: "border border-line border-l-[3px] border-l-sch bg-paper p-card", eb: "text-sch", en: "Reminders" },
+  proposals: { card: "border border-line border-l-[3px] border-l-ref bg-paper p-card", eb: "text-ref-ink", en: "Proposals" },
+  agenda: { card: "border border-line border-l-[3px] border-l-accent bg-paper p-card", eb: "text-accent", en: "Agenda" },
+  notice: { card: "border border-line border-l-[3px] border-l-warn bg-paper p-card", eb: "text-warn-ink", en: "Notice" },
+  files: { card: "border border-line border-l-[3px] border-l-line bg-paper p-card", eb: "text-meta", en: "Files" },
+} as const;
+
+function SecHead({
+  s,
+  title,
+  right,
+}: {
+  s: { eb: string; en: string };
+  title: string;
+  right?: ReactNode;
+}) {
+  return (
+    <div className="mb-4 flex items-start justify-between gap-3">
+      <div>
+        <div className={`font-ui text-chip font-medium uppercase tracking-kicker ${s.eb}`}>{s.en}</div>
+        <h2 className="mt-1 font-serif text-h4">{title}</h2>
+      </div>
+      {right}
+    </div>
+  );
+}
 
 export default async function MeetingDetailPage({ params }: { params: { id: string } }) {
   await requireUser();
@@ -54,7 +83,7 @@ export default async function MeetingDetailPage({ params }: { params: { id: stri
 
   const now = new Date();
   const timeline = buildTimeline(
-    { meetingAt: m.meetingAt, proposalDeadline: m.proposalDeadline },
+    { meetingAt: m.meetingAt, proposalDeadline: m.proposalDeadline, kind: m.kind },
     m.milestones.map((ms) => ({ id: ms.id, title: ms.title, at: ms.at, note: ms.note }))
   );
 
@@ -138,11 +167,12 @@ export default async function MeetingDetailPage({ params }: { params: { id: stri
       </div>
 
       {/* 籌備時間軸（大） */}
-      <section className={`${cardCls} mt-8`}>
-        <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-          <h2 className={sectionTitle}>{c.timeline.title}</h2>
-          <span className="font-sans text-caption text-meta">{c.timeline.lede}</span>
-        </div>
+      <section className={`${SEC.timeline.card} mt-8`}>
+        <SecHead
+          s={SEC.timeline}
+          title={c.timeline.title}
+          right={<span className="hidden max-w-[16rem] text-right font-sans text-caption text-meta hero:block">{c.timeline.lede}</span>}
+        />
 
         <ol className="relative mt-6 space-y-6 before:absolute before:bottom-2 before:left-[6px] before:top-2 before:w-px before:bg-line">
           {timeline.map((ms) => {
@@ -151,15 +181,17 @@ export default async function MeetingDetailPage({ params }: { params: { id: stri
               d > 0 ? c.timeline.inDays(d) : d === 0 ? c.timeline.today : c.timeline.agoDays(-d);
             const statusCls = d > 0 ? "text-accent" : d === 0 ? "text-warn-ink" : "text-meta";
             const dotCls =
-              ms.action === "custom"
-                ? "bg-sch"
-                : ms.action === "meeting"
-                  ? "bg-ink"
-                  : d === 0
-                    ? "bg-warn-ink"
-                    : d < 0
-                      ? "bg-line"
-                      : "bg-accent";
+              ms.action === "law"
+                ? "bg-ref"
+                : ms.action === "custom"
+                  ? "bg-sch"
+                  : ms.action === "meeting"
+                    ? "bg-ink"
+                    : d === 0
+                      ? "bg-warn-ink"
+                      : d < 0
+                        ? "bg-line"
+                        : "bg-accent";
             return (
               <li key={ms.key} className="relative pl-7">
                 <span
@@ -171,6 +203,30 @@ export default async function MeetingDetailPage({ params }: { params: { id: stri
                 </div>
                 <p className="mt-0.5 font-sans text-body font-medium text-ink">{ms.title}</p>
                 <p className="font-sans text-caption text-meta">{ms.hint}</p>
+
+                {ms.action === "law" && ms.source ? (
+                  <a
+                    href={ms.sourceHref}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-1 inline-block border border-ref-border bg-ref-surface px-2 py-0.5 font-sans text-chip text-ref-ink transition-colors hover:border-ref"
+                  >
+                    法源：{ms.source} ↗
+                  </a>
+                ) : null}
+
+                {ms.action === "law" ? (
+                  <form action={addReminder} className="mt-2">
+                    <input type="hidden" name="meetingId" value={m.id} />
+                    <input type="hidden" name="offsetDays" value={ms.offsetDays ?? 6} />
+                    <button
+                      type="submit"
+                      className="border border-ink px-3 py-1.5 font-ui text-chip font-medium leading-none tracking-snug text-ink transition-colors hover:border-accent hover:bg-accent hover:text-white"
+                    >
+                      {c.timeline.actRemind}
+                    </button>
+                  </form>
+                ) : null}
 
                 {ms.action === "notice" || ms.action === "agenda" ? (
                   <form action={generateNoticeAction} className="mt-2">
@@ -254,8 +310,8 @@ export default async function MeetingDetailPage({ params }: { params: { id: stri
 
       <div className="mt-8 grid gap-6 rd:grid-cols-2">
         {/* 會議資訊 */}
-        <section className={cardCls}>
-          <h2 className={sectionTitle}>{c.detail.infoTitle}</h2>
+        <section className={SEC.info.card}>
+          <SecHead s={SEC.info} title={c.detail.infoTitle} />
           <dl className="mt-4 grid grid-cols-[6rem_1fr] gap-y-2 font-sans text-body text-ink">
             <dt className="text-meta">{c.form.meetingAt}</dt>
             <dd>{rocDateTimeFull(m.meetingAt)}</dd>
@@ -280,8 +336,8 @@ export default async function MeetingDetailPage({ params }: { params: { id: stri
         </section>
 
         {/* 會前提醒 */}
-        <section className={cardCls}>
-          <h2 className={sectionTitle}>{c.detail.remindersTitle}</h2>
+        <section className={SEC.reminders.card}>
+          <SecHead s={SEC.reminders} title={c.detail.remindersTitle} />
           <form action={addReminder} className="mt-4 flex items-end gap-3">
             <input type="hidden" name="meetingId" value={m.id} />
             <div className="flex flex-col gap-1.5">
@@ -339,8 +395,8 @@ export default async function MeetingDetailPage({ params }: { params: { id: stri
       </div>
 
       {/* 提案 */}
-      <section className={`${cardCls} mt-6`}>
-        <h2 className={sectionTitle}>{c.detail.proposalsTitle}</h2>
+      <section className={`${SEC.proposals.card} mt-6`}>
+        <SecHead s={SEC.proposals} title={c.detail.proposalsTitle} />
 
         <ul className="mt-4 divide-y divide-line-soft">
           {m.proposals.length === 0 ? (
@@ -436,19 +492,20 @@ export default async function MeetingDetailPage({ params }: { params: { id: stri
       </section>
 
       {/* 議程 */}
-      <section className={`${cardCls} mt-6`}>
-        <div className="flex items-baseline justify-between gap-3">
-          <h2 className={sectionTitle}>{c.detail.agendaTitle}</h2>
-          <span className="font-sans text-caption text-meta">{c.detail.agendaHint}</span>
-        </div>
+      <section className={`${SEC.agenda.card} mt-6`}>
+        <SecHead
+          s={SEC.agenda}
+          title={c.detail.agendaTitle}
+          right={<span className="hidden max-w-[16rem] text-right font-sans text-caption text-meta hero:block">{c.detail.agendaHint}</span>}
+        />
         <div className="mt-4">
           <CopyBlock text={agendaText} label={c.detail.agendaTitle} />
         </div>
       </section>
 
       {/* 開會通知 / 會議通知 */}
-      <section className={`${cardCls} mt-6`}>
-        <h2 className={sectionTitle}>{c.detail.noticeTitle}</h2>
+      <section className={`${SEC.notice.card} mt-6`}>
+        <SecHead s={SEC.notice} title={c.detail.noticeTitle} />
         <p className="mt-2 font-sans text-caption text-meta">{c.notice.pick}</p>
         <p className="mt-1 font-sans text-caption text-warn-ink">{c.notice.draftOnly}</p>
 
@@ -528,10 +585,14 @@ export default async function MeetingDetailPage({ params }: { params: { id: stri
                     <div className="px-3 py-2">
                       <p className="font-sans text-caption font-medium text-ink">{c.notice.subject}</p>
                       <p className="mt-0.5 font-sans text-body text-ink">{n.subject}</p>
-                      <p className="mt-3 font-sans text-caption font-medium text-ink">{c.notice.body}</p>
-                      <pre className="mt-0.5 max-h-[24rem] overflow-auto whitespace-pre-wrap break-words font-sans text-body leading-relaxed text-ink">
-                        {n.bodyText}
-                      </pre>
+                      <details className="mt-3">
+                        <summary className="cursor-pointer font-sans text-caption font-medium text-accent">
+                          {c.notice.body}
+                        </summary>
+                        <pre className="mt-1.5 max-h-[24rem] overflow-auto whitespace-pre-wrap break-words border border-line-soft bg-paper2 p-2.5 font-sans text-body leading-relaxed text-ink">
+                          {n.bodyText}
+                        </pre>
+                      </details>
                       {emails ? (
                         <p className="mt-2 break-words font-sans text-caption text-meta">
                           {c.notice.recipients}：{emails}
@@ -547,11 +608,12 @@ export default async function MeetingDetailPage({ params }: { params: { id: stri
       </section>
 
       {/* 會議資料 */}
-      <section className={`${cardCls} mt-6`}>
-        <div className="flex items-baseline justify-between gap-3">
-          <h2 className={sectionTitle}>{c.detail.filesTitle}</h2>
-          {filesList ? <CopyButton text={filesList} label={c.files.copyAll} /> : null}
-        </div>
+      <section className={`${SEC.files.card} mt-6`}>
+        <SecHead
+          s={SEC.files}
+          title={c.detail.filesTitle}
+          right={filesList ? <CopyButton text={filesList} label={c.files.copyAll} /> : undefined}
+        />
         <p className="mt-2 font-sans text-caption text-meta">{c.files.hint}</p>
         {filesList ? (
           <ul className="mt-4 divide-y divide-line-soft">

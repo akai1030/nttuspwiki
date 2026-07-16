@@ -30,7 +30,7 @@ export default async function PublicMeetingDetail({ params }: { params: { id: st
 
   const now = new Date();
   const timeline = buildTimeline(
-    { meetingAt: m.meetingAt, proposalDeadline: m.proposalDeadline },
+    { meetingAt: m.meetingAt, proposalDeadline: m.proposalDeadline, kind: m.kind },
     m.milestones.map((ms) => ({ id: ms.id, title: ms.title, at: ms.at, note: ms.note }))
   );
 
@@ -134,7 +134,15 @@ export default async function PublicMeetingDetail({ params }: { params: { id: st
               const statusText = d > 0 ? tl.inDays(d) : d === 0 ? tl.today : tl.agoDays(-d);
               const statusCls = d > 0 ? "text-accent" : d === 0 ? "text-warn-ink" : "text-meta";
               const dotCls =
-                ms.action === "custom" ? "bg-sch" : ms.action === "meeting" ? "bg-ink" : d < 0 ? "bg-line" : "bg-accent";
+                ms.action === "law"
+                  ? "bg-ref"
+                  : ms.action === "custom"
+                    ? "bg-sch"
+                    : ms.action === "meeting"
+                      ? "bg-ink"
+                      : d < 0
+                        ? "bg-line"
+                        : "bg-accent";
               return (
                 <li key={ms.key} className="relative pl-7">
                   <span className={`absolute left-0 top-1 h-[13px] w-[13px] rounded-full border-2 border-paper ${dotCls}`} />
@@ -143,6 +151,14 @@ export default async function PublicMeetingDetail({ params }: { params: { id: st
                     <span className={`font-ui text-chip leading-none ${statusCls}`}>{statusText}</span>
                   </div>
                   <p className="mt-0.5 font-sans text-body text-ink">{ms.title}</p>
+                  {ms.action === "law" && ms.source ? (
+                    <a
+                      href={ms.sourceHref}
+                      className="mt-1 inline-block border border-ref-border bg-ref-surface px-2 py-0.5 font-sans text-chip text-ref-ink hover:border-ref"
+                    >
+                      法源：{ms.source} ↗
+                    </a>
+                  ) : null}
                 </li>
               );
             })}
