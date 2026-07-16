@@ -19,6 +19,7 @@ import {
   setMeetingStatus,
   addMilestone,
   deleteMilestone,
+  toggleMeetingPublic,
 } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -74,15 +75,45 @@ export default async function MeetingDetailPage({ params }: { params: { id: stri
           <h1 className="mt-2 font-serif text-h2">{m.name}</h1>
           <p className="mt-1 font-sans text-caption text-meta">
             {m.academicYear}・第{m.session}屆
+            {m.isPublic ? (
+              <span className="ml-2 font-ui text-chip text-accent">● {c.detail.publicBadge}</span>
+            ) : null}
           </p>
         </div>
-        <a
-          href={`/console/meetings/${m.id}/edit`}
-          className="border border-line px-4 py-2 font-ui text-caption font-medium leading-none tracking-snug text-ink transition-colors hover:border-accent hover:text-accent"
-        >
-          {c.detail.edit}
-        </a>
+        <div className="flex flex-wrap items-center gap-2">
+          {m.isPublic ? (
+            <a
+              href={`/meetings/${m.id}`}
+              target="_blank"
+              rel="noreferrer"
+              className="font-ui text-caption text-accent hover:underline"
+            >
+              {c.detail.viewPublic}
+            </a>
+          ) : null}
+          <form action={toggleMeetingPublic}>
+            <input type="hidden" name="id" value={m.id} />
+            <button
+              type="submit"
+              className={
+                "border px-4 py-2 font-ui text-caption font-medium leading-none tracking-snug transition-colors " +
+                (m.isPublic
+                  ? "border-line text-meta hover:border-accent hover:text-accent"
+                  : "border-accent bg-accent text-white hover:bg-accent-soft")
+              }
+            >
+              {m.isPublic ? c.detail.makePrivate : c.detail.makePublic}
+            </button>
+          </form>
+          <a
+            href={`/console/meetings/${m.id}/edit`}
+            className="border border-line px-4 py-2 font-ui text-caption font-medium leading-none tracking-snug text-ink transition-colors hover:border-accent hover:text-accent"
+          >
+            {c.detail.edit}
+          </a>
+        </div>
       </div>
+      <p className="mt-2 font-sans text-caption text-meta">{c.detail.publicHint}</p>
 
       {/* 狀態切換 */}
       <div className="mt-4 flex flex-wrap gap-2">

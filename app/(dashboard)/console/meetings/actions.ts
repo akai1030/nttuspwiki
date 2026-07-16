@@ -83,6 +83,18 @@ export async function updateMeeting(fd: FormData) {
   redirect(`/console/meetings/${id}`);
 }
 
+export async function toggleMeetingPublic(fd: FormData) {
+  await requireUser();
+  const id = str(fd, "id");
+  if (!id) return;
+  const m = await prisma.meeting.findUnique({ where: { id }, select: { isPublic: true } });
+  if (!m) return;
+  await prisma.meeting.update({ where: { id }, data: { isPublic: !m.isPublic } });
+  revalidatePath(`/console/meetings/${id}`);
+  revalidatePath("/meetings");
+  revalidatePath(`/meetings/${id}`);
+}
+
 export async function setMeetingStatus(fd: FormData) {
   await requireUser();
   const id = str(fd, "id");

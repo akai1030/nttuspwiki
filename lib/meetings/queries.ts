@@ -48,3 +48,50 @@ export function listUpcomingReminders(limit = 50) {
 
 export type MeetingWithCounts = Awaited<ReturnType<typeof listMeetings>>[number];
 export type MeetingDetail = NonNullable<Awaited<ReturnType<typeof getMeeting>>>;
+
+// ── 公開（免登入）：只回安全欄位，絕不含收件人/通知草稿/內部備註 ──
+
+export function listPublicMeetings() {
+  return prisma.meeting.findMany({
+    where: { isPublic: true },
+    orderBy: { meetingAt: "desc" },
+    select: {
+      id: true,
+      session: true,
+      academicYear: true,
+      name: true,
+      kind: true,
+      meetingAt: true,
+      location: true,
+      status: true,
+    },
+  });
+}
+
+export function getPublicMeeting(id: string) {
+  return prisma.meeting.findFirst({
+    where: { id, isPublic: true },
+    select: {
+      id: true,
+      session: true,
+      academicYear: true,
+      name: true,
+      kind: true,
+      meetingAt: true,
+      location: true,
+      meetingUrl: true,
+      docNumber: true,
+      proposalDeadline: true,
+      status: true,
+      // 提案只露案由/分節/提案人；不露說明與附件連結（可能未定/內部）
+      proposals: {
+        orderBy: [{ order: "asc" }, { serialNo: "asc" }],
+        select: { id: true, serialNo: true, section: true, title: true, proposer: true, order: true },
+      },
+      milestones: { orderBy: { at: "asc" }, select: { id: true, title: true, at: true, note: true } },
+      // 明確不選：notes（內部備註）、recipients、notices（郵件草稿）、createdById
+    },
+  });
+}
+
+export type PublicMeetingDetail = NonNullable<Awaited<ReturnType<typeof getPublicMeeting>>>;

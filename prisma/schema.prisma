@@ -186,6 +186,7 @@ model Meeting {
   proposalDeadline DateTime? // 提案截止
   notes            String?           @db.Text // 備註一、二…
   status           MeetingStatus     @default(DRAFT)
+  isPublic         Boolean           @default(false) // admin 逐場開；true 才出現在免登入公開頁
   createdById      String // User.id（幹部）
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt

@@ -37,6 +37,12 @@ export function SiteHeader({ breadcrumb }: { breadcrumb?: ReactNode }) {
             {copy.nav.search}
           </a>
           <a
+            href="/meetings"
+            className="hidden font-sans text-nav text-ink opacity-[.72] transition-opacity hover:text-accent hover:opacity-100 hero:inline"
+          >
+            {copy.publicMeetings.nav}
+          </a>
+          <a
             href="/login"
             className="border border-ink px-4 py-2 font-ui text-caption font-medium leading-none tracking-snug text-ink transition-colors hover:border-accent hover:text-accent"
           >
