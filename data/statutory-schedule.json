@@ -1,0 +1,2342 @@
+[
+  {
+    "lawNumber": "0.0",
+    "lawName": "國立臺東大學學生會組織章程",
+    "article": "14",
+    "articleName": "正副會長選舉",
+    "quote": "會長、副會長由全體會員直接選舉產生，任期一學年，連選得連任一次，其選舉應於每屆任滿前內完成",
+    "type": "RELATIVE",
+    "subject": "選舉委員會",
+    "summary": "正副會長任期一學年、連選得連任一次，選舉應於每屆任滿前完成"
+  },
+  {
+    "lawNumber": "0.0",
+    "lawName": "國立臺東大學學生會組織章程",
+    "article": "16",
+    "articleName": "出缺時之職權代理",
+    "quote": "4. 副會長缺位時，會長應於一個月內提名候選人，經學生議會同意後於三日內公告，繼任至原任期屆滿為止。",
+    "type": "RELATIVE",
+    "subject": "會長",
+    "summary": "副會長缺位，會長應於一個月內提名候選人，議會同意後三日內公告"
+  },
+  {
+    "lawNumber": "0.0",
+    "lawName": "國立臺東大學學生會組織章程",
+    "article": "16",
+    "articleName": "出缺時之職權代理",
+    "quote": "如距會長任期屆滿之日超過三個月以上，應立即進行會長補選",
+    "type": "RELATIVE",
+    "subject": "選舉委員會",
+    "summary": "正副會長皆缺位且距任期屆滿逾三個月，應立即進行會長補選"
+  },
+  {
+    "lawNumber": "0.0",
+    "lawName": "國立臺東大學學生會組織章程",
+    "article": "16",
+    "articleName": "出缺時之職權代理",
+    "quote": "本會會長、副會長辭職、去職、死亡或被罷免，應於決議生效三日內函知相關組織及學務處",
+    "type": "RELATIVE",
+    "subject": "行政中心",
+    "summary": "正副會長辭職/去職/死亡/被罷免，應於決議生效三日內函知相關組織及學務處"
+  },
+  {
+    "lawNumber": "0.0",
+    "lawName": "國立臺東大學學生會組織章程",
+    "article": "17",
+    "articleName": "新任正副會長出缺時之處置",
+    "quote": "會長於任滿之日解職",
+    "type": "RELATIVE",
+    "subject": "會長",
+    "summary": "會長於任滿之日解職，新任未就職前由原任代行"
+  },
+  {
+    "lawNumber": "0.0",
+    "lawName": "國立臺東大學學生會組織章程",
+    "article": "17",
+    "articleName": "新任正副會長出缺時之處置",
+    "quote": "則依次應由原任學生議會正、副議長、原任學生評議委員會正、副主任委員於學期結束前召開會務會議",
+    "type": "ABSOLUTE",
+    "subject": "議會",
+    "summary": "正副會長、祕書部長均無法視事，原任議長等應於學期結束前召開會務會議推選臨時正副會長"
+  },
+  {
+    "lawNumber": "0.0",
+    "lawName": "國立臺東大學學生會組織章程",
+    "article": "18",
+    "articleName": "就職與宣誓",
+    "quote": "新舊任會長應於每學年六月份公開辦理交接，新任會長應於交接就職之時宣誓",
+    "type": "RECURRING",
+    "subject": "會長",
+    "summary": "新舊任會長應於每學年六月份公開辦理交接，新任會長就職時宣誓"
+  },
+  {
+    "lawNumber": "0.0",
+    "lawName": "國立臺東大學學生會組織章程",
+    "article": "21",
+    "articleName": "各部會首長之產生",
+    "quote": "會長須於下次常會前重新提名，同一人選不得被提名超過兩次",
+    "type": "RELATIVE",
+    "subject": "會長",
+    "summary": "部會首長任命遭議會否決，會長須於下次常會前重新提名，同一人選不得逾兩次"
+  },
+  {
+    "lawNumber": "0.0",
+    "lawName": "國立臺東大學學生會組織章程",
+    "article": "27",
+    "articleName": "行政中心對議會負責",
+    "quote": "於該決議案送達學生行政中心七日內，移請學生議會覆議",
+    "type": "RELATIVE",
+    "subject": "行政中心",
+    "summary": "行政中心認決議窒礙難行，應於決議案送達七日內移請議會覆議"
+  },
+  {
+    "lawNumber": "0.0",
+    "lawName": "國立臺東大學學生會組織章程",
+    "article": "27",
+    "articleName": "行政中心對議會負責",
+    "quote": "學生會會長應於收到學生議會決議案七日內公告",
+    "type": "RELATIVE",
+    "subject": "會長",
+    "summary": "會長應於收到議會決議案七日內公告"
+  },
+  {
+    "lawNumber": "0.0",
+    "lawName": "國立臺東大學學生會組織章程",
+    "article": "27",
+    "articleName": "行政中心對議會負責",
+    "quote": "學生議會決議本條之決議案，應於七日內送達學生行政中心",
+    "type": "RELATIVE",
+    "subject": "議會",
+    "summary": "議會決議案應於七日內送達行政中心"
+  },
+  {
+    "lawNumber": "0.0",
+    "lawName": "國立臺東大學學生會組織章程",
+    "article": "28",
+    "articleName": "各部會首長之更換",
+    "quote": "經議會同意後，會長應於七日內公告，經公告後該一級幹部立即解除職務",
+    "type": "RELATIVE",
+    "subject": "會長",
+    "summary": "一級幹部不適任經議會同意後，會長應於七日內公告，公告後立即解職"
+  },
+  {
+    "lawNumber": "0.0",
+    "lawName": "國立臺東大學學生會組織章程",
+    "article": "31",
+    "articleName": "任期",
+    "quote": "議員任期一學年，連選得連任。",
+    "type": "RECURRING",
+    "subject": "議員",
+    "summary": "學生議員任期一學年，連選得連任"
+  },
+  {
+    "lawNumber": "0.0",
+    "lawName": "國立臺東大學學生會組織章程",
+    "article": "32",
+    "articleName": "議會職權",
+    "quote": "學生議會決議案通過後，應於七日內移送學生行政中心，學生行政中心應於收到後七日內公布之",
+    "type": "RELATIVE",
+    "subject": "議會",
+    "summary": "議會決議案通過後七日內移送行政中心，行政中心收到後七日內公布"
+  },
+  {
+    "lawNumber": "0.0",
+    "lawName": "國立臺東大學學生會組織章程",
+    "article": "33",
+    "articleName": "正副議長之產生",
+    "quote": "任期一年，由議員以無記名投票互選之",
+    "type": "RECURRING",
+    "subject": "議員",
+    "summary": "議長、副議長任期一年，由議員無記名投票互選"
+  },
+  {
+    "lawNumber": "0.0",
+    "lawName": "國立臺東大學學生會組織章程",
+    "article": "40",
+    "articleName": "評議員產生方式",
+    "quote": "評議委員會置委員柒人，任期一年",
+    "type": "RECURRING",
+    "subject": "評議委員會",
+    "summary": "評議委員任期一年"
+  },
+  {
+    "lawNumber": "0.0",
+    "lawName": "國立臺東大學學生會組織章程",
+    "article": "41",
+    "articleName": "資格",
+    "quote": "評議委員因受彈劾處分、失去本校在學資格，或至他校研習超過一學期（含）以上者，由學生會會長補行提名",
+    "type": "RELATIVE",
+    "subject": "會長",
+    "summary": "評議委員赴他校研習逾一學期等情形，由會長補行提名遞補"
+  },
+  {
+    "lawNumber": "0.2",
+    "lawName": "國立臺東大學學生會會徽法",
+    "article": "7",
+    "articleName": "",
+    "quote": "經學生行政中心、學生議會、學生評議會核定後，於二週內送至各單位祕書處及議會核備",
+    "type": "RELATIVE",
+    "subject": "行政中心",
+    "summary": "會徽式樣經三方核定後應於二週內送各單位祕書處及議會核備"
+  },
+  {
+    "lawNumber": "1.10",
+    "lawName": "國立臺東大學學生會會務會議實行準則",
+    "article": "6",
+    "articleName": "會議之召開",
+    "quote": "會務會議於學生議會審議行政中心幹部任命案後召開之",
+    "type": "RELATIVE",
+    "subject": "會務會議",
+    "summary": "會務會議於議會審議行政中心幹部任命案後召開"
+  },
+  {
+    "lawNumber": "1.1",
+    "lawName": "國立臺東大學學生會預算法",
+    "article": "19",
+    "articleName": "資產清冊",
+    "quote": "學生會應於每任期結束時製作資產清冊",
+    "type": "RECURRING",
+    "subject": "財務部",
+    "summary": "學生會應於每任期結束時製作資產清冊"
+  },
+  {
+    "lawNumber": "1.1",
+    "lawName": "國立臺東大學學生會預算法",
+    "article": "19",
+    "articleName": "資產清冊",
+    "quote": "每一年度資產清冊至少需保留三年",
+    "type": "RELATIVE",
+    "subject": "財務部",
+    "summary": "資產清冊至少需保留三年"
+  },
+  {
+    "lawNumber": "1.1",
+    "lawName": "國立臺東大學學生會預算法",
+    "article": "24",
+    "articleName": "預算編列之呈送",
+    "quote": "開學後一月內如有舉辦活動，應於上一個學期結束兩週以前送交。總預算案應於開學後兩週內送交",
+    "type": "ABSOLUTE",
+    "subject": "各單位",
+    "summary": "開學後一月內活動預算應於上學期結束兩週前送交；總預算案應於開學後兩週內送交"
+  },
+  {
+    "lawNumber": "1.1",
+    "lawName": "國立臺東大學學生會預算法",
+    "article": "29",
+    "articleName": "審議期限",
+    "quote": "學生議會應於收到學生會預算案後兩週內審查完畢",
+    "type": "RELATIVE",
+    "subject": "議會",
+    "summary": "議會應於收到預算案後兩週內審查完畢"
+  },
+  {
+    "lawNumber": "1.1",
+    "lawName": "國立臺東大學學生會預算法",
+    "article": "33-1",
+    "articleName": "法定預算之借支",
+    "quote": "須於使用前一週填寫借支款項申請單",
+    "type": "RELATIVE",
+    "subject": "各部門",
+    "summary": "法定預算借支須於使用前一週填寫借支款項申請單"
+  },
+  {
+    "lawNumber": "1.1",
+    "lawName": "國立臺東大學學生會預算法",
+    "article": "38",
+    "articleName": "未使用經費之處理",
+    "quote": "決算日後，各部處經費尚未使用者，應停止使用，結算剩餘應轉入下學期使用",
+    "type": "RELATIVE",
+    "subject": "各部處",
+    "summary": "決算日後未用經費應停用，結餘轉入下學期"
+  },
+  {
+    "lawNumber": "1.1",
+    "lawName": "國立臺東大學學生會預算法",
+    "article": "42",
+    "articleName": "學生議會調查權",
+    "quote": "學生會各單位收到要求後，應於三日內予以回覆",
+    "type": "RELATIVE",
+    "subject": "各單位",
+    "summary": "議會調閱資料，各單位收到要求後三日內回覆"
+  },
+  {
+    "lawNumber": "1.1",
+    "lawName": "國立臺東大學學生會預算法",
+    "article": "43",
+    "articleName": "經費提領",
+    "quote": "經學生議會財務委員會主委於填具傳票後三日內審核核可後",
+    "type": "RELATIVE",
+    "subject": "財務委員會",
+    "summary": "經費提領由財委會主委於填具傳票後三日內審核核可"
+  },
+  {
+    "lawNumber": "1.1",
+    "lawName": "國立臺東大學學生會預算法",
+    "article": "52",
+    "articleName": "預算之公布",
+    "quote": "預算案經通過後，會長應於十日內對外以書面公布張貼",
+    "type": "RELATIVE",
+    "subject": "會長",
+    "summary": "預算案通過後會長應於十日內對外公布張貼"
+  },
+  {
+    "lawNumber": "1.11",
+    "lawName": "國立臺東大學學生會歷屆結餘經費管理辦法",
+    "article": "5",
+    "articleName": "經費之運用",
+    "quote": "學生會每學年得從歷屆結餘提領經費，作為該學年上、下學期之總預算",
+    "type": "RECURRING",
+    "subject": "行政中心",
+    "summary": "學生會每學年得自歷屆結餘提領經費作為該學年上下學期總預算"
+  },
+  {
+    "lawNumber": "1.12",
+    "lawName": "國立臺東大學學生行政中心組織及施行準則",
+    "article": "4",
+    "articleName": "看守內閣",
+    "quote": "原任會長任期屆滿時須領各部會首長內閣總辭，但於新任會長選舉結果公告至新任會長上任前須維持行政中心之運作。",
+    "type": "RELATIVE",
+    "subject": "行政中心",
+    "summary": "原任會長任期屆滿各部會首長總辭，惟新任會長選舉結果公告至上任前維持看守運作"
+  },
+  {
+    "lawNumber": "1.13",
+    "lawName": "國立臺東大學學生行政中心各級會議議事規則",
+    "article": "4",
+    "articleName": "會期",
+    "quote": "一個任期即為完整之會期，自七月一日起至隔年六月三十日止。",
+    "type": "ABSOLUTE",
+    "subject": "行政中心",
+    "summary": "行政中心一任期為完整會期，自七月一日至隔年六月三十日"
+  },
+  {
+    "lawNumber": "1.13",
+    "lawName": "國立臺東大學學生行政中心各級會議議事規則",
+    "article": "5",
+    "articleName": "常務會議",
+    "quote": "開會期程：每三週舉行一次，必要時由會長主動召開或經法定出席人三分之一提議得召開之",
+    "type": "RECURRING",
+    "subject": "行政中心",
+    "summary": "常務會議每三週舉行一次，必要時得召開"
+  },
+  {
+    "lawNumber": "1.13",
+    "lawName": "國立臺東大學學生行政中心各級會議議事規則",
+    "article": "5",
+    "articleName": "常務會議",
+    "quote": "會議議程應於開會前二日分送各出列席人",
+    "type": "RELATIVE",
+    "subject": "祕書部",
+    "summary": "常務會議議程應於開會前二日分送各出列席人"
+  },
+  {
+    "lawNumber": "1.13",
+    "lawName": "國立臺東大學學生行政中心各級會議議事規則",
+    "article": "10",
+    "articleName": "出席及列席",
+    "quote": "會長應於每學期結算各部會正副首長之出缺席狀況",
+    "type": "RECURRING",
+    "subject": "會長",
+    "summary": "會長應於每學期結算各部會正副首長出缺席狀況"
+  },
+  {
+    "lawNumber": "1.13",
+    "lawName": "國立臺東大學學生行政中心各級會議議事規則",
+    "article": "10",
+    "articleName": "出席及列席",
+    "quote": "會長應於兩周內提新任人選經學生議會同意，並於三日內公告",
+    "type": "RELATIVE",
+    "subject": "會長",
+    "summary": "部會首長每學期無故缺席逾30%視同離職，會長兩周內提新任、三日內公告"
+  },
+  {
+    "lawNumber": "1.13",
+    "lawName": "國立臺東大學學生行政中心各級會議議事規則",
+    "article": "14",
+    "articleName": "請假規範",
+    "quote": "應於開會前一日向行政中心祕書部請假",
+    "type": "RELATIVE",
+    "subject": "部會首長",
+    "summary": "部會正副首長無法出席應於開會前一日向祕書部請假"
+  },
+  {
+    "lawNumber": "1.13",
+    "lawName": "國立臺東大學學生行政中心各級會議議事規則",
+    "article": "15",
+    "articleName": "提案日程",
+    "quote": "常務會議提案應於本會開會三日前送達行政中心祕書部",
+    "type": "RELATIVE",
+    "subject": "提案人",
+    "summary": "常務會議提案應於本會開會三日前送達祕書部"
+  },
+  {
+    "lawNumber": "1.13",
+    "lawName": "國立臺東大學學生行政中心各級會議議事規則",
+    "article": "15",
+    "articleName": "提案日程",
+    "quote": "一般提案：應於一日前送達行政中心祕書部",
+    "type": "RELATIVE",
+    "subject": "提案人",
+    "summary": "一般提案應於開會一日前送達祕書部"
+  },
+  {
+    "lawNumber": "1.14",
+    "lawName": "國立臺東大學學生會急難救助條例",
+    "article": "3",
+    "articleName": "經費來源",
+    "quote": "經費來源為每學期由財務部以歷屆結餘專款專用編列五萬元",
+    "type": "RECURRING",
+    "subject": "財務部",
+    "summary": "急難補助經費每學期由財務部以歷屆結餘專款編列五萬元"
+  },
+  {
+    "lawNumber": "1.14",
+    "lawName": "國立臺東大學學生會急難救助條例",
+    "article": "7",
+    "articleName": "申請流程",
+    "quote": "學生本人或委託人應於發生事故後六月內將申請表格與佐證資料",
+    "type": "RELATIVE",
+    "subject": "申請人",
+    "summary": "急難補助申請應於事故發生後六個月內備件送件"
+  },
+  {
+    "lawNumber": "1.14",
+    "lawName": "國立臺東大學學生會急難救助條例",
+    "article": "7",
+    "articleName": "申請流程",
+    "quote": "申請通過一個月內由導師、學生會會長、學生議會議長或其他相關人員，前往慰問時送達",
+    "type": "RELATIVE",
+    "subject": "財務部",
+    "summary": "急難補助申請通過一個月內送達慰問金"
+  },
+  {
+    "lawNumber": "1.14",
+    "lawName": "國立臺東大學學生會急難救助條例",
+    "article": "11",
+    "articleName": "保存及個資保護",
+    "quote": "前兩項送審之文件，應於審查通過後三月內銷毀",
+    "type": "RELATIVE",
+    "subject": "財務部",
+    "summary": "急難補助送審文件應於審查通過後三個月內銷毀"
+  },
+  {
+    "lawNumber": "1.14",
+    "lawName": "國立臺東大學學生會急難救助條例",
+    "article": "12",
+    "articleName": "爭議之處理",
+    "quote": "僅得於收到通知後七日內提出再審查",
+    "type": "RELATIVE",
+    "subject": "會員",
+    "summary": "不服急難補助決議者得於收到通知後七日內提再審查"
+  },
+  {
+    "lawNumber": "1.14",
+    "lawName": "國立臺東大學學生會急難救助條例",
+    "article": "13",
+    "articleName": "追討之方式",
+    "quote": "追討一個月未達成效應進行公告追討",
+    "type": "RELATIVE",
+    "subject": "財務部",
+    "summary": "急難補助追討逾一個月未成效應公告追討"
+  },
+  {
+    "lawNumber": "1.15",
+    "lawName": "國立臺東大學學生會差旅管理辦法",
+    "article": "2",
+    "articleName": "經費來源及限制",
+    "quote": "經費來源為每學期由財務部以歷屆結餘專款專用編列經費",
+    "type": "RECURRING",
+    "subject": "財務部",
+    "summary": "訓練補助款每學期由財務部以歷屆結餘專款編列，每學期初不得少於七萬五千元"
+  },
+  {
+    "lawNumber": "1.15",
+    "lawName": "國立臺東大學學生會差旅管理辦法",
+    "article": "6",
+    "articleName": "申請流程",
+    "quote": "出差人應至遲於出差前三日填具差旅補助申請表",
+    "type": "RELATIVE",
+    "subject": "出差人",
+    "summary": "出差人應至遲於出差前三日填具差旅補助申請表"
+  },
+  {
+    "lawNumber": "1.15",
+    "lawName": "國立臺東大學學生會差旅管理辦法",
+    "article": "6",
+    "articleName": "申請流程",
+    "quote": "申請通過後兩週後完成撥款",
+    "type": "RELATIVE",
+    "subject": "財務部",
+    "summary": "差旅補助申請通過後兩週完成撥款"
+  },
+  {
+    "lawNumber": "1.15",
+    "lawName": "國立臺東大學學生會差旅管理辦法",
+    "article": "7",
+    "articleName": "發表要求",
+    "quote": "應於出差結束後兩週內繳交成果報告書",
+    "type": "RELATIVE",
+    "subject": "出差人",
+    "summary": "應於出差結束後兩週內繳交成果報告書"
+  },
+  {
+    "lawNumber": "1.15",
+    "lawName": "國立臺東大學學生會差旅管理辦法",
+    "article": "9",
+    "articleName": "審查原則",
+    "quote": "每人每學期不得申請超過四次",
+    "type": "RECURRING",
+    "subject": "出差人",
+    "summary": "差旅補助每人每學期申請不得超過四次"
+  },
+  {
+    "lawNumber": "1.15",
+    "lawName": "國立臺東大學學生會差旅管理辦法",
+    "article": "10",
+    "articleName": "追討之方式",
+    "quote": "追討一個月未達成效應進行公告追討",
+    "type": "RELATIVE",
+    "subject": "財務部",
+    "summary": "差旅補助追討逾一個月未成效應公告追討"
+  },
+  {
+    "lawNumber": "1.16",
+    "lawName": "國立臺東大學學生會顧問聘用與管理辦法",
+    "article": "2",
+    "articleName": "任期",
+    "quote": "其任期則為自學生議會同意任命過後開始計算，至該屆學生會任期結束為止",
+    "type": "RELATIVE",
+    "subject": "顧問",
+    "summary": "顧問任期自議會同意任命起算，至該屆學生會任期結束"
+  },
+  {
+    "lawNumber": "1.16",
+    "lawName": "國立臺東大學學生會顧問聘用與管理辦法",
+    "article": "7",
+    "articleName": "辭職",
+    "quote": "於七日內送至學生議會進行備查",
+    "type": "RELATIVE",
+    "subject": "祕書部",
+    "summary": "顧問辭職經上報會長後七日內送議會備查"
+  },
+  {
+    "lawNumber": "1.17",
+    "lawName": "國立臺東大學學生會會史編纂委員會設置條例",
+    "article": "4",
+    "articleName": "本委員會之任期",
+    "quote": "本委員會任期自學生議會同意任命過後至該屆學生會任期結束為止。",
+    "type": "RELATIVE",
+    "subject": "會史編纂委員會",
+    "summary": "會史編纂委員會任期自議會同意任命起至該屆學生會任期結束"
+  },
+  {
+    "lawNumber": "1.17",
+    "lawName": "國立臺東大學學生會會史編纂委員會設置條例",
+    "article": "7",
+    "articleName": "會議舉行",
+    "quote": "本委員會每學期至少開會二次，必要時得召開臨時會議",
+    "type": "RECURRING",
+    "subject": "會史編纂委員會",
+    "summary": "會史委員會每學期至少開會二次，必要時召開臨時會議"
+  },
+  {
+    "lawNumber": "1.17",
+    "lawName": "國立臺東大學學生會會史編纂委員會設置條例",
+    "article": "8",
+    "articleName": "經費來源",
+    "quote": "經費來源為每學期由財務部以歷屆結餘專款專用編列五萬元",
+    "type": "RECURRING",
+    "subject": "財務部",
+    "summary": "會史委員會經費每學期由財務部以歷屆結餘專款編列五萬元"
+  },
+  {
+    "lawNumber": "1.17",
+    "lawName": "國立臺東大學學生會會史編纂委員會設置條例",
+    "article": "11",
+    "articleName": "成立及交接事宜",
+    "quote": "學生會長須在每學年開學一個月內向學生議會提請任命，學生議會同意後，需於兩周內由學生議會議長擔任第一次會議召集人，進行主委與副主委選舉",
+    "type": "RECURRING",
+    "subject": "會長",
+    "summary": "會長須於每學年開學一個月內提請任命會史委員，議會同意後兩週內由議長召集首次會議選正副主委"
+  },
+  {
+    "lawNumber": "1.18",
+    "lawName": "國立臺東大學學生會獎助學生校務研究補助辦法",
+    "article": "2",
+    "articleName": "",
+    "quote": "本校在籍學生得於每學期期間提出研究計畫申請並擔任主持人",
+    "type": "RECURRING",
+    "subject": "在籍學生",
+    "summary": "在籍學生得於每學期期間提出研究計畫申請"
+  },
+  {
+    "lawNumber": "1.18",
+    "lawName": "國立臺東大學學生會獎助學生校務研究補助辦法",
+    "article": "4",
+    "articleName": "",
+    "quote": "應於十四個工作日內初審其形式是否符合前條第三項規定",
+    "type": "RELATIVE",
+    "subject": "議會祕書處",
+    "summary": "議會祕書處收件後十四個工作日內初審研究計畫形式"
+  },
+  {
+    "lawNumber": "1.18",
+    "lawName": "國立臺東大學學生會獎助學生校務研究補助辦法",
+    "article": "7",
+    "articleName": "",
+    "quote": "研究計畫執行期間逾二分之一時，應於七日內向本會提交書面期中報告。執行期間結束後主持人應至議會大會進行期末報告，並於報告後一個月內向議會祕書處提交成果報告",
+    "type": "RELATIVE",
+    "subject": "計畫主持人",
+    "summary": "研究計畫執行過半應七日內提期中報告；結束後至議會期末報告，報告後一個月內提成果報告"
+  },
+  {
+    "lawNumber": "1.18",
+    "lawName": "國立臺東大學學生會獎助學生校務研究補助辦法",
+    "article": "7",
+    "articleName": "",
+    "quote": "經議會祕書處催繳七日內仍未提交，應立即終止研究計畫及其獎助經費核銷並公告周知",
+    "type": "RELATIVE",
+    "subject": "議會祕書處",
+    "summary": "期中/期末/成果報告經催繳七日內仍未交，立即終止計畫及獎助"
+  },
+  {
+    "lawNumber": "1.19",
+    "lawName": "國立臺東大學學生會交接條例",
+    "article": "7",
+    "articleName": "",
+    "quote": "後任負責人在規定結報期間內，即該屆學年度結束前三十日內",
+    "type": "ABSOLUTE",
+    "subject": "負責人",
+    "summary": "負責人從缺時後任應於該屆學年度結束前三十日內結報"
+  },
+  {
+    "lawNumber": "1.19",
+    "lawName": "國立臺東大學學生會交接條例",
+    "article": "8",
+    "articleName": "",
+    "quote": "移交事項及其相關內容應至少保存五年",
+    "type": "RELATIVE",
+    "subject": "祕書",
+    "summary": "移交事項及其相關內容應至少保存五年"
+  },
+  {
+    "lawNumber": "1.19",
+    "lawName": "國立臺東大學學生會交接條例",
+    "article": "9",
+    "articleName": "",
+    "quote": "填寫後應於十四日內，分別送交學生行政中心及學生議會、學生評議委員會之主管單位備查",
+    "type": "RELATIVE",
+    "subject": "祕書",
+    "summary": "交接表單填寫後十四日內分送行政中心/議會/評議會主管單位備查"
+  },
+  {
+    "lawNumber": "1.19",
+    "lawName": "國立臺東大學學生會交接條例",
+    "article": "9",
+    "articleName": "",
+    "quote": "本會新任會長、副會長改選，應於當屆學年度結束前三十日內完成移交",
+    "type": "ABSOLUTE",
+    "subject": "會長",
+    "summary": "新任正副會長改選應於當屆學年度結束前三十日內完成移交"
+  },
+  {
+    "lawNumber": "1.19",
+    "lawName": "國立臺東大學學生會交接條例",
+    "article": "12",
+    "articleName": "",
+    "quote": "應事先詳述理由陳報該機關負責人核准展期；其展期不得超過一個月",
+    "type": "RELATIVE",
+    "subject": "負責人",
+    "summary": "移交如需展期應陳報核准，展期不得超過一個月"
+  },
+  {
+    "lawNumber": "1.2",
+    "lawName": "國立臺東大學學生會決算法",
+    "article": "3",
+    "articleName": "決算時點",
+    "quote": "決算於每學期期初審查預算前辦理一次。",
+    "type": "RECURRING",
+    "subject": "財務部",
+    "summary": "決算於每學期期初審查預算前辦理一次"
+  },
+  {
+    "lawNumber": "1.20",
+    "lawName": "國立臺東大學學生會締約標準作業條例",
+    "article": "5",
+    "articleName": "",
+    "quote": "並於學生議會休會期結束後之首次常會，提出合約簽訂追認案",
+    "type": "RELATIVE",
+    "subject": "行政中心",
+    "summary": "合約於議會休會期間簽定者，應於休會期結束後首次常會提出合約簽訂追認案"
+  },
+  {
+    "lawNumber": "1.2",
+    "lawName": "國立臺東大學學生會決算法",
+    "article": "9",
+    "articleName": "部門改組之決算編列方式",
+    "quote": "部門在學期終了前裁撤者，該部門應於裁撤之日辦理決算",
+    "type": "RELATIVE",
+    "subject": "財務部",
+    "summary": "部門於學期終了前裁撤者，應於裁撤之日辦理決算"
+  },
+  {
+    "lawNumber": "1.2",
+    "lawName": "國立臺東大學學生會決算法",
+    "article": "13",
+    "articleName": "行政中心簽核送財務委員會核查",
+    "quote": "財務部應於領款後三日內將存摺帳目、領款金額、支出黏貼憑證填表單向學生議會報備",
+    "type": "RELATIVE",
+    "subject": "財務部",
+    "summary": "財務部領款後三日內向議會報備帳目"
+  },
+  {
+    "lawNumber": "1.2",
+    "lawName": "國立臺東大學學生會決算法",
+    "article": "15",
+    "articleName": "決算案之製作",
+    "quote": "於開學後七日內，送交學生議會財務委員會",
+    "type": "RELATIVE",
+    "subject": "財務部",
+    "summary": "決算案經會長簽章後開學後七日內送財委會"
+  },
+  {
+    "lawNumber": "1.2",
+    "lawName": "國立臺東大學學生會決算法",
+    "article": "18",
+    "articleName": "財務委員會審議期限",
+    "quote": "財務委員會應於收到決算案五日內進行審查",
+    "type": "RELATIVE",
+    "subject": "財務委員會",
+    "summary": "財委會收到決算案五日內進行審查"
+  },
+  {
+    "lawNumber": "1.2",
+    "lawName": "國立臺東大學學生會決算法",
+    "article": "22",
+    "articleName": "決算公開原則",
+    "quote": "決算案應於審查完畢後十日內由學生會會長對外以書面公布張貼",
+    "type": "RELATIVE",
+    "subject": "會長",
+    "summary": "決算案審查完畢後十日內由會長公布張貼"
+  },
+  {
+    "lawNumber": "1.2",
+    "lawName": "國立臺東大學學生會決算法",
+    "article": "24",
+    "articleName": "逾領經費之處理",
+    "quote": "每學期結束後逾領未使用之經費，應先回存於學生會專門帳戶",
+    "type": "RECURRING",
+    "subject": "財務部",
+    "summary": "每學期結束後逾領未用經費應回存專戶"
+  },
+  {
+    "lawNumber": "1.3",
+    "lawName": "國立臺東大學學生會特殊預算管理辦法",
+    "article": "3",
+    "articleName": "定義",
+    "quote": "得提請使用特殊預算，但不得於寒暑假提出",
+    "type": "ABSOLUTE",
+    "subject": "學生會",
+    "summary": "特殊預算不得於寒暑假提出"
+  },
+  {
+    "lawNumber": "1.3",
+    "lawName": "國立臺東大學學生會特殊預算管理辦法",
+    "article": "7",
+    "articleName": "特殊預算之編製",
+    "quote": "審議通過後，於決議十日內公佈後，得以施行",
+    "type": "RELATIVE",
+    "subject": "會長",
+    "summary": "特殊預算審議通過後決議十日內公布施行"
+  },
+  {
+    "lawNumber": "1.3",
+    "lawName": "國立臺東大學學生會特殊預算管理辦法",
+    "article": "12",
+    "articleName": "審議期限",
+    "quote": "學生議會應於收到學生會特殊預算書後兩週內審查完畢",
+    "type": "RELATIVE",
+    "subject": "議會",
+    "summary": "議會收到特殊預算書後兩週內審查完畢"
+  },
+  {
+    "lawNumber": "1.3",
+    "lawName": "國立臺東大學學生會特殊預算管理辦法",
+    "article": "19",
+    "articleName": "未使用經費之處理",
+    "quote": "決算日後，各部處經費尚未使用者，應停止使用，結算剩餘應轉入下學期使用",
+    "type": "RELATIVE",
+    "subject": "各部處",
+    "summary": "決算日後未用經費應停用，結餘轉入下學期"
+  },
+  {
+    "lawNumber": "1.3",
+    "lawName": "國立臺東大學學生會特殊預算管理辦法",
+    "article": "22",
+    "articleName": "學生議會調查權",
+    "quote": "學生會各單位收到要求後，應於三日內予以回覆",
+    "type": "RELATIVE",
+    "subject": "各單位",
+    "summary": "議會調閱資料，各單位收到要求後三日內回覆"
+  },
+  {
+    "lawNumber": "1.3",
+    "lawName": "國立臺東大學學生會特殊預算管理辦法",
+    "article": "25",
+    "articleName": "特殊預算案保留年限",
+    "quote": "特殊預算案一式二份，應至少保留三年",
+    "type": "RELATIVE",
+    "subject": "財務部",
+    "summary": "特殊預算案至少保留三年，每年交接日交接"
+  },
+  {
+    "lawNumber": "1.3",
+    "lawName": "國立臺東大學學生會特殊預算管理辦法",
+    "article": "26",
+    "articleName": "特殊預算之公布",
+    "quote": "特殊預算案經學生議會通過後，會長應於十日內對外以書面公布張貼",
+    "type": "RELATIVE",
+    "subject": "會長",
+    "summary": "特殊預算案通過後會長應於十日內公布張貼"
+  },
+  {
+    "lawNumber": "1.4",
+    "lawName": "國立臺東大學學生會財務管理辦法",
+    "article": "7",
+    "articleName": "",
+    "quote": "學期末亦需整合該學期之所有經費支出明細，統整為決算案並公布",
+    "type": "ABSOLUTE",
+    "subject": "財務部",
+    "summary": "學期末需整合該學期經費明細為決算案公布"
+  },
+  {
+    "lawNumber": "1.5",
+    "lawName": "國立臺東大學學生會社團活動經費申請辦法",
+    "article": "5",
+    "articleName": "",
+    "quote": "經費來源為每學期由財務部以歷屆結餘專款專用編列經費",
+    "type": "RECURRING",
+    "subject": "財務部",
+    "summary": "社團補助款每學期由財務部以歷屆結餘專款編列，每學期初不得少於五萬"
+  },
+  {
+    "lawNumber": "1.5",
+    "lawName": "國立臺東大學學生會社團活動經費申請辦法",
+    "article": "6",
+    "articleName": "",
+    "quote": "每學期各社團可申請之補助金額上限為新臺幣伍仟元",
+    "type": "RECURRING",
+    "subject": "社團",
+    "summary": "每學期各社團可申請補助金額上限五千元"
+  },
+  {
+    "lawNumber": "1.5",
+    "lawName": "國立臺東大學學生會社團活動經費申請辦法",
+    "article": "10",
+    "articleName": "",
+    "quote": "需於活動開始至少兩週前（含假日）繳交活動企劃書",
+    "type": "RELATIVE",
+    "subject": "社團",
+    "summary": "社團補助需於活動開始至少兩週前繳交活動企劃書"
+  },
+  {
+    "lawNumber": "1.5",
+    "lawName": "國立臺東大學學生會社團活動經費申請辦法",
+    "article": "12",
+    "articleName": "",
+    "quote": "審查單位需於收到補助申請後一週內，由社團部、財務部分別指派至少一位擔任審查委員",
+    "type": "RELATIVE",
+    "subject": "社團部",
+    "summary": "審查單位收到補助申請後一週內召開審查會議"
+  },
+  {
+    "lawNumber": "1.5",
+    "lawName": "國立臺東大學學生會社團活動經費申請辦法",
+    "article": "15",
+    "articleName": "",
+    "quote": "社團於每學年度上學期出席社系長大會",
+    "type": "RECURRING",
+    "subject": "社團",
+    "summary": "社團每學年度上學期出席社系長大會（依次數給獎勵）"
+  },
+  {
+    "lawNumber": "1.6",
+    "lawName": "國立臺東大學學生會社團與系學會租借器材申請辦法",
+    "article": "2",
+    "articleName": "",
+    "quote": "租借學生會器材須於租借日期三日前向學生行政中心財務部申請",
+    "type": "RELATIVE",
+    "subject": "租借單位",
+    "summary": "租借器材須於租借日期三日前申請"
+  },
+  {
+    "lawNumber": "1.6",
+    "lawName": "國立臺東大學學生會社團與系學會租借器材申請辦法",
+    "article": "2",
+    "articleName": "",
+    "quote": "租借單位使用完畢後三日內通知學生行政中心財務部並歸還所租借器材",
+    "type": "RELATIVE",
+    "subject": "租借單位",
+    "summary": "使用完畢後三日內通知並歸還器材"
+  },
+  {
+    "lawNumber": "1.6",
+    "lawName": "國立臺東大學學生會社團與系學會租借器材申請辦法",
+    "article": "5",
+    "articleName": "",
+    "quote": "該租借單位需在收到通知日起三十日內（含）回復原狀或支付維修金、賠償金",
+    "type": "RELATIVE",
+    "subject": "租借單位",
+    "summary": "器材遺失缺損須於收到通知日起三十日內回復或賠償"
+  },
+  {
+    "lawNumber": "1.6",
+    "lawName": "國立臺東大學學生會社團與系學會租借器材申請辦法",
+    "article": "6",
+    "articleName": "",
+    "quote": "若三日內有報遺失而後尋回歸還之情況，本會應予以退回所沒收之保證金",
+    "type": "RELATIVE",
+    "subject": "租借單位",
+    "summary": "三日內報遺失後尋回歸還者退回保證金"
+  },
+  {
+    "lawNumber": "1.7",
+    "lawName": "國立臺東大學學生會會費退費辦法",
+    "article": "3",
+    "articleName": "申請退費期限",
+    "quote": "低收入戶：應於每學期期初一個月內提出，逾期者皆不受理",
+    "type": "RECURRING",
+    "subject": "申請人",
+    "summary": "低收入戶退費應於每學期期初一個月內提出，逾期不受理"
+  },
+  {
+    "lawNumber": "1.7",
+    "lawName": "國立臺東大學學生會會費退費辦法",
+    "article": "3",
+    "articleName": "申請退費期限",
+    "quote": "凡是具備資格者應於正式離開學校前半年至離開學校後半年內提出，逾期者皆不受理",
+    "type": "RELATIVE",
+    "subject": "申請人",
+    "summary": "交換生等退費應於離校前半年至離校後半年內提出"
+  },
+  {
+    "lawNumber": "1.7",
+    "lawName": "國立臺東大學學生會會費退費辦法",
+    "article": "3",
+    "articleName": "申請退費期限",
+    "quote": "國外之交換學生至本校及本校學生交換至國外：至正式離開學校前",
+    "type": "RELATIVE",
+    "subject": "申請人",
+    "summary": "國外交換退費應至正式離開學校前提出"
+  },
+  {
+    "lawNumber": "1.7",
+    "lawName": "國立臺東大學學生會會費退費辦法",
+    "article": "5",
+    "articleName": "退費流程",
+    "quote": "學生會會長與財務部部長應於一個月內審查完畢",
+    "type": "RELATIVE",
+    "subject": "會長",
+    "summary": "退費應於一個月內審查完畢並通知申請者"
+  },
+  {
+    "lawNumber": "1.7",
+    "lawName": "國立臺東大學學生會會費退費辦法",
+    "article": "5",
+    "articleName": "退費流程",
+    "quote": "可於質疑答覆書收受後一個月內向學生評議委員會提出仲裁申請",
+    "type": "RELATIVE",
+    "subject": "退費者",
+    "summary": "對退費異議得於質疑答覆書收受後一個月內向評議會申請仲裁"
+  },
+  {
+    "lawNumber": "1.7",
+    "lawName": "國立臺東大學學生會會費退費辦法",
+    "article": "6",
+    "articleName": "正常退費金計算方式",
+    "quote": "為逢本校期中考週、期末考週之時（以當學年度本校行事曆為依據）將暫停受理退費事宜",
+    "type": "ABSOLUTE",
+    "subject": "財務部",
+    "summary": "期中考週、期末考週暫停受理退費"
+  },
+  {
+    "lawNumber": "1.8",
+    "lawName": "國立臺東大學學生會會費收費辦法",
+    "article": "4",
+    "articleName": "會費之繳交",
+    "quote": "如會員需補繳會費，可於該學年內向學生會補繳該學年會費",
+    "type": "RELATIVE",
+    "subject": "會員",
+    "summary": "會員得於該學年內補繳當學年會費"
+  },
+  {
+    "lawNumber": "1.9",
+    "lawName": "國立臺東大學學生會系學會活動經費補助條例",
+    "article": "6",
+    "articleName": "",
+    "quote": "經費來源為每學期由財務部以歷屆結餘專款專用編列經費",
+    "type": "RECURRING",
+    "subject": "財務部",
+    "summary": "系學會補助款每學期由財務部以歷屆結餘專款編列"
+  },
+  {
+    "lawNumber": "1.9",
+    "lawName": "國立臺東大學學生會系學會活動經費補助條例",
+    "article": "8",
+    "articleName": "",
+    "quote": "系學會須於收到通知後三十日內繳回申請款項至國立臺東大學學生會帳戶",
+    "type": "RELATIVE",
+    "subject": "系學會",
+    "summary": "違規系學會收到通知後三十日內繳回款項"
+  },
+  {
+    "lawNumber": "1.9",
+    "lawName": "國立臺東大學學生會系學會活動經費補助條例",
+    "article": "9",
+    "articleName": "",
+    "quote": "每學期各系總申請金額不得超過新臺幣壹萬伍千元",
+    "type": "RECURRING",
+    "subject": "系學會",
+    "summary": "每學期各系總申請金額不得超過一萬五千元"
+  },
+  {
+    "lawNumber": "1.9",
+    "lawName": "國立臺東大學學生會系學會活動經費補助條例",
+    "article": "9",
+    "articleName": "",
+    "quote": "系學會活動經費補助之申請受理期限為每學期開學起至該學期最後一次學生議會大會",
+    "type": "RECURRING",
+    "subject": "系學會",
+    "summary": "系學會補助受理期限為每學期開學至該學期最後一次議會大會"
+  },
+  {
+    "lawNumber": "1.9",
+    "lawName": "國立臺東大學學生會系學會活動經費補助條例",
+    "article": "10",
+    "articleName": "",
+    "quote": "須在該活動舉辦前二到六週以上由該系議員完成提案",
+    "type": "RELATIVE",
+    "subject": "系議員",
+    "summary": "系學會補助提案須於活動舉辦前二到六週以上完成"
+  },
+  {
+    "lawNumber": "1.9",
+    "lawName": "國立臺東大學學生會系學會活動經費補助條例",
+    "article": "10",
+    "articleName": "",
+    "quote": "受理機關須在大會通過提案後十日內開會審理（如遇期中考及期末考得順延一週），最晚須於活動開始前五日進行審查，通過後三日內將本條例之申請表交由執行機關並告知活動負責人",
+    "type": "RELATIVE",
+    "subject": "受理機關",
+    "summary": "受理機關大會通過後十日內開會審理、活動前五日前審查、通過後三日內轉交申請表"
+  },
+  {
+    "lawNumber": "1.9",
+    "lawName": "國立臺東大學學生會系學會活動經費補助條例",
+    "article": "10",
+    "articleName": "",
+    "quote": "系學會需在活動結束後二週內繳交該活動相關之成果報告書與支出黏貼憑證填表單",
+    "type": "RELATIVE",
+    "subject": "系學會",
+    "summary": "系學會活動結束後二週內繳交成果報告與憑證"
+  },
+  {
+    "lawNumber": "1.9",
+    "lawName": "國立臺東大學學生會系學會活動經費補助條例",
+    "article": "10",
+    "articleName": "",
+    "quote": "需在下學期開學日後一週內繳交，逾期未繳交則不予監察",
+    "type": "ABSOLUTE",
+    "subject": "系學會",
+    "summary": "學期末/寒暑假活動之成果報告需於下學期開學日後一週內繳交"
+  },
+  {
+    "lawNumber": "1.9",
+    "lawName": "國立臺東大學學生會系學會活動經費補助條例",
+    "article": "10",
+    "articleName": "",
+    "quote": "審議通過後十日內進行補助款發放並告知活動負責人",
+    "type": "RELATIVE",
+    "subject": "執行機關",
+    "summary": "審議通過後十日內發放補助款"
+  },
+  {
+    "lawNumber": "2.0",
+    "lawName": "國立臺東大學學生議會組織及實行準則",
+    "article": "3-1",
+    "articleName": "",
+    "quote": "則應經由下屆學生會就任後，於一個月內召開會務會議，優先審議之",
+    "type": "RELATIVE",
+    "subject": "會務會議",
+    "summary": "議案未於同屆議畢，下屆就任後一個月內召開會務會議優先審議"
+  },
+  {
+    "lawNumber": "2.0",
+    "lawName": "國立臺東大學學生議會組織及實行準則",
+    "article": "6",
+    "articleName": "正、副議長之職權",
+    "quote": "議長缺位時，由學生議會副議長代理，並於最近一次常會或臨時會推舉新任議長",
+    "type": "RELATIVE",
+    "subject": "議會",
+    "summary": "議長缺位由副議長代理，最近一次常會或臨時會推舉新議長"
+  },
+  {
+    "lawNumber": "2.0",
+    "lawName": "國立臺東大學學生議會組織及實行準則",
+    "article": "8",
+    "articleName": "全校性學生意見諮詢投票",
+    "quote": "學生議會審查通過後，二十個工作天內舉辦投票，投票截止二十四小時內公告投票結果",
+    "type": "RELATIVE",
+    "subject": "議會",
+    "summary": "諮詢投票審查通過後二十個工作天內舉辦，投票截止二十四小時內公告結果"
+  },
+  {
+    "lawNumber": "2.0",
+    "lawName": "國立臺東大學學生議會組織及實行準則",
+    "article": "9",
+    "articleName": "會期",
+    "quote": "一屆任期即為完整之會期，自七月一日起至隔年六月三十日止。",
+    "type": "ABSOLUTE",
+    "subject": "議會",
+    "summary": "議會一屆任期為完整會期，自七月一日至隔年六月三十日"
+  },
+  {
+    "lawNumber": "2.0",
+    "lawName": "國立臺東大學學生議會組織及實行準則",
+    "article": "10",
+    "articleName": "會議之種類",
+    "quote": "常會：每個月由議長召開一次，唯寒、暑假例外",
+    "type": "RECURRING",
+    "subject": "議長",
+    "summary": "議會常會每個月由議長召開一次（寒暑假除外）"
+  },
+  {
+    "lawNumber": "2.0",
+    "lawName": "國立臺東大學學生議會組織及實行準則",
+    "article": "11",
+    "articleName": "議員出席",
+    "quote": "學生議員無故缺席議會內部各項會議達三次或因公、喪、分娩、特殊公假、病假以外之因素請假次數達六次者，於出缺勤狀況結算公告後立即停權",
+    "type": "RELATIVE",
+    "subject": "議員",
+    "summary": "議員無故缺席達三次/請假達六次，出缺勤結算公告後立即停權"
+  },
+  {
+    "lawNumber": "2.0",
+    "lawName": "國立臺東大學學生議會組織及實行準則",
+    "article": "11",
+    "articleName": "議員出席",
+    "quote": "議長、副議長因公、喪、分娩、特殊公假、病假以外之因素請假次數達三次者，於出缺勤狀況結算公告後立即停止該議長或副議長之職權",
+    "type": "RELATIVE",
+    "subject": "議會",
+    "summary": "正副議長請假達三次，出缺勤結算公告後立即停止職權"
+  },
+  {
+    "lawNumber": "2.0",
+    "lawName": "國立臺東大學學生議會組織及實行準則",
+    "article": "15",
+    "articleName": "會議公開原則",
+    "quote": "應公開且於開議十四日前公告後舉行",
+    "type": "RELATIVE",
+    "subject": "議會",
+    "summary": "議會會議應於開議十四日前公告後公開舉行"
+  },
+  {
+    "lawNumber": "2.0",
+    "lawName": "國立臺東大學學生議會組織及實行準則",
+    "article": "19",
+    "articleName": "停權處理",
+    "quote": "議長應於每月一日結算所有議員之出缺席狀況並於三日內公告之",
+    "type": "RECURRING",
+    "subject": "議長",
+    "summary": "議長應於每月一日結算議員出缺席並於三日內公告"
+  },
+  {
+    "lawNumber": "2.0",
+    "lawName": "國立臺東大學學生議會組織及實行準則",
+    "article": "19",
+    "articleName": "停權處理",
+    "quote": "議員停權須於一周內行文通知該系，由選委會協同該系系學會補選之",
+    "type": "RELATIVE",
+    "subject": "議會",
+    "summary": "議員停權須於一周內行文通知該系並辦補選"
+  },
+  {
+    "lawNumber": "2.0",
+    "lawName": "國立臺東大學學生議會組織及實行準則",
+    "article": "19",
+    "articleName": "停權處理",
+    "quote": "則由議員於三日內推舉出代理議長，並於最近一次將開議之常會或臨時會推舉新任議長或副議長",
+    "type": "RELATIVE",
+    "subject": "議會",
+    "summary": "議長副議長均停權，議員三日內推代理議長，最近一次常會/臨時會推新議長"
+  },
+  {
+    "lawNumber": "2.0",
+    "lawName": "國立臺東大學學生議會組織及實行準則",
+    "article": "20",
+    "articleName": "提案日程",
+    "quote": "於當次常會前一日中午十二時前送達本會祕書處",
+    "type": "RELATIVE",
+    "subject": "議員",
+    "summary": "臨時提案須於當次常會前一日中午十二時前送達祕書處"
+  },
+  {
+    "lawNumber": "2.0",
+    "lawName": "國立臺東大學學生議會組織及實行準則",
+    "article": "20",
+    "articleName": "提案日程",
+    "quote": "各單位及學生議員之提案應於本會開會十日前送達本會祕書處。（三）惟六月常會之一般提案得經財務委員會與程序暨法規委員會同意，於本會開會三日前送交至本會祕書處",
+    "type": "RELATIVE",
+    "subject": "各單位",
+    "summary": "一般提案應於開會十日前送達；六月常會提案得於開會三日前送達"
+  },
+  {
+    "lawNumber": "2.0",
+    "lawName": "國立臺東大學學生議會組織及實行準則",
+    "article": "21",
+    "articleName": "會議資料獲取",
+    "quote": "祕書處應於常會前四日主動提供議員會議資料",
+    "type": "RELATIVE",
+    "subject": "祕書處",
+    "summary": "祕書處應於常會前四日提供議員會議資料"
+  },
+  {
+    "lawNumber": "2.0",
+    "lawName": "國立臺東大學學生議會組織及實行準則",
+    "article": "28",
+    "articleName": "決議之覆議",
+    "quote": "應於該議決送達學生會七日內附具理由，送請學生議會覆議",
+    "type": "RELATIVE",
+    "subject": "學生會",
+    "summary": "學生會認決議窒礙難行，應於送達七日內附理由送議會覆議"
+  },
+  {
+    "lawNumber": "2.1",
+    "lawName": "國立臺東大學學生議會各委員會實行細則",
+    "article": "5",
+    "articleName": "主任委員之職權",
+    "quote": "定時召開各委員會之例行性會議",
+    "type": "RECURRING",
+    "subject": "主任委員",
+    "summary": "主任委員定時召開各委員會例行性會議"
+  },
+  {
+    "lawNumber": "2.1",
+    "lawName": "國立臺東大學學生議會各委員會實行細則",
+    "article": "15",
+    "articleName": "委員會之召開",
+    "quote": "本委員會之召開須在大會通過提案後，由召集人十日內召集各委員進行開會審議",
+    "type": "RELATIVE",
+    "subject": "召集人",
+    "summary": "財務委員會召開須於大會通過提案後十日內召集開會"
+  },
+  {
+    "lawNumber": "2.1",
+    "lawName": "國立臺東大學學生議會各委員會實行細則",
+    "article": "18",
+    "articleName": "委員會之召開",
+    "quote": "本委員會之召開須在大會通過提案後，由召集人十日內召集各委員進行開會審議",
+    "type": "RELATIVE",
+    "subject": "召集人",
+    "summary": "活動委員會召開須於大會通過提案後十日內召集開會"
+  },
+  {
+    "lawNumber": "2.1",
+    "lawName": "國立臺東大學學生議會各委員會實行細則",
+    "article": "18",
+    "articleName": "委員會之召開",
+    "quote": "本委員會得於學生會活動結束後七日內召開，學生會撰寫之活動成果報告應於議會下次常會、臨時會前五日送達議會祕書處",
+    "type": "RELATIVE",
+    "subject": "活動委員會",
+    "summary": "活動委員會得於活動結束後七日內召開；成果報告下次常會/臨時會前五日送達"
+  },
+  {
+    "lawNumber": "2.1",
+    "lawName": "國立臺東大學學生議會各委員會實行細則",
+    "article": "19",
+    "articleName": "委員會之職責",
+    "quote": "活動建議報告在委員會召開後七日內交一份備份給學生會",
+    "type": "RELATIVE",
+    "subject": "活動委員會",
+    "summary": "活動建議報告於委員會召開後七日內交備份給學生會"
+  },
+  {
+    "lawNumber": "2.1",
+    "lawName": "國立臺東大學學生議會各委員會實行細則",
+    "article": "21",
+    "articleName": "委員會之召開",
+    "quote": "本委員會應於學生議會常會、臨時會前六日召開，編擬議程表。",
+    "type": "RELATIVE",
+    "subject": "程序暨法規委員會",
+    "summary": "程序暨法規委員會應於議會常會、臨時會前六日召開，編擬議程表"
+  },
+  {
+    "lawNumber": "2.1",
+    "lawName": "國立臺東大學學生議會各委員會實行細則",
+    "article": "23",
+    "articleName": "提案單",
+    "quote": "提案單者需在本委員會開會前送達，逾期者延至下次程序暨法規委員會開會審議之",
+    "type": "RELATIVE",
+    "subject": "提案人",
+    "summary": "提案單須於程序暨法規委員會開會前送達，逾期延至下次審議"
+  },
+  {
+    "lawNumber": "2.1",
+    "lawName": "國立臺東大學學生議會各委員會實行細則",
+    "article": "25",
+    "articleName": "委員會之召開",
+    "quote": "每學期固定召開兩次，遇討論重要議題之校級會議，得臨時召開之",
+    "type": "RECURRING",
+    "subject": "委員會",
+    "summary": "校級會議相關委員會每學期固定召開兩次"
+  },
+  {
+    "lawNumber": "2.1",
+    "lawName": "國立臺東大學學生議會各委員會實行細則",
+    "article": "28",
+    "articleName": "委員會之召開",
+    "quote": "受理單位之召開須在大會通過補助提案後，由召集人十日內召集各委員達三人以上得進行開會審理",
+    "type": "RELATIVE",
+    "subject": "受理單位",
+    "summary": "系學會補助受理單位須於大會通過提案後十日內召集開會"
+  },
+  {
+    "lawNumber": "2.1",
+    "lawName": "國立臺東大學學生議會各委員會實行細則",
+    "article": "28",
+    "articleName": "委員會之召開",
+    "quote": "監察單位之召開需在收到成果報告書後，由召集人二周內召集各委員達三人以上得進行開會審理",
+    "type": "RELATIVE",
+    "subject": "監察單位",
+    "summary": "監察單位須於收到成果報告書後二週內召集開會"
+  },
+  {
+    "lawNumber": "2.2",
+    "lawName": "國立臺東大學學生議會祕書處組織實行細則",
+    "article": "2",
+    "articleName": "祕書任期",
+    "quote": "學生議會祕書長及各級祕書之任期為每年七月一日至隔年七月三十日，共十三個月，且第一月訂為實習月",
+    "type": "ABSOLUTE",
+    "subject": "祕書",
+    "summary": "議會祕書任期每年七月一日至隔年七月三十日共十三個月，首月為實習月"
+  },
+  {
+    "lawNumber": "2.2",
+    "lawName": "國立臺東大學學生議會祕書處組織實行細則",
+    "article": "5",
+    "articleName": "祕書之辭職",
+    "quote": "祕書於任期中辭職，應於常會前三日遞交具辭職原由及本人簽名之書面報告後方能生效",
+    "type": "RELATIVE",
+    "subject": "祕書",
+    "summary": "祕書任期中辭職應於常會前三日遞書面報告方生效"
+  },
+  {
+    "lawNumber": "2.2",
+    "lawName": "國立臺東大學學生議會祕書處組織實行細則",
+    "article": "6",
+    "articleName": "祕書處會議",
+    "quote": "祕書處每月得由議長召集祕書長、副議長、副祕書長、各委員會祕書、行政祕書",
+    "type": "RECURRING",
+    "subject": "議長",
+    "summary": "祕書處會議每月由議長召集"
+  },
+  {
+    "lawNumber": "2.2",
+    "lawName": "國立臺東大學學生議會祕書處組織實行細則",
+    "article": "6",
+    "articleName": "祕書處會議",
+    "quote": "祕書處會議應於一日前將相關會議資訊告知議會全體",
+    "type": "RELATIVE",
+    "subject": "祕書處",
+    "summary": "祕書處會議應於一日前告知議會全體"
+  },
+  {
+    "lawNumber": "2.2",
+    "lawName": "國立臺東大學學生議會祕書處組織實行細則",
+    "article": "10",
+    "articleName": "代理之情形",
+    "quote": "祕書長於任期中辭職，若任期尚餘三個月（含）以上，以副祕書長暫行代理",
+    "type": "RELATIVE",
+    "subject": "祕書處",
+    "summary": "祕書長任期中辭職，任期餘三個月以上由副祕書長暫行代理"
+  },
+  {
+    "lawNumber": "2.2",
+    "lawName": "國立臺東大學學生議會祕書處組織實行細則",
+    "article": "10",
+    "articleName": "代理之情形",
+    "quote": "事後議長須三日內以書面追認其代理之情事",
+    "type": "RELATIVE",
+    "subject": "議長",
+    "summary": "祕書長代理，議長須於事後三日內以書面追認"
+  },
+  {
+    "lawNumber": "2.2",
+    "lawName": "國立臺東大學學生議會祕書處組織實行細則",
+    "article": "17",
+    "articleName": "祕書之遞補及徵選",
+    "quote": "如任期尚餘兩個月（含）以上，則須於二十日內公開徵選",
+    "type": "RELATIVE",
+    "subject": "祕書處",
+    "summary": "祕書中途去職，任期餘兩個月以上須於二十日內公開徵選"
+  },
+  {
+    "lawNumber": "2.3",
+    "lawName": "國立臺東大學學生議會暨常會職權行使法",
+    "article": "2",
+    "articleName": "預備會議之召集",
+    "quote": "學生議會舉行預備會議即首次常會，至遲應於每學年度下學期結業日前",
+    "type": "ABSOLUTE",
+    "subject": "議會",
+    "summary": "議會預備會議（首次常會）至遲應於每學年度下學期結業日前舉行"
+  },
+  {
+    "lawNumber": "2.3",
+    "lawName": "國立臺東大學學生議會暨常會職權行使法",
+    "article": "3",
+    "articleName": "預備會議之事項",
+    "quote": "學生議會每屆第一會期報到首日舉行預備會議，進行議員就職宣誓及議長、副議長之選舉。",
+    "type": "RELATIVE",
+    "subject": "議會",
+    "summary": "議會每屆第一會期報到首日舉行預備會議，行就職宣誓及正副議長選舉"
+  },
+  {
+    "lawNumber": "2.3",
+    "lawName": "國立臺東大學學生議會暨常會職權行使法",
+    "article": "15",
+    "articleName": "屆滿不予繼續審議之議案",
+    "quote": "每屆學生議員任期屆滿時，除預（決）算案，或法令另有規定外，尚未議決之議案，下屆不予繼續審議",
+    "type": "RELATIVE",
+    "subject": "議會",
+    "summary": "議員任期屆滿時未議決議案（除預決算）下屆不予繼續審議"
+  },
+  {
+    "lawNumber": "2.3",
+    "lawName": "國立臺東大學學生議會暨常會職權行使法",
+    "article": "17",
+    "articleName": "施政方針及報告之提出",
+    "quote": "行政中心應於每月議會常會召開十日前，將下月施政方針及上月之施政報告送達學生議會祕書處",
+    "type": "RELATIVE",
+    "subject": "行政中心",
+    "summary": "行政中心應於每月議會常會召開十日前送達施政方針與施政報告"
+  },
+  {
+    "lawNumber": "2.3",
+    "lawName": "國立臺東大學學生議會暨常會職權行使法",
+    "article": "17",
+    "articleName": "施政方針及報告之提出",
+    "quote": "新任會長應於就職後二個月內，向議會提出年度施政方針之報告，並至遲於議會九月常會或每學年度上學期首次會議之召開日五日前，將報告送達議會祕書處",
+    "type": "RELATIVE",
+    "subject": "會長",
+    "summary": "新任會長就職後二個月內提年度施政方針，至遲九月常會召開日五日前送達"
+  },
+  {
+    "lawNumber": "2.3",
+    "lawName": "國立臺東大學學生議會暨常會職權行使法",
+    "article": "19",
+    "articleName": "質詢類別及提出方式",
+    "quote": "議員如採用聯合質詢，應於每月常會召開日七日前向議會祕書處登記之",
+    "type": "RELATIVE",
+    "subject": "議員",
+    "summary": "聯合質詢應於每月常會召開日七日前登記"
+  },
+  {
+    "lawNumber": "2.3",
+    "lawName": "國立臺東大學學生議會暨常會職權行使法",
+    "article": "22",
+    "articleName": "質詢登記",
+    "quote": "學生議員得於每月常會召開日七日前向議會祕書處登記之。為前項之質詢時，得將其質詢要旨以書面或電子之質詢單於常會召開日三日前送交議會祕書處",
+    "type": "RELATIVE",
+    "subject": "議員",
+    "summary": "質詢登記於常會召開日七日前、質詢單三日前送達"
+  },
+  {
+    "lawNumber": "2.3",
+    "lawName": "國立臺東大學學生議會暨常會職權行使法",
+    "article": "23",
+    "articleName": "備質詢未及部分之答復",
+    "quote": "未及答復部分，應於下次常會召開日七日前以書面答復",
+    "type": "RELATIVE",
+    "subject": "行政中心",
+    "summary": "口頭質詢未及答復部分應於下次常會召開日七日前書面答復"
+  },
+  {
+    "lawNumber": "2.3",
+    "lawName": "國立臺東大學學生議會暨常會職權行使法",
+    "article": "24",
+    "articleName": "議事日程詢答事項之編列",
+    "quote": "行政中心應於收到前項質詢後七日內，將書面或電子之答復送由議會轉知質詢議員",
+    "type": "RELATIVE",
+    "subject": "行政中心",
+    "summary": "行政中心收到質詢後七日內書面答復"
+  },
+  {
+    "lawNumber": "2.3",
+    "lawName": "國立臺東大學學生議會暨常會職權行使法",
+    "article": "35",
+    "articleName": "覆議案之門檻",
+    "quote": "覆議案審查後，應於常會以記名投票表決。如贊成維持原決議者，超過出席學生議員三分之二，即維持原決議；如未達出席學生議員三分之二，即不維持原決議；逾期未作成決議者，原決議失效。",
+    "type": "RELATIVE",
+    "subject": "議會",
+    "summary": "覆議案審查後於常會記名投票表決，逾期未作成決議者原決議失效"
+  },
+  {
+    "lawNumber": "2.3",
+    "lawName": "國立臺東大學學生議會暨常會職權行使法",
+    "article": "38",
+    "articleName": "調閱過程方式",
+    "quote": "應於七日內提供之",
+    "type": "RELATIVE",
+    "subject": "受調閱機關",
+    "summary": "受調閱機關應於七日內提供文件"
+  },
+  {
+    "lawNumber": "2.3",
+    "lawName": "國立臺東大學學生議會暨常會職權行使法",
+    "article": "42",
+    "articleName": "調員人員之任務及其文件效果",
+    "quote": "調閱委員會或調閱專案小組應於文件調閱處理終結後三十日內，分向議會或委員會提出調閱報告書及處理意見",
+    "type": "RELATIVE",
+    "subject": "調閱委員會",
+    "summary": "調閱處理終結後三十日內提出調閱報告書及處理意見"
+  },
+  {
+    "lawNumber": "2.3",
+    "lawName": "國立臺東大學學生議會暨常會職權行使法",
+    "article": "48",
+    "articleName": "資料檢送方式",
+    "quote": "應於開會日十日前，將開會通知、議程等相關資料",
+    "type": "RELATIVE",
+    "subject": "委員會",
+    "summary": "公聽會委員會應於開會日十日前送達開會通知、議程"
+  },
+  {
+    "lawNumber": "2.3",
+    "lawName": "國立臺東大學學生議會暨常會職權行使法",
+    "article": "51",
+    "articleName": "公聽會之終結",
+    "quote": "委員會應於公聽會終結後，於下次議會常會召開日七日前，依出席者所提供之正、反意見提出公聽會報告",
+    "type": "RELATIVE",
+    "subject": "委員會",
+    "summary": "公聽會終結後於下次常會召開日七日前提出公聽會報告"
+  },
+  {
+    "lawNumber": "2.3",
+    "lawName": "國立臺東大學學生議會暨常會職權行使法",
+    "article": "54",
+    "articleName": "舉行要件及其內容方式",
+    "quote": "學生議會審查通過後，二十個工作天內舉辦投票，投票截止二十四小時內公告投票結果",
+    "type": "RELATIVE",
+    "subject": "選舉委員會",
+    "summary": "諮詢投票審查通過後二十個工作天內舉辦，截止二十四小時內公告"
+  },
+  {
+    "lawNumber": "2.3",
+    "lawName": "國立臺東大學學生議會暨常會職權行使法",
+    "article": "56",
+    "articleName": "命令違法之救濟程序",
+    "quote": "原訂頒機關應於十日內更正或廢止；逾期未為更正或廢止者，該命令應即失效",
+    "type": "RELATIVE",
+    "subject": "訂頒機關",
+    "summary": "命令違法經通知，訂頒機關應於十日內更正廢止，逾期失效"
+  },
+  {
+    "lawNumber": "2.5",
+    "lawName": "國立臺東大學學生議會請假辦法",
+    "article": "3",
+    "articleName": "請假類別",
+    "quote": "陪產假：指配偶或伴侶發生分娩之十五日內，得請假一次會議",
+    "type": "RELATIVE",
+    "subject": "議員",
+    "summary": "陪產假：配偶或伴侶分娩之十五日內得請假一次會議"
+  },
+  {
+    "lawNumber": "2.5",
+    "lawName": "國立臺東大學學生議會請假辦法",
+    "article": "3",
+    "articleName": "請假類別",
+    "quote": "生理假：指女性因生理期致無法出席，每月得請生理假一日",
+    "type": "RECURRING",
+    "subject": "議員",
+    "summary": "生理假每月得請一日"
+  },
+  {
+    "lawNumber": "2.5",
+    "lawName": "國立臺東大學學生議會請假辦法",
+    "article": "3",
+    "articleName": "請假類別",
+    "quote": "祭儀假：指原住民族辦理歲時祭儀，以原住民委員會公告日期為依據，並以每學期申請一次為限",
+    "type": "RECURRING",
+    "subject": "議員",
+    "summary": "祭儀假以每學期申請一次為限"
+  },
+  {
+    "lawNumber": "2.5",
+    "lawName": "國立臺東大學學生議會請假辦法",
+    "article": "3",
+    "articleName": "請假類別",
+    "quote": "心理假：學生因心理或精神不適，致業務執行有困難者，得提出申請，每學期得請假一次會議",
+    "type": "RECURRING",
+    "subject": "議員",
+    "summary": "心理假每學期得請假一次會議"
+  },
+  {
+    "lawNumber": "2.5",
+    "lawName": "國立臺東大學學生議會請假辦法",
+    "article": "4",
+    "articleName": "請假方式",
+    "quote": "公假、事假、祭儀假：應於開議前三日辦理",
+    "type": "RELATIVE",
+    "subject": "議員",
+    "summary": "公假、事假、祭儀假應於開議前三日辦理"
+  },
+  {
+    "lawNumber": "2.5",
+    "lawName": "國立臺東大學學生議會請假辦法",
+    "article": "4",
+    "articleName": "請假方式",
+    "quote": "病假、分娩假、陪產假、喪假：應於開議後三日內或請假因素消除二日內辦理",
+    "type": "RELATIVE",
+    "subject": "議員",
+    "summary": "病假、分娩假、陪產假、喪假應於開議後三日內或請假因素消除二日內辦理"
+  },
+  {
+    "lawNumber": "2.5",
+    "lawName": "國立臺東大學學生議會請假辦法",
+    "article": "4",
+    "articleName": "請假方式",
+    "quote": "生理假：不需請假證明，應於開議後三日內辦理",
+    "type": "RELATIVE",
+    "subject": "議員",
+    "summary": "生理假應於開議後三日內辦理"
+  },
+  {
+    "lawNumber": "2.5",
+    "lawName": "國立臺東大學學生議會請假辦法",
+    "article": "4",
+    "articleName": "請假方式",
+    "quote": "心理假：不需請假證明，應於開議前一日或後二日內辦理",
+    "type": "RELATIVE",
+    "subject": "議員",
+    "summary": "心理假應於開議前一日或後二日內辦理"
+  },
+  {
+    "lawNumber": "2.5",
+    "lawName": "國立臺東大學學生議會請假辦法",
+    "article": "5",
+    "articleName": "特殊緊急狀況",
+    "quote": "如因特殊緊急狀況未能出席會議，應於狀況結束後二日內補假",
+    "type": "RELATIVE",
+    "subject": "議員",
+    "summary": "特殊緊急未能出席應於狀況結束後二日內補假"
+  },
+  {
+    "lawNumber": "2.6",
+    "lawName": "國立臺東大學學生會彈劾法",
+    "article": "3",
+    "articleName": "",
+    "quote": "學生議會祕書處收到彈劾案提案後，應於三日內以紙本、電子資料傳輸方式或其他被彈劾人可隨時取得及得列印之資料為告知會長及被彈劾人彈劾案之彈劾事由、開會日期及救濟方式",
+    "type": "RELATIVE",
+    "subject": "議會祕書處",
+    "summary": "彈劾案提案後祕書處三日內告知會長及被彈劾人"
+  },
+  {
+    "lawNumber": "2.6",
+    "lawName": "國立臺東大學學生會彈劾法",
+    "article": "3",
+    "articleName": "",
+    "quote": "立即停權，七日內未向評議會提出彈劾無效之訴，經評議會裁定通過或駁回申請，被彈劾人則立即解除職務",
+    "type": "RELATIVE",
+    "subject": "被彈劾人",
+    "summary": "彈劾案通過立即停權，七日內未提彈劾無效之訴即解職"
+  },
+  {
+    "lawNumber": "2.6",
+    "lawName": "國立臺東大學學生會彈劾法",
+    "article": "7",
+    "articleName": "",
+    "quote": "被彈劾人得於七日內向評議會提出彈劾無效之訴經評議會依法判定屬實，得宣告該彈劾案之決議無效",
+    "type": "RELATIVE",
+    "subject": "被彈劾人",
+    "summary": "被彈劾人得於七日內向評議會提彈劾無效之訴"
+  },
+  {
+    "lawNumber": "2.7",
+    "lawName": "國立臺東大學學生議會正、副議長產生及繼任與補選辦法",
+    "article": "2",
+    "articleName": "正副議長之產生",
+    "quote": "學生議會每屆第一會期報到首日舉行預備會議，進行議員就職宣誓及議長、副議長之選舉",
+    "type": "RELATIVE",
+    "subject": "議會",
+    "summary": "議會每屆第一會期報到首日舉行預備會議，行就職宣誓及正副議長選舉"
+  },
+  {
+    "lawNumber": "2.7",
+    "lawName": "國立臺東大學學生議會正、副議長產生及繼任與補選辦法",
+    "article": "3",
+    "articleName": "任期",
+    "quote": "本會議長及副議長任期一年，自當選該年七月一日至次年六月三十日止",
+    "type": "ABSOLUTE",
+    "subject": "議會",
+    "summary": "議長副議長任期一年，自當選該年七月一日至次年六月三十日"
+  },
+  {
+    "lawNumber": "2.7",
+    "lawName": "國立臺東大學學生議會正、副議長產生及繼任與補選辦法",
+    "article": "5",
+    "articleName": "懸缺時之處置辦法",
+    "quote": "議長被罷免、彈劾、死亡、辭職或因故不能視事而無法復原者，應即函知學生會、學生評議委員會。並依副議長順序繼任議長，並於最近一次常會或臨時會推舉新任議長",
+    "type": "RELATIVE",
+    "subject": "議會",
+    "summary": "議長懸缺應即函知並繼任，最近一次常會/臨時會推新議長"
+  },
+  {
+    "lawNumber": "2.7",
+    "lawName": "國立臺東大學學生議會正、副議長產生及繼任與補選辦法",
+    "article": "7",
+    "articleName": "正副議長之停權",
+    "quote": "則由議員於三日內推舉出代理議長，並於最近一次將開議之常會或臨時會推舉新任議長或副議長，且不得推選被解職停權人。其會議主席由議員互推之，補選議長及副議長任期自當選翌日起至原任議長及副議長任期屆滿之日止",
+    "type": "RELATIVE",
+    "subject": "議會",
+    "summary": "議長副議長均停權，議員三日內推代理議長；補選者任期至原任屆滿"
+  },
+  {
+    "lawNumber": "2.7",
+    "lawName": "國立臺東大學學生議會正、副議長產生及繼任與補選辦法",
+    "article": "8",
+    "articleName": "補選臨時會議",
+    "quote": "補選之議長、副議長應於當選日七日內以書面通知學生會行政中心祕書處、學生評議委員會祕書處",
+    "type": "RELATIVE",
+    "subject": "議長",
+    "summary": "補選議長副議長應於當選日七日內書面通知行政中心與評議會祕書處"
+  },
+  {
+    "lawNumber": "2.8",
+    "lawName": "國立臺東大學學生議會議員行為法",
+    "article": "17",
+    "articleName": "",
+    "quote": "學生議會程序暨法規委員會得於學生議會常會、臨時會前六日召開委員會時，處理下列事項",
+    "type": "RELATIVE",
+    "subject": "程序暨法規委員會",
+    "summary": "程序暨法規委員會得於常會、臨時會前六日召開處理事項"
+  },
+  {
+    "lawNumber": "2.9",
+    "lawName": "國立臺東大學學生議會議場規則",
+    "article": "2",
+    "articleName": "",
+    "quote": "席次之排列，於每屆第一會期開始後三個月內，由議長召集各議員商定之",
+    "type": "RELATIVE",
+    "subject": "議長",
+    "summary": "議員席次於每屆第一會期開始後三個月內由議長召集商定"
+  },
+  {
+    "lawNumber": "2.9",
+    "lawName": "國立臺東大學學生議會議場規則",
+    "article": "2",
+    "articleName": "",
+    "quote": "前項席次於開議前一日仍未商定者，由議員親自抽籤定之",
+    "type": "RELATIVE",
+    "subject": "議員",
+    "summary": "席次於開議前一日仍未商定者由議員抽籤定之"
+  },
+  {
+    "lawNumber": "3.0",
+    "lawName": "國立臺東大學學生會評議委員會組織及評議準則",
+    "article": "5",
+    "articleName": "仲裁之申請",
+    "quote": "申訴之提起應於收受或知悉措施之次日起三十日內以書面為之；再申訴應於申訴評議書達到之次日起十日內以書面為之",
+    "type": "RELATIVE",
+    "subject": "申訴人",
+    "summary": "申訴應於知悉措施次日起三十日內提起；再申訴於評議書達到次日起十日內"
+  },
+  {
+    "lawNumber": "3.0",
+    "lawName": "國立臺東大學學生會評議委員會組織及評議準則",
+    "article": "7",
+    "articleName": "",
+    "quote": "評議會得通知申訴人於三日內補正。屆期未補正者，評議會得逕為評議",
+    "type": "RELATIVE",
+    "subject": "評議會",
+    "summary": "申訴不合規定通知申訴人三日內補正，屆期未補正得逕為評議"
+  },
+  {
+    "lawNumber": "3.0",
+    "lawName": "國立臺東大學學生會評議委員會組織及評議準則",
+    "article": "8",
+    "articleName": "",
+    "quote": "原措施單位應自前項書面通知達到之次日起七日內，擬具說明書連同關係文件，送受理之評議會",
+    "type": "RELATIVE",
+    "subject": "原措施單位",
+    "summary": "原措施單位應自通知達到次日起七日內送說明書"
+  },
+  {
+    "lawNumber": "3.0",
+    "lawName": "國立臺東大學學生會評議委員會組織及評議準則",
+    "article": "12",
+    "articleName": "",
+    "quote": "評議會之評議決定自收受申訴書之次日起，應於二十日內為之；必要時，得予延長，並通知申訴人。延長以一次為限，最長不得逾一個月",
+    "type": "RELATIVE",
+    "subject": "評議會",
+    "summary": "評議決定應於收受申訴書次日起二十日內為之，得延長一次最長不逾一個月"
+  },
+  {
+    "lawNumber": "3.0",
+    "lawName": "國立臺東大學學生會評議委員會組織及評議準則",
+    "article": "16",
+    "articleName": "1 評議書應載明下列事項：",
+    "quote": "得於評議書送達之次日起三十日內，向評議會提起再申訴",
+    "type": "RELATIVE",
+    "subject": "申訴人",
+    "summary": "不服評議得於評議書送達次日起三十日內提再申訴"
+  },
+  {
+    "lawNumber": "3.0",
+    "lawName": "國立臺東大學學生會評議委員會組織及評議準則",
+    "article": "20",
+    "articleName": "",
+    "quote": "主任委員於收件日期十日內應召開會議，決議是否受理",
+    "type": "RELATIVE",
+    "subject": "主任委員",
+    "summary": "解釋申請，主委應於收件十日內召開會議決議是否受理"
+  },
+  {
+    "lawNumber": "3.0",
+    "lawName": "國立臺東大學學生會評議委員會組織及評議準則",
+    "article": "20",
+    "articleName": "",
+    "quote": "評議會決議受理之案件，應於二十日內完成解釋報告書送交申請人",
+    "type": "RELATIVE",
+    "subject": "評議會",
+    "summary": "評議會決議受理後二十日內完成解釋報告書送交申請人"
+  },
+  {
+    "lawNumber": "4.0",
+    "lawName": "國立臺東大學學生會公民投票辦法",
+    "article": "6",
+    "articleName": "期程計算",
+    "quote": "本法所定各種期間之計算，準用國立臺東大學學生會學生公職人員選舉罷免法之規定。",
+    "type": "RELATIVE",
+    "subject": "公審會",
+    "summary": "公投各種期間之計算，準用選罷法之規定"
+  },
+  {
+    "lawNumber": "4.0",
+    "lawName": "國立臺東大學學生會公民投票辦法",
+    "article": "8",
+    "articleName": "行使權力之期程",
+    "quote": "投票人學籍之計算，以算至投票一日前為準",
+    "type": "RELATIVE",
+    "subject": "選舉委員會",
+    "summary": "公投投票人學籍之計算以投票一日前為準"
+  },
+  {
+    "lawNumber": "4.0",
+    "lawName": "國立臺東大學學生會公民投票辦法",
+    "article": "10",
+    "articleName": "提案規定",
+    "quote": "公審會應於收到公民投票提案後，二十日內完成審核，提案不合規定者，應予駁回",
+    "type": "RELATIVE",
+    "subject": "公審會",
+    "summary": "公審會收到公投提案後二十日內完成審核"
+  },
+  {
+    "lawNumber": "4.0",
+    "lawName": "國立臺東大學學生會公民投票辦法",
+    "article": "10",
+    "articleName": "提案規定",
+    "quote": "審核期間公審會應於七日內查對提案人名冊，及依該提案性質分別函請學生議會及相關機關於收受該函文後一個月內提出意見書",
+    "type": "RELATIVE",
+    "subject": "公審會",
+    "summary": "審核期間七日內查對提案人名冊，函請機關於收函後一個月內提意見書"
+  },
+  {
+    "lawNumber": "4.0",
+    "lawName": "國立臺東大學學生會公民投票辦法",
+    "article": "10",
+    "articleName": "提案規定",
+    "quote": "前項提案經審核完成符合規定者，公審會應於十日內舉行聽證會，確定公民投票案之提案內容",
+    "type": "RELATIVE",
+    "subject": "公審會",
+    "summary": "提案審核符合規定，公審會應於十日內舉行聽證會"
+  },
+  {
+    "lawNumber": "4.0",
+    "lawName": "國立臺東大學學生會公民投票辦法",
+    "article": "10",
+    "articleName": "提案規定",
+    "quote": "並於確定後通知提案人之領銜人於二十日內向學生選舉委員會領取連署人名冊格式，自行印製，徵求連署；逾期未領取者，視為放棄連署",
+    "type": "RELATIVE",
+    "subject": "提案領銜人",
+    "summary": "確定後領銜人二十日內領取連署人名冊格式，逾期視為放棄"
+  },
+  {
+    "lawNumber": "4.0",
+    "lawName": "國立臺東大學學生會公民投票辦法",
+    "article": "11",
+    "articleName": "連署規定",
+    "quote": "於領取連署人名冊格式之次日起六個月內，向學生選舉委員會提出；逾期未提出者，視為放棄連署",
+    "type": "RELATIVE",
+    "subject": "提案領銜人",
+    "summary": "連署人名冊應於領取格式次日起六個月內提出，逾期視為放棄"
+  },
+  {
+    "lawNumber": "4.0",
+    "lawName": "國立臺東大學學生會公民投票辦法",
+    "article": "11",
+    "articleName": "連署規定",
+    "quote": "自視為放棄連署之日起，原提案人於一年內不得就同一事項重行提出之",
+    "type": "RELATIVE",
+    "subject": "提案人",
+    "summary": "視為放棄連署之日起一年內不得就同一事項重行提出"
+  },
+  {
+    "lawNumber": "4.0",
+    "lawName": "國立臺東大學學生會公民投票辦法",
+    "article": "12",
+    "articleName": "公投審查",
+    "quote": "經審查有下列情事之一者，應於十五日內予以駁回",
+    "type": "RELATIVE",
+    "subject": "選舉委員會",
+    "summary": "選委會收到公投提案審查有瑕疵應於十五日內駁回"
+  },
+  {
+    "lawNumber": "4.0",
+    "lawName": "國立臺東大學學生會公民投票辦法",
+    "article": "12",
+    "articleName": "公投審查",
+    "quote": "公審會應於三十日內將認定結果通知主管機關及學生選舉委員會",
+    "type": "RELATIVE",
+    "subject": "公審會",
+    "summary": "公審會應於三十日內將認定結果通知主管機關及選委會"
+  },
+  {
+    "lawNumber": "4.0",
+    "lawName": "國立臺東大學學生會公民投票辦法",
+    "article": "12",
+    "articleName": "公投審查",
+    "quote": "學生選舉委員會應通知提案人之領銜人於十日內補提，補提後仍不足規定人數或逾期不補提者，該提案應予駁回",
+    "type": "RELATIVE",
+    "subject": "選舉委員會",
+    "summary": "提案人數不足，選委會通知領銜人十日內補提，逾期不補提予駁回"
+  },
+  {
+    "lawNumber": "4.0",
+    "lawName": "國立臺東大學學生會公民投票辦法",
+    "article": "13",
+    "articleName": "議會交付公投",
+    "quote": "學生議會提案經否決者，自該否決之日起一年內，不得就該事項重行提出",
+    "type": "RELATIVE",
+    "subject": "議會",
+    "summary": "議會公投提案經否決，自否決之日起一年內不得就該事項重行提出"
+  },
+  {
+    "lawNumber": "4.0",
+    "lawName": "國立臺東大學學生會公民投票辦法",
+    "article": "14",
+    "articleName": "公告及宣傳格式",
+    "quote": "學生選舉委員會應於公民投票日二十一日前，就下列事項公告之",
+    "type": "RELATIVE",
+    "subject": "選舉委員會",
+    "summary": "選委會應於公民投票日二十一日前公告投票事項"
+  },
+  {
+    "lawNumber": "4.0",
+    "lawName": "國立臺東大學學生會公民投票辦法",
+    "article": "17",
+    "articleName": "選舉日期",
+    "quote": "學生選舉委員會應於公民投票案公告成立後一個月起至三個月內舉行公民投票",
+    "type": "RELATIVE",
+    "subject": "選舉委員會",
+    "summary": "選委會應於公投案公告成立後一個月起至三個月內舉行公投"
+  },
+  {
+    "lawNumber": "4.0",
+    "lawName": "國立臺東大學學生會公民投票辦法",
+    "article": "22",
+    "articleName": "公投通過處置",
+    "quote": "公民投票案經通過者，各該選舉委員會應於投票完畢七日內公告公民投票結果",
+    "type": "RELATIVE",
+    "subject": "選舉委員會",
+    "summary": "公投通過應於投票完畢七日內公告結果"
+  },
+  {
+    "lawNumber": "4.0",
+    "lawName": "國立臺東大學學生會公民投票辦法",
+    "article": "22",
+    "articleName": "公投通過處置",
+    "quote": "原法律或自治條例於公告之日算至第三日起，修改或失其效力",
+    "type": "RELATIVE",
+    "subject": "議會",
+    "summary": "複決案原法律於公告之日算至第三日起修改或失效"
+  },
+  {
+    "lawNumber": "4.0",
+    "lawName": "國立臺東大學學生會公民投票辦法",
+    "article": "22",
+    "articleName": "公投通過處置",
+    "quote": "學生行政中心及各級自治單位行政單位應於一個月內研擬相關之法律、自治條例提案，並送學生議會及其各級自治單位立法單位審議。學生議會及其各級自治單位立法單位應於會期休會前完成審議程序",
+    "type": "RELATIVE",
+    "subject": "行政中心",
+    "summary": "創制案通過，行政單位一個月內研擬法案，議會應於會期休會前完成審議"
+  },
+  {
+    "lawNumber": "4.0",
+    "lawName": "國立臺東大學學生會公民投票辦法",
+    "article": "22",
+    "articleName": "公投通過處置",
+    "quote": "會長應於七日內發布收費辦法修正案之公告",
+    "type": "RELATIVE",
+    "subject": "會長",
+    "summary": "收費辦法公投通過，會長應於七日內發布收費辦法修正案公告"
+  },
+  {
+    "lawNumber": "4.0",
+    "lawName": "國立臺東大學學生會公民投票辦法",
+    "article": "23",
+    "articleName": "公投否決處置",
+    "quote": "公民投票案經否決者，各該選舉委員會應於投票完畢七日內公告公民投票結果，並通知提案人之領銜人",
+    "type": "RELATIVE",
+    "subject": "選舉委員會",
+    "summary": "公投否決應於投票完畢七日內公告並通知領銜人"
+  },
+  {
+    "lawNumber": "4.0",
+    "lawName": "國立臺東大學學生會公民投票辦法",
+    "article": "24",
+    "articleName": "禁止重複原則",
+    "quote": "自各該選舉委員會公告該投票結果之日起一年內，不得就同一事項重行提出",
+    "type": "RELATIVE",
+    "subject": "公審會",
+    "summary": "公投提案經通過或否決，自公告結果之日起一年內不得就同一事項重提"
+  },
+  {
+    "lawNumber": "4.0",
+    "lawName": "國立臺東大學學生會公民投票辦法",
+    "article": "26",
+    "articleName": "委員會組成",
+    "quote": "本會置委員五人，任期一年",
+    "type": "RECURRING",
+    "subject": "公審會",
+    "summary": "公審會置委員五人，任期一年"
+  },
+  {
+    "lawNumber": "4.0",
+    "lawName": "國立臺東大學學生會公民投票辦法",
+    "article": "29",
+    "articleName": "期限",
+    "quote": "公投審議爭訟之審理期限以不超過兩個月為原則",
+    "type": "RELATIVE",
+    "subject": "評議會",
+    "summary": "公投審議爭訟之審理期限以不超過兩個月為原則"
+  },
+  {
+    "lawNumber": "4.1",
+    "lawName": "國立臺東大學學生會選舉委員會組織準則",
+    "article": "4",
+    "articleName": "",
+    "quote": "選委會任期自學生議會第一次會議（含常會及臨時會）同意任命過後始至隔年六月最後一次會議（含常會及臨時會）及學生會任期結束為止",
+    "type": "ABSOLUTE",
+    "subject": "選舉委員會",
+    "summary": "選委會任期自議會首次會議同意任命起，至隔年六月最後一次會議及學生會任期結束"
+  },
+  {
+    "lawNumber": "4.1",
+    "lawName": "國立臺東大學學生會選舉委員會組織準則",
+    "article": "5-1",
+    "articleName": "",
+    "quote": "選委會或同次選舉候選人得於十日內向評議委員會提起當選無效之訴",
+    "type": "RELATIVE",
+    "subject": "選舉委員會",
+    "summary": "當選有瑕疵，選委會或候選人得於十日內向評議會提當選無效之訴"
+  },
+  {
+    "lawNumber": "4.1",
+    "lawName": "國立臺東大學學生會選舉委員會組織準則",
+    "article": "7",
+    "articleName": "",
+    "quote": "每學年度下學期第一週確認完畢各系章程",
+    "type": "ABSOLUTE",
+    "subject": "選舉委員會",
+    "summary": "選委會主委每學年度下學期第一週確認完畢各系章程"
+  },
+  {
+    "lawNumber": "4.1",
+    "lawName": "國立臺東大學學生會選舉委員會組織準則",
+    "article": "13",
+    "articleName": "",
+    "quote": "學生會長須在每學年開學一個月內向學生議會提請任命，學生議會同意後，需於兩周內由學生會會長擔任第一次會議召集人，進行主委與副主委選舉",
+    "type": "RELATIVE",
+    "subject": "會長",
+    "summary": "會長須於每學年開學一個月內提請任命選委會，議會同意後兩週內召集首次會議選正副主委"
+  },
+  {
+    "lawNumber": "4.2",
+    "lawName": "國立臺東大學學生會學生公職人員選舉罷免法",
+    "article": "8",
+    "articleName": "",
+    "quote": "投票日前十四日已登錄學籍登記資料，依規定有選舉人資格者，一律編入名冊",
+    "type": "RELATIVE",
+    "subject": "選舉委員會",
+    "summary": "投票日前十四日已登錄學籍者一律編入選舉人名冊"
+  },
+  {
+    "lawNumber": "4.2",
+    "lawName": "國立臺東大學學生會學生公職人員選舉罷免法",
+    "article": "14-1",
+    "articleName": "",
+    "quote": "學生公職人員該學年度第一次選舉，應於其前任公職人員任期屆滿兩個月前完成，即每年之五月三十日前執行完畢",
+    "type": "ABSOLUTE",
+    "subject": "選舉委員會",
+    "summary": "該學年度第一次選舉應於前任任期屆滿兩個月前、即每年五月三十日前完成"
+  },
+  {
+    "lawNumber": "4.2",
+    "lawName": "國立臺東大學學生會學生公職人員選舉罷免法",
+    "article": "17",
+    "articleName": "",
+    "quote": "每屆無故缺席會議次數達兩次者，則視同離職，應於離職當日起三十日內由選委會進行補選",
+    "type": "RELATIVE",
+    "subject": "選舉委員會",
+    "summary": "議員每屆無故缺席達兩次視同離職，離職當日起三十日內由選委會補選"
+  },
+  {
+    "lawNumber": "4.2",
+    "lawName": "國立臺東大學學生會學生公職人員選舉罷免法",
+    "article": "19",
+    "articleName": "",
+    "quote": "於投票日前四十日公布第一次公告",
+    "type": "RELATIVE",
+    "subject": "選舉委員會",
+    "summary": "選委會於投票日前四十日公布第一次選舉公告"
+  },
+  {
+    "lawNumber": "4.2",
+    "lawName": "國立臺東大學學生會學生公職人員選舉罷免法",
+    "article": "19",
+    "articleName": "",
+    "quote": "於投票日前十四日公布第二次公告",
+    "type": "RELATIVE",
+    "subject": "選舉委員會",
+    "summary": "選委會於投票日前十四日公布第二次公告"
+  },
+  {
+    "lawNumber": "4.2",
+    "lawName": "國立臺東大學學生會學生公職人員選舉罷免法",
+    "article": "19",
+    "articleName": "",
+    "quote": "於投票日後十日內公布第三次公告",
+    "type": "RELATIVE",
+    "subject": "選舉委員會",
+    "summary": "選委會於投票日後十日內公布第三次公告"
+  },
+  {
+    "lawNumber": "4.2",
+    "lawName": "國立臺東大學學生會學生公職人員選舉罷免法",
+    "article": "20",
+    "articleName": "",
+    "quote": "選委會應於投票日後十日內於第三次公告第二次候選人登記時間",
+    "type": "RELATIVE",
+    "subject": "選舉委員會",
+    "summary": "無人登記時，選委會於投票日後十日內公告第二次候選人登記時間"
+  },
+  {
+    "lawNumber": "4.2",
+    "lawName": "國立臺東大學學生會學生公職人員選舉罷免法",
+    "article": "21",
+    "articleName": "",
+    "quote": "候選人登記時間不得少於十四日",
+    "type": "RELATIVE",
+    "subject": "選舉委員會",
+    "summary": "候選人登記時間不得少於十四日"
+  },
+  {
+    "lawNumber": "4.2",
+    "lawName": "國立臺東大學學生會學生公職人員選舉罷免法",
+    "article": "22",
+    "articleName": "",
+    "quote": "於投票日前十四日分發，並張貼於適當地點及網站",
+    "type": "RELATIVE",
+    "subject": "選舉委員會",
+    "summary": "選舉公報於投票日前十四日分發張貼"
+  },
+  {
+    "lawNumber": "4.2",
+    "lawName": "國立臺東大學學生會學生公職人員選舉罷免法",
+    "article": "24",
+    "articleName": "",
+    "quote": "其時間、地點應於舉辦前三日告知選舉委員會",
+    "type": "RELATIVE",
+    "subject": "候選人",
+    "summary": "自辦政見發表會之時間地點應於舉辦前三日告知選委會"
+  },
+  {
+    "lawNumber": "4.2",
+    "lawName": "國立臺東大學學生會學生公職人員選舉罷免法",
+    "article": "25-1",
+    "articleName": "",
+    "quote": "應於該學年度第二學期開學第一週內，提供該系組織章程與相關法規予以學生會選舉委員會備查",
+    "type": "ABSOLUTE",
+    "subject": "各系",
+    "summary": "設選委會之系所應於該學年度第二學期開學第一週內提供章程法規備查"
+  },
+  {
+    "lawNumber": "4.2",
+    "lawName": "國立臺東大學學生會學生公職人員選舉罷免法",
+    "article": "27",
+    "articleName": "候選人不得有下列情事：",
+    "quote": "候選人及其助選員於投票日前一日及投票日進行競選及助選活動",
+    "type": "RELATIVE",
+    "subject": "候選人",
+    "summary": "候選人及助選員不得於投票日前一日及投票日進行競選助選"
+  },
+  {
+    "lawNumber": "4.2",
+    "lawName": "國立臺東大學學生會學生公職人員選舉罷免法",
+    "article": "31",
+    "articleName": "本法所稱公職人員之當選規範如下：",
+    "quote": "若當選人於第三次公告三日內以書面告知學生議會其因故不能就職，則由第二高票之候選人遞補之",
+    "type": "RELATIVE",
+    "subject": "當選人",
+    "summary": "當選人於第三次公告三日內告知不能就職，由第二高票遞補"
+  },
+  {
+    "lawNumber": "4.2",
+    "lawName": "國立臺東大學學生會學生公職人員選舉罷免法",
+    "article": "34",
+    "articleName": "",
+    "quote": "應於當選公告發布後五日內向選委會提出申訴",
+    "type": "RELATIVE",
+    "subject": "候選人",
+    "summary": "對選舉結果異議應於當選公告發布後五日內向選委會提出申訴"
+  },
+  {
+    "lawNumber": "4.2",
+    "lawName": "國立臺東大學學生會學生公職人員選舉罷免法",
+    "article": "35",
+    "articleName": "",
+    "quote": "可預見或將發生之天災或不可抗力情事之改訂投票日應於投票日三日前公告",
+    "type": "RELATIVE",
+    "subject": "選舉委員會",
+    "summary": "因天災改訂投票日應於投票日三日前公告"
+  },
+  {
+    "lawNumber": "4.2",
+    "lawName": "國立臺東大學學生會學生公職人員選舉罷免法",
+    "article": "36",
+    "articleName": "",
+    "quote": "但就職未滿四個月不得罷免",
+    "type": "RELATIVE",
+    "subject": "選舉人",
+    "summary": "罷免案就職未滿四個月不得提出"
+  },
+  {
+    "lawNumber": "4.2",
+    "lawName": "國立臺東大學學生會學生公職人員選舉罷免法",
+    "article": "37",
+    "articleName": "",
+    "quote": "學生議會應於罷免案提出七日內審理並交付選委會",
+    "type": "RELATIVE",
+    "subject": "議會",
+    "summary": "議會應於罷免案提出七日內審理並交付選委會"
+  },
+  {
+    "lawNumber": "4.2",
+    "lawName": "國立臺東大學學生會學生公職人員選舉罷免法",
+    "article": "38",
+    "articleName": "",
+    "quote": "選委會應於學生議會交付罷免案三十日內，舉行罷免投票",
+    "type": "RELATIVE",
+    "subject": "選舉委員會",
+    "summary": "選委會應於議會交付罷免案三十日內舉行罷免投票"
+  },
+  {
+    "lawNumber": "4.2",
+    "lawName": "國立臺東大學學生會學生公職人員選舉罷免法",
+    "article": "39",
+    "articleName": "",
+    "quote": "罷免案通過後，選委會應於十日內公告罷免投票結果，罷免案通過者，被罷免人應於公告當日起解除職務；應自罷免投票結果公告之日起三十日內完成補選投票",
+    "type": "RELATIVE",
+    "subject": "選舉委員會",
+    "summary": "罷免通過選委會十日內公告，被罷免人公告當日解職，公告日起三十日內完成補選"
+  },
+  {
+    "lawNumber": "4.2",
+    "lawName": "國立臺東大學學生會學生公職人員選舉罷免法",
+    "article": "41",
+    "articleName": "",
+    "quote": "罷免案宣告成立後，選委會應於三日內將罷免理由書副本送交被罷免人",
+    "type": "RELATIVE",
+    "subject": "選舉委員會",
+    "summary": "罷免案成立後選委會三日內送罷免理由書副本給被罷免人"
+  },
+  {
+    "lawNumber": "4.2",
+    "lawName": "國立臺東大學學生會學生公職人員選舉罷免法",
+    "article": "42",
+    "articleName": "",
+    "quote": "得自當選人名單或罷免投票結果公告之日起十四日內，以學生會選舉委員會為被申訴對象，向學生評議委員會提起選舉或罷免無效之申訴",
+    "type": "RELATIVE",
+    "subject": "候選人",
+    "summary": "選舉或罷免無效之申訴應於公告之日起十四日內提出"
+  },
+  {
+    "lawNumber": "4.2",
+    "lawName": "國立臺東大學學生會學生公職人員選舉罷免法",
+    "article": "44",
+    "articleName": "",
+    "quote": "自公告當選人名單之日起一個月內，向學生評議委員會提起當選無效之申訴",
+    "type": "RELATIVE",
+    "subject": "選舉委員會",
+    "summary": "當選無效之申訴應於公告當選名單之日起一個月內提出"
+  },
+  {
+    "lawNumber": "4.2",
+    "lawName": "國立臺東大學學生會學生公職人員選舉罷免法",
+    "article": "47",
+    "articleName": "",
+    "quote": "得於罷免投票結果公告之日起三十日內，以罷免案提議人之領銜人或被罷免人為被申訴對象，向學生評議委員會提起罷免案通過或否決無效之申訴",
+    "type": "RELATIVE",
+    "subject": "選舉委員會",
+    "summary": "罷免通過或否決無效之申訴應於結果公告之日起三十日內提出"
+  },
+  {
+    "lawNumber": "4.2",
+    "lawName": "國立臺東大學學生會學生公職人員選舉罷免法",
+    "article": "48",
+    "articleName": "",
+    "quote": "得於當選人名單或罷免投票結果公告之日起十四日內，檢具事證，向學生評議委員會或學生會選舉委員會舉發之",
+    "type": "RELATIVE",
+    "subject": "選舉人",
+    "summary": "選舉/罷免無效情事得於公告之日起十四日內舉發"
+  },
+  {
+    "lawNumber": "4.2",
+    "lawName": "國立臺東大學學生會學生公職人員選舉罷免法",
+    "article": "49",
+    "articleName": "",
+    "quote": "各審受理之學生評議委員會調查小組應於三個月內審結",
+    "type": "RELATIVE",
+    "subject": "評議會",
+    "summary": "選舉罷免申訴調查小組應於三個月內審結"
+  },
+  {
+    "lawNumber": "4.3",
+    "lawName": "國立臺東大學學生會校級會議學生代表推舉暨罷免辦法",
+    "article": "3",
+    "articleName": "學生代表",
+    "quote": "學代任期以一學年為原則",
+    "type": "RECURRING",
+    "subject": "學生代表",
+    "summary": "校級會議學生代表任期以一學年為原則"
+  },
+  {
+    "lawNumber": "4.3",
+    "lawName": "國立臺東大學學生會校級會議學生代表推舉暨罷免辦法",
+    "article": "10",
+    "articleName": "學生代表之推舉",
+    "quote": "前項學代名單於選舉產生後，會長應於三十日內對外以書面公布張貼",
+    "type": "RELATIVE",
+    "subject": "會長",
+    "summary": "學代名單選舉產生後會長應於三十日內對外公布張貼"
+  }
+]

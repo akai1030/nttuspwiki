@@ -53,10 +53,28 @@ export default async function PublicMeetingsPage() {
           </div>
           <h1 className="mt-3 font-serif text-h2">{c.title}</h1>
           <p className="mt-4 max-w-reader font-sans text-lede text-lede-ink">{c.lede}</p>
-          <a href="/meetings/about" className="mt-4 inline-block font-sans text-body text-accent hover:underline">
-            {c.aboutLink} →
-          </a>
+          <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2">
+            <a href="/meetings/schedule" className="font-sans text-body text-accent hover:underline">
+              {copy.publicMeetings.schedule.nav} →
+            </a>
+            <a href="/meetings/about" className="font-sans text-body text-accent hover:underline">
+              {c.aboutLink} →
+            </a>
+          </div>
         </header>
+
+        <a
+          href="/meetings/schedule"
+          className="mb-10 block border border-line border-l-[3px] border-l-accent bg-paper2 p-card transition-colors hover:border-accent"
+        >
+          <div className="font-ui text-eyebrow font-medium uppercase tracking-kicker text-accent">
+            Statutory Schedule
+          </div>
+          <h2 className="mt-2 font-serif text-h4">{copy.publicMeetings.schedule.cardTitle} →</h2>
+          <p className="mt-2 max-w-reader font-sans text-body text-body-ink">
+            {copy.publicMeetings.schedule.cardBody}
+          </p>
+        </a>
 
         {meetings.length === 0 ? (
           <p className="border border-line bg-paper2 px-4 py-10 text-center font-sans text-body text-meta">
