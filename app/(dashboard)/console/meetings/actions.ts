@@ -139,7 +139,13 @@ export async function generateNoticeAction(fd: FormData) {
   });
   if (!meeting) return;
 
-  const recipientIds = fd.getAll("recipientIds").filter((v): v is string => typeof v === "string");
+  let recipientIds = fd.getAll("recipientIds").filter((v): v is string => typeof v === "string");
+  // 未帶收件人（例如從時間軸觸發）→ 預設全體啟用中收件人。
+  if (recipientIds.length === 0) {
+    const active = await prisma.recipient.findMany({ where: { active: true }, select: { id: true } });
+    recipientIds = active.map((r) => r.id);
+  }
+  const audience = str(fd, "audience") || undefined;
   const forNotice: MeetingForNotice = {
     session: meeting.session,
     academicYear: meeting.academicYear,
@@ -153,6 +159,7 @@ export async function generateNoticeAction(fd: FormData) {
   };
   const { subject, body } = generateNotice(forNotice, kind, {
     proposalCount: meeting._count.proposals,
+    audience,
   });
 
   await prisma.meetingNotice.create({

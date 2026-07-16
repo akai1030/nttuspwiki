@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth/guard";
 import { getMeeting, listRecipients } from "@/lib/meetings/queries";
-import { rocDateTimeFull, rocDeadline } from "@/lib/meetings/roc";
+import { rocDateTimeFull, rocDeadline, rocDate } from "@/lib/meetings/roc";
 import { buildAgendaText } from "@/lib/meetings/agenda";
+import { buildTimeline, daysBetween, PREP_OFFSETS } from "@/lib/meetings/timeline";
 import { AGENDA_SECTIONS } from "@/lib/meetings/sections";
 import { DEFAULT_OFFSETS } from "@/lib/meetings/reminders";
 import { Input } from "@/components/SearchBox";
@@ -47,6 +48,9 @@ export default async function MeetingDetailPage({ params }: { params: { id: stri
     .filter((p) => p.fileUrl?.trim())
     .map((p) => `附件${p.serialNo}｜${p.title}：${p.fileUrl}`)
     .join("\n");
+
+  const now = new Date();
+  const timeline = buildTimeline({ meetingAt: m.meetingAt, proposalDeadline: m.proposalDeadline });
 
   return (
     <main className="mx-auto max-w-wrap px-wrap-sm py-section-sm hero:px-wrap">
@@ -96,6 +100,74 @@ export default async function MeetingDetailPage({ params }: { params: { id: stri
           </form>
         ))}
       </div>
+
+      {/* 籌備時間軸（大） */}
+      <section className={`${cardCls} mt-8`}>
+        <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+          <h2 className={sectionTitle}>{c.timeline.title}</h2>
+          <span className="font-sans text-caption text-meta">{c.timeline.lede}</span>
+        </div>
+
+        <ol className="relative mt-6 space-y-6 before:absolute before:bottom-2 before:left-[6px] before:top-2 before:w-px before:bg-line">
+          {timeline.map((ms) => {
+            const d = daysBetween(now, ms.date);
+            const statusText =
+              d > 0 ? c.timeline.inDays(d) : d === 0 ? c.timeline.today : c.timeline.agoDays(-d);
+            const statusCls = d > 0 ? "text-accent" : d === 0 ? "text-warn-ink" : "text-meta";
+            const dotCls =
+              ms.action === "meeting"
+                ? "bg-ink"
+                : d === 0
+                  ? "bg-warn-ink"
+                  : d < 0
+                    ? "bg-line"
+                    : "bg-accent";
+            return (
+              <li key={ms.key} className="relative pl-7">
+                <span
+                  className={`absolute left-0 top-1 h-[13px] w-[13px] rounded-full border-2 border-paper ${dotCls}`}
+                />
+                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
+                  <span className="font-serif text-art-name tnum text-ink">{rocDate(ms.date)}</span>
+                  <span className={`font-ui text-chip leading-none ${statusCls}`}>{statusText}</span>
+                </div>
+                <p className="mt-0.5 font-sans text-body font-medium text-ink">{ms.title}</p>
+                <p className="font-sans text-caption text-meta">{ms.hint}</p>
+
+                {ms.action === "notice" || ms.action === "agenda" ? (
+                  <form action={generateNoticeAction} className="mt-2">
+                    <input type="hidden" name="meetingId" value={m.id} />
+                    <input type="hidden" name="kind" value={ms.action} />
+                    <button
+                      type="submit"
+                      className="border border-ink px-3 py-1.5 font-ui text-chip font-medium leading-none tracking-snug text-ink transition-colors hover:border-accent hover:bg-accent hover:text-white"
+                    >
+                      {ms.action === "notice" ? c.timeline.actNotice : c.timeline.actAgenda}
+                    </button>
+                  </form>
+                ) : null}
+
+                {ms.action === "remind" ? (
+                  <form action={addReminder} className="mt-2">
+                    <input type="hidden" name="meetingId" value={m.id} />
+                    <input type="hidden" name="offsetDays" value={PREP_OFFSETS.remind} />
+                    <button
+                      type="submit"
+                      className="border border-ink px-3 py-1.5 font-ui text-chip font-medium leading-none tracking-snug text-ink transition-colors hover:border-accent hover:bg-accent hover:text-white"
+                    >
+                      {c.timeline.actRemind}
+                    </button>
+                  </form>
+                ) : null}
+              </li>
+            );
+          })}
+        </ol>
+
+        <p className="mt-5 border-t border-line-soft pt-3 font-sans text-caption text-meta">
+          {c.timeline.offsetNote}
+        </p>
+      </section>
 
       <div className="mt-8 grid gap-6 rd:grid-cols-2">
         {/* 會議資訊 */}
@@ -307,6 +379,18 @@ export default async function MeetingDetailPage({ params }: { params: { id: stri
               <input type="radio" name="kind" value="agenda" /> {c.notice.kindAgenda}
             </label>
           </fieldset>
+
+          <div className="mt-4 flex max-w-xs flex-col gap-1.5">
+            <label htmlFor="n-aud" className="font-sans text-caption font-medium text-ink">
+              {c.notice.audience}
+            </label>
+            <Input
+              id="n-aud"
+              name="audience"
+              defaultValue="議員代表"
+              placeholder={c.notice.audiencePlaceholder}
+            />
+          </div>
 
           <div className="mt-4">
             <p className="font-sans text-caption font-medium text-ink">{c.notice.recipients}</p>

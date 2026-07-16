@@ -55,10 +55,10 @@ export function rocDateTimeFull(d: Date): string {
   return `${p.rocYear}年${p.month}月${p.day}日（${p.weekdayLong}）${period(p.hour)}${p.hour}:${pad2(p.minute)}`;
 }
 
-/** 「115年7月15日（三）晚間19:00」— 首句用（週次短寫）。 */
+/** 「115年07月15日（三）19:00」— 開會通知/議程用（月日補零、週次短寫、無時段稱謂，對齊真本）。 */
 export function rocDateTime(d: Date): string {
   const p = rocParts(d);
-  return `${p.rocYear}年${p.month}月${p.day}日（${p.weekdayShort}）${period(p.hour)}${p.hour}:${pad2(p.minute)}`;
+  return `${p.rocYear}年${pad2(p.month)}月${pad2(p.day)}日（${p.weekdayShort}）${p.hour}:${pad2(p.minute)}`;
 }
 
 /** 「115年7月15日（星期三）」— 純日期。 */
