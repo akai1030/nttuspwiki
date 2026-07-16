@@ -3,7 +3,7 @@ import { requireUser } from "@/lib/auth/guard";
 import { listRecipients } from "@/lib/meetings/queries";
 import { Input } from "@/components/SearchBox";
 import { copy } from "@/lib/copy";
-import { addRecipient, toggleRecipient } from "../actions";
+import { addRecipient, toggleRecipient, updateRecipient, deleteRecipient } from "../actions";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -82,27 +82,49 @@ export default async function RecipientsPage() {
         ) : (
           <ul className="divide-y divide-line-soft border-y border-line-soft">
             {recipients.map((r) => (
-              <li key={r.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 py-3">
-                <span className="shrink-0 border border-line-soft px-2 py-0.5 font-ui text-chip leading-none text-meta">
-                  {r.roleTag}
-                </span>
-                <span className="font-sans text-body text-ink">{r.name}</span>
-                <span className="font-sans text-caption text-meta">{r.email}</span>
-                <span className="font-sans text-caption text-meta">第{r.session}屆</span>
-                <span
-                  className={
-                    "ml-auto font-ui text-chip " + (r.active ? "text-accent" : "text-meta")
-                  }
-                >
+              <li key={r.id} className="flex flex-wrap items-end gap-2 py-3">
+                <form action={updateRecipient} className="flex flex-1 flex-wrap items-end gap-2">
+                  <input type="hidden" name="id" value={r.id} />
+                  <Input name="name" defaultValue={r.name} aria-label={c.name} className="w-28 !py-1.5 text-caption" />
+                  <Input name="email" type="email" defaultValue={r.email} aria-label={c.email} className="w-52 !py-1.5 text-caption" />
+                  <select
+                    name="roleTag"
+                    defaultValue={r.roleTag}
+                    aria-label={c.roleTag}
+                    className="rounded-sm border border-line bg-paper px-2 py-1.5 font-sans text-caption text-ink focus:border-accent"
+                  >
+                    <option>議員</option>
+                    <option>列席</option>
+                    <option>旁聽</option>
+                    <option>祕書處</option>
+                  </select>
+                  <Input name="session" type="number" defaultValue={r.session} aria-label={c.session} className="w-16 !py-1.5 text-caption" />
+                  <button
+                    type="submit"
+                    className="border border-ink bg-ink px-2.5 py-1.5 font-ui text-chip leading-none text-white transition-colors hover:border-accent hover:bg-accent"
+                  >
+                    {c.save}
+                  </button>
+                </form>
+                <span className={"font-ui text-chip " + (r.active ? "text-accent" : "text-meta")}>
                   {r.active ? c.active : c.inactive}
                 </span>
                 <form action={toggleRecipient}>
                   <input type="hidden" name="id" value={r.id} />
                   <button
                     type="submit"
-                    className="border border-line px-2.5 py-1 font-ui text-chip leading-none text-ink transition-colors hover:border-accent hover:text-accent"
+                    className="border border-line px-2.5 py-1.5 font-ui text-chip leading-none text-ink transition-colors hover:border-accent hover:text-accent"
                   >
                     {c.toggle}
+                  </button>
+                </form>
+                <form action={deleteRecipient}>
+                  <input type="hidden" name="id" value={r.id} />
+                  <button
+                    type="submit"
+                    className="font-ui text-chip text-meta transition-colors hover:text-warn-ink"
+                  >
+                    {c.del}
                   </button>
                 </form>
               </li>

@@ -42,11 +42,16 @@ export function buildSubject(m: MeetingForNotice, kind: NoticeKind): string {
   return `${verb}檢送國立臺東大學${sessionZh(m.session)}議會「${m.academicYear}${m.name}」${tail}`;
 }
 
-export function buildBody(
-  m: MeetingForNotice,
-  kind: NoticeKind,
-  opts: { proposalCount?: number; noticeDate?: Date; audience?: string } = {}
-): string {
+export type NoticeOpts = {
+  proposalCount?: number;
+  noticeDate?: Date;
+  audience?: string;
+  signer?: string; // 署名，如「祕書處 祕書長 王小明」
+  contactPhone?: string;
+  contactEmail?: string;
+};
+
+export function buildBody(m: MeetingForNotice, kind: NoticeKind, opts: NoticeOpts = {}): string {
   const noticeDate = opts.noticeDate ?? new Date();
   const audience = opts.audience?.trim() || AUDIENCE_DEFAULT;
   const location = m.location?.trim() || "線上視訊會議";
@@ -89,18 +94,25 @@ export function buildBody(
   lines.push("〔會議注意事項〕");
   ATTENTION.forEach((t, i) => lines.push(`${i + 1}. ${t}`));
 
+  const org = `國立臺東大學${sessionZh(m.session)}學生議會`;
+  const signer = opts.signer?.trim() || "祕書處";
   lines.push("");
   lines.push("敬祝");
   lines.push("平安順心");
-  lines.push(`國立臺東大學${sessionZh(m.session)}學生議會 祕書處 敬上`);
+  lines.push(`${org} ${signer} 敬上`);
+
+  const phone = opts.contactPhone?.trim();
+  const email = opts.contactEmail?.trim();
+  if (phone || email) {
+    lines.push("────────────────────");
+    lines.push(`${org} ${signer}`);
+    if (phone) lines.push(`M：${phone}`);
+    if (email) lines.push(`e-mail：${email}`);
+  }
 
   return lines.join("\n");
 }
 
-export function generateNotice(
-  m: MeetingForNotice,
-  kind: NoticeKind,
-  opts: { proposalCount?: number; noticeDate?: Date; audience?: string } = {}
-): GeneratedNotice {
+export function generateNotice(m: MeetingForNotice, kind: NoticeKind, opts: NoticeOpts = {}): GeneratedNotice {
   return { subject: buildSubject(m, kind), body: buildBody(m, kind, opts) };
 }

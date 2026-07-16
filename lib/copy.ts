@@ -4,20 +4,20 @@
  */
 export const copy = {
   site: {
-    title: "國立臺東大學學生議會數位法典｜法規查詢暨自治制度資料庫",
+    title: "國立臺東大學學生議會數位法典暨議事系統｜法規查詢、自治制度資料庫",
     // SEO 用長描述（layout metadata）。
     description:
-      "國立臺東大學學生議會數位法典——彙整學生會 38 部自治法規、768 條條文的查詢與自治制度資料庫。法規檢索、條文參照、修正沿革，第二十屆現行版，逐條可溯源。",
+      "國立臺東大學學生議會數位法典暨議事系統——彙整學生會 38 部自治法規、768 條條文的查詢與自治制度資料庫。法規檢索、條文參照、修正沿革，第二十屆現行版，逐條可溯源。",
   },
 
   // 首頁 hero
   home: {
     kicker: "NTTU Student Parliament · 20th",
     org: "國立臺東大學學生議會",
-    sys: "數位法典",
-    subtitle: "法規查詢暨自治制度資料庫",
+    sys: "數位法典暨議事系統",
+    subtitle: "法規查詢、自治制度資料庫",
     en: "NTTUSP Codex",
-    lede: "三十八部自治法規，整理成一部查得到、讀得懂、對照得起來的數位法典。第二十屆現行版，逐條可溯源、逐次修正有跡可循。",
+    lede: "三十八部自治法規，整理成一部查得到、讀得懂的數位法典。第二十屆現行版，逐條可溯源、逐次修正有跡可循。",
     scrollcue: { latin: "SCROLL ↓", zh: "向下捲動" },
     // 統計數字（值由資料層帶入，這裡只放標籤）
     stats: {
@@ -30,7 +30,7 @@ export const copy = {
 
   // 導覽 / 站名
   nav: {
-    brand: "國立臺東大學學生議會 · 數位法典",
+    brand: "國立臺東大學學生議會 · 數位法典暨議事系統",
     index: "法規總覽",
     reader: "條文閱讀",
     search: "全文檢索",
@@ -245,7 +245,6 @@ export const copy = {
           h: "這個頁面是什麼",
           items: [
             "這裡公開國立臺東大學學生議會的會議資訊——會議時間、議程與籌備時程，供全校查閱。",
-            "收件人名單、內部往來與郵件草稿等不對外公開；正式效力以會議紀錄為準。",
           ],
         },
         {
@@ -277,7 +276,7 @@ export const copy = {
           h: "資料來源與免責",
           items: [
             "本頁資料由學生議會祕書處維護，僅供參考。",
-            "正式效力以議會通過之會議紀錄為準；個人資料不對外公開。",
+            "正式效力以議會通過之會議紀錄為準。",
           ],
         },
       ],
@@ -343,7 +342,7 @@ export const copy = {
     },
     proposal: {
       addTitle: "新增提案",
-      serialNo: "案號 / 附件序",
+      serialNo: "附件序（議程＝附件1，提案從2起）",
       section: "分節",
       title: "案由",
       titlePlaceholder: "案由…",
@@ -362,8 +361,8 @@ export const copy = {
       today: "今天",
       inDays: (n: number) => `還有 ${n} 天`,
       agoDays: (n: number) => `已過 ${n} 天`,
-      actNotice: "生成開會通知",
-      actAgenda: "生成議程通知",
+      actNotice: "去生成開會通知 ↓",
+      actAgenda: "去生成議程通知 ↓",
       actRemind: "加入提醒",
       done: "已加提醒",
       addTitle: "新增委員會／其他時程",
@@ -377,10 +376,16 @@ export const copy = {
     notice: {
       audience: "稱謂",
       audiencePlaceholder: "議員代表 / 議員 / 列席代表",
+      signer: "署名",
+      signerPlaceholder: "祕書處 祕書長 王小明",
+      contactPhone: "聯絡電話",
+      contactEmail: "聯絡信箱",
+      pdf: "PDF／列印",
       kindNotice: "開會通知單",
       kindAgenda: "會議通知（含議程）",
       pick: "選擇通知類型、稱謂與收件人，生成內容後複製、貼到官方信箱寄出。",
       recipients: "收件人（勾選）",
+      manageRecipients: "管理收件人名單 ↗",
       noRecipients: "尚無收件人。先到「收件人名單」新增（可先佔位，之後補真實名單）。",
       generate: "生成通知內容",
       subject: "主旨",
@@ -390,6 +395,7 @@ export const copy = {
       copyRecipients: "複製收件人",
       latest: "最近生成",
       none: "尚未生成任何通知。",
+      del: "刪除",
       draftOnly: "系統只生成內容、不自動寄送；請人工於官方信箱確認後送出。",
     },
     reminder: {
@@ -401,6 +407,8 @@ export const copy = {
       inapp: "站內",
       done: "已處理",
       markDone: "標記已處理",
+      undo: "取消",
+      del: "刪除",
       needMeetingTime: "需先有會議時間。",
     },
     files: {
@@ -422,7 +430,9 @@ export const copy = {
       active: "啟用中",
       inactive: "已停用",
       toggle: "啟用／停用",
-      placeholderNote: "提示：可先新增幾筆佔位（如「議員01」），之後再改成真實姓名與信箱。",
+      save: "儲存",
+      del: "刪除",
+      placeholderNote: "提示：可先新增幾筆佔位（如「議員01」），之後直接在下方每列改成真實姓名與信箱、按「儲存」。",
     },
   },
 
@@ -491,7 +501,7 @@ export const copy = {
 
   // 頁尾
   foot: {
-    zh: "國立臺東大學學生議會 · 數位法典",
+    zh: "國立臺東大學學生議會 · 數位法典暨議事系統",
     en: "NTTU STUDENT ASSOCIATION · 2026",
   },
 } as const;

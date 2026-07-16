@@ -158,6 +158,9 @@ export async function generateNoticeAction(fd: FormData) {
     recipientIds = active.map((r) => r.id);
   }
   const audience = str(fd, "audience") || undefined;
+  const signer = str(fd, "signer") || undefined;
+  const contactPhone = str(fd, "contactPhone") || undefined;
+  const contactEmail = str(fd, "contactEmail") || undefined;
   const forNotice: MeetingForNotice = {
     session: meeting.session,
     academicYear: meeting.academicYear,
@@ -172,6 +175,9 @@ export async function generateNoticeAction(fd: FormData) {
   const { subject, body } = generateNotice(forNotice, kind, {
     proposalCount: meeting._count.proposals,
     audience,
+    signer,
+    contactPhone,
+    contactEmail,
   });
 
   await prisma.meetingNotice.create({
@@ -185,6 +191,16 @@ export async function generateNoticeAction(fd: FormData) {
     },
   });
   revalidatePath(`/console/meetings/${meetingId}`);
+}
+
+export async function deleteNotice(fd: FormData) {
+  await requireUser();
+  const id = str(fd, "id");
+  const meetingId = str(fd, "meetingId");
+  if (id) {
+    await prisma.meetingNotice.delete({ where: { id } });
+    revalidatePath(`/console/meetings/${meetingId}`);
+  }
 }
 
 // —— 提醒 ——
@@ -212,6 +228,26 @@ export async function markReminderDone(fd: FormData) {
   const meetingId = str(fd, "meetingId");
   if (id) {
     await prisma.meetingReminder.update({ where: { id }, data: { sentAt: new Date() } });
+    revalidatePath(`/console/meetings/${meetingId}`);
+  }
+}
+
+export async function unmarkReminderDone(fd: FormData) {
+  await requireUser();
+  const id = str(fd, "id");
+  const meetingId = str(fd, "meetingId");
+  if (id) {
+    await prisma.meetingReminder.update({ where: { id }, data: { sentAt: null } });
+    revalidatePath(`/console/meetings/${meetingId}`);
+  }
+}
+
+export async function deleteReminder(fd: FormData) {
+  await requireUser();
+  const id = str(fd, "id");
+  const meetingId = str(fd, "meetingId");
+  if (id) {
+    await prisma.meetingReminder.delete({ where: { id } });
     revalidatePath(`/console/meetings/${meetingId}`);
   }
 }
@@ -263,6 +299,33 @@ export async function toggleRecipient(fd: FormData) {
   const r = await prisma.recipient.findUnique({ where: { id } });
   if (r) {
     await prisma.recipient.update({ where: { id }, data: { active: !r.active } });
+    revalidatePath("/console/meetings/recipients");
+  }
+}
+
+export async function updateRecipient(fd: FormData) {
+  await requireUser();
+  const id = str(fd, "id");
+  const name = str(fd, "name");
+  const email = str(fd, "email");
+  if (!id || !name || !email) return;
+  await prisma.recipient.update({
+    where: { id },
+    data: {
+      name,
+      email: email.toLowerCase(),
+      roleTag: str(fd, "roleTag") || "議員",
+      session: int(fd, "session", 0),
+    },
+  });
+  revalidatePath("/console/meetings/recipients");
+}
+
+export async function deleteRecipient(fd: FormData) {
+  await requireUser();
+  const id = str(fd, "id");
+  if (id) {
+    await prisma.recipient.delete({ where: { id } });
     revalidatePath("/console/meetings/recipients");
   }
 }

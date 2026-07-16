@@ -10,6 +10,7 @@ import { AGENDA_SECTIONS } from "@/lib/meetings/sections";
 import { DEFAULT_OFFSETS } from "@/lib/meetings/reminders";
 import { Input } from "@/components/SearchBox";
 import { CopyBlock, CopyButton } from "@/components/CopyBlock";
+import { PrintButton } from "@/components/PrintButton";
 import { copy } from "@/lib/copy";
 import {
   addProposal,
@@ -17,10 +18,13 @@ import {
   generateNoticeAction,
   addReminder,
   markReminderDone,
+  unmarkReminderDone,
+  deleteReminder,
   setMeetingStatus,
   addMilestone,
   deleteMilestone,
   toggleMeetingPublic,
+  deleteNotice,
 } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -229,16 +233,12 @@ export default async function MeetingDetailPage({ params }: { params: { id: stri
                 ) : null}
 
                 {ms.action === "notice" || ms.action === "agenda" ? (
-                  <form action={generateNoticeAction} className="mt-2">
-                    <input type="hidden" name="meetingId" value={m.id} />
-                    <input type="hidden" name="kind" value={ms.action} />
-                    <button
-                      type="submit"
-                      className="border border-ink px-3 py-1.5 font-ui text-chip font-medium leading-none tracking-snug text-ink transition-colors hover:border-accent hover:bg-accent hover:text-white"
-                    >
-                      {ms.action === "notice" ? c.timeline.actNotice : c.timeline.actAgenda}
-                    </button>
-                  </form>
+                  <a
+                    href="#notice"
+                    className="mt-2 inline-block border border-ink px-3 py-1.5 font-ui text-chip font-medium leading-none tracking-snug text-ink transition-colors hover:border-accent hover:bg-accent hover:text-white"
+                  >
+                    {ms.action === "notice" ? c.timeline.actNotice : c.timeline.actAgenda}
+                  </a>
                 ) : null}
 
                 {ms.action === "remind" ? (
@@ -373,20 +373,42 @@ export default async function MeetingDetailPage({ params }: { params: { id: stri
                 <li key={r.id} className="flex items-center gap-3 py-2 font-sans text-caption">
                   <span className="text-ink">會前 {r.offsetDays} 天</span>
                   <span className="tnum text-meta">{rocDateTimeFull(r.fireAt)}</span>
-                  {r.sentAt ? (
-                    <span className="ml-auto text-meta">{c.reminder.done}</span>
-                  ) : (
-                    <form action={markReminderDone} className="ml-auto">
+                  <div className="ml-auto flex items-center gap-2">
+                    {r.sentAt ? (
+                      <form action={unmarkReminderDone} className="flex items-center gap-2">
+                        <input type="hidden" name="id" value={r.id} />
+                        <input type="hidden" name="meetingId" value={m.id} />
+                        <span className="text-sch">✓ {c.reminder.done}</span>
+                        <button
+                          type="submit"
+                          className="border border-line px-2 py-1 font-ui text-chip leading-none text-accent transition-colors hover:border-accent"
+                        >
+                          {c.reminder.undo}
+                        </button>
+                      </form>
+                    ) : (
+                      <form action={markReminderDone}>
+                        <input type="hidden" name="id" value={r.id} />
+                        <input type="hidden" name="meetingId" value={m.id} />
+                        <button
+                          type="submit"
+                          className="border border-line px-2 py-1 font-ui text-chip leading-none text-ink transition-colors hover:border-accent hover:text-accent"
+                        >
+                          {c.reminder.markDone}
+                        </button>
+                      </form>
+                    )}
+                    <form action={deleteReminder}>
                       <input type="hidden" name="id" value={r.id} />
                       <input type="hidden" name="meetingId" value={m.id} />
                       <button
                         type="submit"
-                        className="border border-line px-2 py-1 font-ui text-chip leading-none text-ink transition-colors hover:border-accent hover:text-accent"
+                        className="font-ui text-chip text-meta transition-colors hover:text-warn-ink"
                       >
-                        {c.reminder.markDone}
+                        {c.reminder.del}
                       </button>
                     </form>
-                  )}
+                  </div>
                 </li>
               ))
             )}
@@ -496,7 +518,14 @@ export default async function MeetingDetailPage({ params }: { params: { id: stri
         <SecHead
           s={SEC.agenda}
           title={c.detail.agendaTitle}
-          right={<span className="hidden max-w-[16rem] text-right font-sans text-caption text-meta hero:block">{c.detail.agendaHint}</span>}
+          right={
+            <div className="flex items-center gap-2">
+              <span className="hidden max-w-[12rem] text-right font-sans text-caption text-meta rd:block">
+                {c.detail.agendaHint}
+              </span>
+              <PrintButton heading="" body={agendaText} label={c.notice.pdf} filename={`${m.name} 議程`} />
+            </div>
+          }
         />
         <div className="mt-4">
           <CopyBlock text={agendaText} label={c.detail.agendaTitle} />
@@ -504,7 +533,7 @@ export default async function MeetingDetailPage({ params }: { params: { id: stri
       </section>
 
       {/* 開會通知 / 會議通知 */}
-      <section className={`${SEC.notice.card} mt-6`}>
+      <section id="notice" className={`${SEC.notice.card} mt-6 scroll-mt-20`}>
         <SecHead s={SEC.notice} title={c.detail.noticeTitle} />
         <p className="mt-2 font-sans text-caption text-meta">{c.notice.pick}</p>
         <p className="mt-1 font-sans text-caption text-warn-ink">{c.notice.draftOnly}</p>
@@ -520,20 +549,45 @@ export default async function MeetingDetailPage({ params }: { params: { id: stri
             </label>
           </fieldset>
 
-          <div className="mt-4 flex max-w-xs flex-col gap-1.5">
-            <label htmlFor="n-aud" className="font-sans text-caption font-medium text-ink">
-              {c.notice.audience}
-            </label>
-            <Input
-              id="n-aud"
-              name="audience"
-              defaultValue="議員代表"
-              placeholder={c.notice.audiencePlaceholder}
-            />
+          <div className="mt-4 grid gap-3 hero:grid-cols-2">
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="n-aud" className="font-sans text-caption font-medium text-ink">
+                {c.notice.audience}
+              </label>
+              <Input id="n-aud" name="audience" defaultValue="議員代表" placeholder={c.notice.audiencePlaceholder} />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="n-signer" className="font-sans text-caption font-medium text-ink">
+                {c.notice.signer}
+              </label>
+              <Input id="n-signer" name="signer" placeholder={c.notice.signerPlaceholder} />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="n-phone" className="font-sans text-caption font-medium text-ink">
+                {c.notice.contactPhone}
+              </label>
+              <Input id="n-phone" name="contactPhone" />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="n-email" className="font-sans text-caption font-medium text-ink">
+                {c.notice.contactEmail}
+              </label>
+              <Input id="n-email" name="contactEmail" type="email" />
+            </div>
           </div>
 
           <div className="mt-4">
-            <p className="font-sans text-caption font-medium text-ink">{c.notice.recipients}</p>
+            <div className="flex items-center justify-between gap-2">
+              <p className="font-sans text-caption font-medium text-ink">{c.notice.recipients}</p>
+              <a
+                href="/console/meetings/recipients"
+                target="_blank"
+                rel="noreferrer"
+                className="font-ui text-chip text-accent hover:underline"
+              >
+                {c.notice.manageRecipients}
+              </a>
+            </div>
             {activeRecipients.length === 0 ? (
               <p className="mt-2 font-sans text-caption text-meta">{c.notice.noRecipients}</p>
             ) : (
@@ -576,10 +630,21 @@ export default async function MeetingDetailPage({ params }: { params: { id: stri
                       <span className="font-ui text-chip text-accent">
                         {n.kind === "agenda" ? c.notice.kindAgenda : c.notice.kindNotice}
                       </span>
-                      <div className="flex gap-2">
+                      <div className="flex flex-wrap gap-2">
                         <CopyButton text={n.subject} label={c.notice.copySubject} />
                         <CopyButton text={n.bodyText} label={c.notice.copyBody} />
                         {emails ? <CopyButton text={emails} label={c.notice.copyRecipients} /> : null}
+                        <PrintButton heading={n.subject} body={n.bodyText} label={c.notice.pdf} filename={n.subject} />
+                        <form action={deleteNotice}>
+                          <input type="hidden" name="id" value={n.id} />
+                          <input type="hidden" name="meetingId" value={m.id} />
+                          <button
+                            type="submit"
+                            className="border border-line px-3 py-1.5 font-ui text-caption font-medium leading-none tracking-snug text-meta transition-colors hover:border-warn-border hover:text-warn-ink"
+                          >
+                            {c.notice.del}
+                          </button>
+                        </form>
                       </div>
                     </div>
                     <div className="px-3 py-2">
