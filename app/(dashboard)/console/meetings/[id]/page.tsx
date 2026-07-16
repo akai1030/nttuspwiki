@@ -17,6 +17,8 @@ import {
   addReminder,
   markReminderDone,
   setMeetingStatus,
+  addMilestone,
+  deleteMilestone,
 } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -50,7 +52,10 @@ export default async function MeetingDetailPage({ params }: { params: { id: stri
     .join("\n");
 
   const now = new Date();
-  const timeline = buildTimeline({ meetingAt: m.meetingAt, proposalDeadline: m.proposalDeadline });
+  const timeline = buildTimeline(
+    { meetingAt: m.meetingAt, proposalDeadline: m.proposalDeadline },
+    m.milestones.map((ms) => ({ id: ms.id, title: ms.title, at: ms.at, note: ms.note }))
+  );
 
   return (
     <main className="mx-auto max-w-wrap px-wrap-sm py-section-sm hero:px-wrap">
@@ -115,13 +120,15 @@ export default async function MeetingDetailPage({ params }: { params: { id: stri
               d > 0 ? c.timeline.inDays(d) : d === 0 ? c.timeline.today : c.timeline.agoDays(-d);
             const statusCls = d > 0 ? "text-accent" : d === 0 ? "text-warn-ink" : "text-meta";
             const dotCls =
-              ms.action === "meeting"
-                ? "bg-ink"
-                : d === 0
-                  ? "bg-warn-ink"
-                  : d < 0
-                    ? "bg-line"
-                    : "bg-accent";
+              ms.action === "custom"
+                ? "bg-sch"
+                : ms.action === "meeting"
+                  ? "bg-ink"
+                  : d === 0
+                    ? "bg-warn-ink"
+                    : d < 0
+                      ? "bg-line"
+                      : "bg-accent";
             return (
               <li key={ms.key} className="relative pl-7">
                 <span
@@ -159,12 +166,57 @@ export default async function MeetingDetailPage({ params }: { params: { id: stri
                     </button>
                   </form>
                 ) : null}
+
+                {ms.action === "custom" && ms.id ? (
+                  <form action={deleteMilestone} className="mt-2">
+                    <input type="hidden" name="id" value={ms.id} />
+                    <input type="hidden" name="meetingId" value={m.id} />
+                    <button
+                      type="submit"
+                      className="font-ui text-chip text-meta transition-colors hover:text-warn-ink"
+                    >
+                      {c.timeline.del}
+                    </button>
+                  </form>
+                ) : null}
               </li>
             );
           })}
         </ol>
 
-        <p className="mt-5 border-t border-line-soft pt-3 font-sans text-caption text-meta">
+        {/* 新增委員會 / 其他時程 */}
+        <form
+          action={addMilestone}
+          className="mt-6 grid gap-3 border-t border-line-soft pt-5 hero:grid-cols-[1.1fr_1fr_1.4fr_auto] hero:items-end"
+        >
+          <input type="hidden" name="meetingId" value={m.id} />
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="ms-title" className="font-sans text-caption font-medium text-ink">
+              {c.timeline.mTitle}
+            </label>
+            <Input id="ms-title" name="title" required placeholder={c.timeline.mTitlePlaceholder} />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="ms-at" className="font-sans text-caption font-medium text-ink">
+              {c.timeline.mAt}
+            </label>
+            <Input id="ms-at" name="at" type="datetime-local" required />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="ms-note" className="font-sans text-caption font-medium text-ink">
+              {c.timeline.mNote}
+            </label>
+            <Input id="ms-note" name="note" />
+          </div>
+          <button
+            type="submit"
+            className="h-[42px] border border-ink bg-ink px-4 font-ui text-caption font-medium leading-none tracking-snug text-white transition-colors hover:border-accent hover:bg-accent"
+          >
+            {c.timeline.mAdd}
+          </button>
+        </form>
+
+        <p className="mt-4 border-t border-line-soft pt-3 font-sans text-caption text-meta">
           {c.timeline.offsetNote}
         </p>
       </section>

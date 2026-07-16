@@ -5,7 +5,7 @@
  * ⚠️ 這裡的天數是「常用預設」，非法定精確值。實際期限應以《組織章程》《議事規則》為準；
  *    待確認後再把 OFFSETS 對齊法源（見 MEETINGS-MODULE.md）。提案截止優先用會議設定的實際值。
  */
-export type MilestoneAction = "notice" | "agenda" | "remind" | "deadline" | "meeting";
+export type MilestoneAction = "notice" | "agenda" | "remind" | "deadline" | "meeting" | "custom";
 
 export type Milestone = {
   key: string;
@@ -13,14 +13,20 @@ export type Milestone = {
   date: Date;
   action: MilestoneAction;
   hint: string;
+  id?: string; // 自訂里程碑（委員會等）才有，供刪除
 };
+
+export type CustomMilestone = { id: string; title: string; at: Date; note: string | null };
 
 // 會前天數（預設，可調）。
 export const PREP_OFFSETS = { notice: 14, deadline: 10, agenda: 3, remind: 1 } as const;
 
 const DAY = 24 * 60 * 60 * 1000;
 
-export function buildTimeline(m: { meetingAt: Date; proposalDeadline: Date | null }): Milestone[] {
+export function buildTimeline(
+  m: { meetingAt: Date; proposalDeadline: Date | null },
+  custom: CustomMilestone[] = []
+): Milestone[] {
   const M = m.meetingAt.getTime();
   const items: Milestone[] = [
     {
@@ -59,6 +65,16 @@ export function buildTimeline(m: { meetingAt: Date; proposalDeadline: Date | nul
       hint: "會議當天。",
     },
   ];
+  for (const cm of custom) {
+    items.push({
+      key: `custom-${cm.id}`,
+      title: cm.title,
+      date: cm.at,
+      action: "custom",
+      hint: cm.note ?? "",
+      id: cm.id,
+    });
+  }
   return items.sort((a, b) => a.date.getTime() - b.date.getTime());
 }
 

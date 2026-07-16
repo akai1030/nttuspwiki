@@ -18,6 +18,7 @@ export function getMeeting(id: string) {
       proposals: { orderBy: [{ order: "asc" }, { serialNo: "asc" }] },
       notices: { orderBy: { createdAt: "desc" } },
       reminders: { orderBy: { fireAt: "asc" } },
+      milestones: { orderBy: { at: "asc" } },
     },
   });
 }

@@ -204,6 +204,29 @@ export async function markReminderDone(fd: FormData) {
   }
 }
 
+// —— 自訂里程碑（各委員會時間等）——
+export async function addMilestone(fd: FormData) {
+  await requireUser();
+  const meetingId = str(fd, "meetingId");
+  const title = str(fd, "title");
+  const at = parseTaipeiLocal(str(fd, "at"));
+  if (!meetingId || !title || !at) return;
+  await prisma.meetingMilestone.create({
+    data: { meetingId, title, at, note: optStr(fd, "note") },
+  });
+  revalidatePath(`/console/meetings/${meetingId}`);
+}
+
+export async function deleteMilestone(fd: FormData) {
+  await requireUser();
+  const id = str(fd, "id");
+  const meetingId = str(fd, "meetingId");
+  if (id) {
+    await prisma.meetingMilestone.delete({ where: { id } });
+    revalidatePath(`/console/meetings/${meetingId}`);
+  }
+}
+
 // —— 收件人 ——
 export async function addRecipient(fd: FormData) {
   await requireUser();

@@ -193,6 +193,7 @@ model Meeting {
   agendaItems      AgendaItem[]
   notices          MeetingNotice[]
   reminders        MeetingReminder[]
+  milestones       MeetingMilestone[]
 
   @@index([session, meetingAt])
 }
@@ -263,4 +264,16 @@ model MeetingReminder {
   sentAt     DateTime?
 
   @@index([fireAt])
+}
+
+model MeetingMilestone {
+  id        String   @id @default(cuid())
+  meetingId String
+  meeting   Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  title     String // 「財務委員會」「資格審查委員會」等
+  at        DateTime
+  note      String?
+  createdAt DateTime @default(now())
+
+  @@index([meetingId])
 }

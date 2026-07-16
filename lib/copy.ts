@@ -290,6 +290,13 @@ export const copy = {
       actAgenda: "生成議程通知",
       actRemind: "加入提醒",
       done: "已加提醒",
+      addTitle: "新增委員會／其他時程",
+      mTitle: "名稱",
+      mTitlePlaceholder: "財務委員會",
+      mAt: "時間",
+      mNote: "說明（選填）",
+      mAdd: "新增時程",
+      del: "刪除",
     },
     notice: {
       audience: "稱謂",
