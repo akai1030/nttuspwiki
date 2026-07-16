@@ -32,6 +32,14 @@ export default async function DashboardLayout({
           >
             {copy.meetings.nav}
           </a>
+          {user.role === "admin" ? (
+            <a
+              href="/console/members"
+              className="hidden font-sans text-nav text-ink opacity-[.72] transition-opacity hover:text-accent hover:opacity-100 hero:inline"
+            >
+              {copy.members.nav}
+            </a>
+          ) : null}
           <span className="hidden font-sans text-caption text-meta hero:inline">
             {displayName}
             <span className="mx-1.5 text-line">·</span>

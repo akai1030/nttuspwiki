@@ -27,6 +27,15 @@ export default async function ConsolePage({
       <h1 className="mt-3 font-serif text-h2">{copy.console.greeting(displayName)}</h1>
       <p className="mt-4 max-w-reader font-sans text-lede text-lede-ink">{copy.console.lede}</p>
 
+      {user.role === "admin" ? (
+        <a
+          href="/console/members"
+          className="mt-4 inline-block font-sans text-body text-accent hover:underline"
+        >
+          {copy.members.nav} →
+        </a>
+      ) : null}
+
       {searchParams?.denied ? (
         <p
           role="alert"

@@ -35,7 +35,7 @@ export const copy = {
     reader: "條文閱讀",
     search: "全文檢索",
     tools: "檢核・時程",
-    login: "幹部登入",
+    login: "議會登入",
   },
 
   // 側邊軌（首頁直排索引）
@@ -66,7 +66,7 @@ export const copy = {
         no: "03",
         title: "檢核與時程",
         en: "Tools",
-        lede: "幹部專用：把提案與經費文件對照相關法規，並從法條推算法定期限、自動提醒。",
+        lede: "議會專用：把提案與經費文件對照相關法規，並從法條推算法定期限、自動提醒。",
       },
     },
   },
@@ -125,13 +125,13 @@ export const copy = {
     tocTitle: "章條目錄",
   },
 
-  // 幹部登入
+  // 議會登入
   login: {
-    title: "幹部登入",
-    body: "檢核與時程為幹部專用功能，需以幹部帳號登入。公開的法規查詢與全文檢索無需登入即可使用。",
+    title: "議會登入",
+    body: "檢核與時程為議會專用功能，需以議會帳號登入。公開的法規查詢與全文檢索無需登入即可使用。",
     backHome: "← 回首頁",
     form: {
-      emailLabel: "幹部信箱",
+      emailLabel: "議會信箱",
       emailPlaceholder: "you@example.com",
       passwordLabel: "密碼",
       passwordPlaceholder: "輸入密碼",
@@ -142,24 +142,24 @@ export const copy = {
       errorInvalid: "信箱或密碼不正確。",
       errorServer: "登入服務暫時無法使用，請稍後再試。",
       errorNetwork: "連線失敗，請檢查網路後再試。",
-      noAccount: "尚無帳號？幹部帳號由管理員建立，請洽議會祕書處。",
+      noAccount: "尚無帳號？議會帳號由管理員建立，請洽議會祕書處。",
     },
   },
 
-  // 幹部中控台
+  // 議會中控台
   console: {
     eyebrow: "Officer Console",
-    title: "幹部中控台",
+    title: "議會中控台",
     greeting: (name: string) => `${name}，你好`,
     roleLabel: "權限",
     roles: {
       admin: "管理員",
-      officer: "幹部",
+      officer: "議會",
       viewer: "檢視者",
     },
     logout: "登出",
     denied: "你沒有存取該頁的權限。",
-    lede: "幹部專用工具入口。此處資料不對外公開。",
+    lede: "議會專用工具入口。此處資料不對外公開。",
     tools: {
       meetings: {
         title: "會議營運",
@@ -176,11 +176,48 @@ export const copy = {
     },
   },
 
+  // 成員管理（僅 admin）
+  members: {
+    nav: "成員管理",
+    title: "成員管理",
+    lede: "建立與管理議會登入帳號。祕書處人員給「議會」即可操作會議營運；「管理員」另可管理成員。",
+    backToConsole: "← 回中控台",
+    roleNames: { admin: "管理員", officer: "議會", viewer: "檢視" },
+    add: {
+      title: "新增成員",
+      email: "Email",
+      name: "姓名",
+      role: "角色",
+      password: "初始密碼",
+      hint: "初始密碼至少 8 碼，建立後把 Email 與密碼交給該成員；忘記可由管理員重設。",
+      submit: "建立帳號",
+      okPrefix: "已建立",
+      okSuffix: "。把 Email 與初始密碼交給該成員即可登入。",
+      errInput: "Email 與初始密碼（至少 8 碼）為必填。",
+      errDup: "此 Email 已有帳號。",
+    },
+    list: {
+      email: "Email",
+      name: "姓名",
+      role: "角色",
+      lastLogin: "最後登入",
+      never: "尚未登入",
+      noPassword: "未設密碼",
+      empty: "尚無成員。",
+      you: "你自己",
+      resetLabel: "重設密碼",
+      resetPlaceholder: "新密碼（≥8碼）",
+      reset: "重設",
+      roleChange: "變更",
+      del: "刪除",
+    },
+  },
+
   // 會議營運模組
   meetings: {
     nav: "會議營運",
     title: "會議營運",
-    lede: "建立會議、彙整提案、生成議程與開會通知，並管理會前提醒。所有資料僅幹部可見。",
+    lede: "建立會議、彙整提案、生成議程與開會通知，並管理會前提醒。所有資料僅議會可見。",
     backToConsole: "← 回中控台",
     copy: "複製",
     copied: "已複製",
@@ -291,7 +328,7 @@ export const copy = {
     },
     recipients: {
       title: "收件人名單",
-      lede: "開會通知的收件對象（議員／列席／旁聽）。屬個資、僅幹部可見。可先佔位，之後補真實名單。",
+      lede: "開會通知的收件對象（議員／列席／旁聽）。屬個資、僅議會可見。可先佔位，之後補真實名單。",
       addTitle: "新增收件人",
       name: "姓名",
       email: "Email",
