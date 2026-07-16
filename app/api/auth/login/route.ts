@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { timingSafeEqual } from "node:crypto";
 import { prisma } from "@/lib/db";
 import { verifyPassword, hashPassword } from "@/lib/auth/password";
 import { createSession } from "@/lib/auth/session";
@@ -12,6 +13,28 @@ export const dynamic = "force-dynamic";
 let dummyHashPromise: Promise<string> | null = null;
 function dummyHash(): Promise<string> {
   return (dummyHashPromise ??= hashPassword("nttusp-not-a-real-account-placeholder"));
+}
+
+// 常數時間字串比對（env 管理員密碼用）。
+function safeEqual(a: string, b: string): boolean {
+  const ab = Buffer.from(a);
+  const bb = Buffer.from(b);
+  if (ab.length !== bb.length) return false;
+  return timingSafeEqual(ab, bb);
+}
+
+// env 引導管理員：在 Zeabur 設 ADMIN_EMAIL / ADMIN_PASSWORD 即可登入（密碼好找、好改）。
+// 命中則確保 DB 有這位 admin（upsert），再種 session。未設兩者則停用本機制。
+async function tryEnvAdmin(email: string, password: string) {
+  const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+  const adminPassword = process.env.ADMIN_PASSWORD;
+  if (!adminEmail || !adminPassword) return null;
+  if (email !== adminEmail || !safeEqual(password, adminPassword)) return null;
+  return prisma.user.upsert({
+    where: { email: adminEmail },
+    update: { role: "admin" },
+    create: { email: adminEmail, role: "admin", name: "管理員" },
+  });
 }
 
 /**
@@ -35,6 +58,14 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    // 先試 env 引導管理員（密碼設在環境變數，Zeabur 好找好改）。
+    const envAdmin = await tryEnvAdmin(email, password);
+    if (envAdmin) {
+      await createSession(envAdmin);
+      await prisma.user.update({ where: { id: envAdmin.id }, data: { lastLoginAt: new Date() } });
+      return NextResponse.json({ ok: true, role: envAdmin.role });
+    }
+
     const user = await prisma.user.findUnique({ where: { email } });
     const ok = await verifyPassword(password, user?.passwordHash ?? (await dummyHash()));
 
