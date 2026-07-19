@@ -11,11 +11,11 @@
 
 | 段 | 驗什麼 | 工具 | 狀態 |
 |---|---|---|---|
-| ① PDF → JSON | 每條 body 逐字來自 PDF | `source-check.ts` + **PyMuPDF**(`extract_pdf.py`，獨立引擎) | ✅ **768/768 逐字命中**（`npm run fidelity:source`，可隨時重跑） |
-| ② JSON → DB | DB.body 逐字 === JSON | `data/verify.ts` §2 | ✅ 通過（38 部/768 條） |
+| ① PDF → JSON | 每條 body 逐字來自 PDF | `source-check.ts` + **PyMuPDF**(`extract_pdf.py`，獨立引擎) | ✅ **772/772 逐字命中**（`npm run fidelity:source`，可隨時重跑） |
+| ② JSON → DB | DB.body 逐字 === JSON | `data/verify.ts` §2 | ✅ 通過（38 部/772 條） |
 | ③ DB → 網頁 HTML | 渲染字串 === DB | （Phase 3 加，render===DB） | ⏳ 待 Phase 3 頁面 |
 | ④ HTML → 瀏覽器 | 畫面上的字 === 原文 | Playwright 抓 DOM 逐字比對 + CI 擋部署 | ⏳ 待 Phase 3 頁面 |
-| 全鏈 drift 守門 | 任何一段的法條文字被改動 | `manifest.json`（每條 SHA-256，git 追蹤） | ✅ 已產生 768 條指紋 |
+| 全鏈 drift 守門 | 任何一段的法條文字被改動 | `manifest.json`（每條 SHA-256，git 追蹤） | ✅ 已產生 772 條指紋 |
 
 > **抽取器**：預設用 PyMuPDF（`extract_pdf.py`，`pip install -r data/fidelity/requirements.txt`）。
 > 它是**獨立於** `parse_laws.py` 所用 pdftotext 的引擎 → 同時解決兩件事：(a) 官方 PDF 的中文
@@ -35,10 +35,10 @@
 
 ## 現況與待辦（回應「你怎麼保證正確」）
 
-- ✅ **① PDF → JSON：768/768 逐字命中**（PyMuPDF 獨立引擎，`npm run fidelity:source`，2026-07-02 起可隨時重跑）。
+- ✅ **① PDF → JSON：772/772 逐字命中**（PyMuPDF 獨立引擎，`npm run fidelity:source`，2026-07-02 起可隨時重跑）。
 - ✅ **② JSON → DB：通過**（`npm run db:verify` §2）。
 - ✅ **獨立第二證人**：PyMuPDF ≠ parse_laws 的 pdftotext，已破除 verify §4 的循環基準。（verify §4 仍用 pdftotext，缺 CJK 時**誠實 skip**、不假失敗；真正的獨立全量驗以 `fidelity:source` 為準。）
-- ✅ **drift 守門**：`manifest.json` 768 條 SHA-256，進 git。
+- ✅ **drift 守門**：`manifest.json` 772 條 SHA-256，進 git。
 
 待辦：
 1. 🖥️ **端到端 DOM 比對（Phase 3）**：render===DB 不夠，要用 Playwright 抓「瀏覽器實際畫出的字」，涵蓋 HTML 轉義／CSS ::before 插入符號／字體合字。頁面就緒後建。
@@ -54,7 +54,7 @@
   全庫掃過款號連續性，**此為唯一的款項 mis-split**。
 - ✅ **重複點號已清（38 個款項 / 7 條）**：1.17 §2/§3/§5-8、1.18 §2 的「1. . 內文」→「1. 內文」
   （移除 parser 對「N.」型 PDF 標記多補的點；內容逐字不變、Level A 仍 768/768），重灌 DB 驗過。
-- ℹ️ **Level B 764/768，剩 4 條為「檢查器誤報」非資料問題**：1.1 §49、2.0 §25、2.4 §5、3.0 §8。
+- ℹ️ **Level B 768/772，剩 4 條為「檢查器誤報」非資料問題**：1.1 §49、2.0 §25、2.4 §5、3.0 §8。
   DB **已正確**把這些款切成「1. …」「2. …」；差異只是 PDF 的款號數字黏在中文後（如「項目1學生」），
   正規化去得掉 DB 的「N. 」卻去不掉 PDF 的黏字。已在報告標為「款號·PDF黏字(DB已正確)」，**無需修**。
 - 🔧 **為何不整包重生 JSON**：原始 JSON 用「含 CJK 的 pdftotext」抽出；本機只有 PyMuPDF。用 PyMuPDF

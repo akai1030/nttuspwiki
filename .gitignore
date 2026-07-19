@@ -4,6 +4,10 @@ node_modules/
 out/
 *.tsbuildinfo
 
+# python 快取（parse_laws.py 匯入時產生）
+__pycache__/
+*.pyc
+
 # env & secrets（絕不追蹤）
 .env
 .env.*

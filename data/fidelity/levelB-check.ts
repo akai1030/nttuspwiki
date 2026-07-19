@@ -1,7 +1,7 @@
 /**
  * Level B 嚴格比對（標點 + 數字 + 拉丁，逐字元）。
  *
- * 前提：Level A（source-check.ts）已 768/768 全過 → 每個「中文字」都逐字對得上、順序正確。
+ * 前提：Level A（source-check.ts）已 772/772 全過 → 每個「中文字」都逐字對得上、順序正確。
  * 因此 Level B 只可能揭露「非表意字」層的差異：標點樣式、數字寫法（如 十四↔14）、拉丁字。
  * 其中**數字差異值得看**（法律的期限/比例/門檻），標點多屬 PDF 抽取的樣式小差。
  *
@@ -184,7 +184,7 @@ function main() {
   const head: string[] = [];
   head.push("# Level B 嚴格比對報告（標點 / 數字 / 拉丁，逐字元）");
   head.push("");
-  head.push("> 前提：Level A 已 768/768 全過 → 中文字零差異。以下只可能是標點樣式或數字/拉丁差異。");
+  head.push("> 前提：Level A 已 772/772 全過 → 中文字零差異。以下只可能是標點樣式或數字/拉丁差異。");
   head.push("");
   head.push(`- 條文：${total}　Level B 完全一致：**${passB} / ${total}**`);
   head.push(`- 🚩 需人工看（含數字/拉丁差異）：${substantiveItems.length ? substantiveItems.join("；") : "無"}`);

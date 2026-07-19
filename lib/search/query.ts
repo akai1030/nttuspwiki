@@ -4,7 +4,7 @@
  * 全程零 API 費、離線（CLAUDE.md 免費優先）。
  *
  * 註：語意層（pgvector + @xenova 本地模型）暫自部署切離以縮小 image（onnxruntime ~1GB）。
- *     768 條向量仍存於 `Article.embedding`；日後接雲端 embedding（取查詢向量）即可復用，
+ *     758 條向量仍存於 `Article.embedding`（1.10 於 115.05.18 修法換條後，其 14 條待 `npm run search:embed` 補）；日後接雲端 embedding（取查詢向量）即可復用，
  *     參考保留於 `lib/search/embed.ts`（已於 tsconfig 排除、不進 build）。
  */
 import { prisma } from "../db";
