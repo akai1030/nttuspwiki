@@ -23,3 +23,7 @@ Thumbs.db
 # 會議參考檔（真本議程/開會通知 PDF，含個資，不進版控）
 /函*.pdf
 /附件*.pdf
+
+# 議員名冊（選舉結果原檔 + 轉出 JSON，含 email/手機/學號等個資，不進版控；由本機匯入 DB）
+*.xlsx
+/data/roster-session*.json

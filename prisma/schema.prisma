@@ -235,8 +235,15 @@ model Recipient {
   email     String
   roleTag   String // 議員 / 列席 / 旁聽 / 祕書處
   active    Boolean  @default(true)
+  // 議員名冊（完整資料；非議員之列席/旁聽/祕書處留空）。皆屬個資，永不進公開路由。
+  district   String? // 選區：全校不分區 / 全校原住民不分區 / 碩博士不分區 / 系選區(系名)
+  department String? // 科系
+  grade      String? // 年級（原文保真，如「二年級」）
+  studentId  String? // 學號（議員唯一鍵，供冪等匯入）
+  phone      String? // 手機
   createdAt DateTime @default(now())
 
+  @@unique([session, studentId]) // 同屆同學號唯一；studentId 為 NULL 的非議員列不受限（PG 視 NULL 互異）
   @@index([session, active])
 }
 

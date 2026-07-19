@@ -16,6 +16,7 @@ const c = copy.meetings.recipients;
 export default async function RecipientsPage() {
   await requireUser();
   const recipients = await listRecipients();
+  const memberCount = recipients.filter((r) => r.studentId).length;
 
   return (
     <main className="mx-auto max-w-wrap px-wrap-sm py-section-sm hero:px-wrap">
@@ -24,6 +25,9 @@ export default async function RecipientsPage() {
       </a>
       <h1 className="mt-4 font-serif text-h2">{c.title}</h1>
       <p className="mt-2 max-w-reader font-sans text-body text-lede-ink">{c.lede}</p>
+      {memberCount > 0 && (
+        <p className="mt-2 font-ui text-caption text-accent">{c.memberN(memberCount)}</p>
+      )}
       <p className="mt-2 max-w-reader font-sans text-caption text-meta">{c.placeholderNote}</p>
 
       {/* 新增 */}
@@ -81,8 +85,16 @@ export default async function RecipientsPage() {
           </p>
         ) : (
           <ul className="divide-y divide-line-soft border-y border-line-soft">
-            {recipients.map((r) => (
-              <li key={r.id} className="flex flex-wrap items-end gap-2 py-3">
+            {recipients.map((r) => {
+              const roster = [
+                r.studentId && `${c.studentId} ${r.studentId}`,
+                [r.department, r.grade].filter(Boolean).join(" "),
+                r.district && r.district !== r.department && `${c.district} ${r.district}`,
+                r.phone && `${c.phone} ${r.phone}`,
+              ].filter(Boolean);
+              return (
+              <li key={r.id} className="py-3">
+                <div className="flex flex-wrap items-end gap-2">
                 <form action={updateRecipient} className="flex flex-1 flex-wrap items-end gap-2">
                   <input type="hidden" name="id" value={r.id} />
                   <Input name="name" defaultValue={r.name} aria-label={c.name} className="w-28 !py-1.5 text-caption" />
@@ -127,8 +139,13 @@ export default async function RecipientsPage() {
                     {c.del}
                   </button>
                 </form>
+                </div>
+                {roster.length > 0 && (
+                  <p className="mt-1.5 font-sans text-caption text-meta">{roster.join("・")}</p>
+                )}
               </li>
-            ))}
+              );
+            })}
           </ul>
         )}
       </div>
