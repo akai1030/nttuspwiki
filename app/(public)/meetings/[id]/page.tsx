@@ -151,7 +151,7 @@ export default async function PublicMeetingDetail({ params }: { params: { id: st
                     <span className={`font-ui text-chip leading-none ${statusCls}`}>{statusText}</span>
                   </div>
                   <p className="mt-0.5 font-sans text-body text-ink">{ms.title}</p>
-                  {ms.action === "law" && ms.source ? (
+                  {ms.source ? (
                     <a
                       href={ms.sourceHref}
                       className="mt-1 inline-block border border-ref-border bg-ref-surface px-2 py-0.5 font-sans text-chip text-ref-ink hover:border-ref"

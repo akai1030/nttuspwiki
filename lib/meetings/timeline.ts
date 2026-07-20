@@ -35,6 +35,8 @@ export function buildTimeline(
   custom: CustomMilestone[] = []
 ): Milestone[] {
   const M = m.meetingAt.getTime();
+  // §10《會議之種類》、§20《提案日程》為議會常會/臨時會之法定條文；委員會會議不適用（不掛）。
+  const isAssembly = m.kind !== "COMMITTEE";
   const items: Milestone[] = [
     {
       key: "notice",
@@ -49,7 +51,10 @@ export function buildTimeline(
       title: "提案繳交截止",
       date: m.proposalDeadline ?? new Date(M - PREP_OFFSETS.deadline * DAY),
       action: "deadline",
-      hint: "議員提案繳交截止（用會議設定的實際截止時間）。",
+      hint: "議員提案繳交截止（用會議設定的實際截止時間）。一般提案應於開會十日前送達祕書處。",
+      ...(isAssembly
+        ? { source: "學生議會組織及實行準則 §20", sourceHref: "/law/2.0#art-20" }
+        : {}),
     },
     {
       key: "agenda",
@@ -70,7 +75,12 @@ export function buildTimeline(
       title: "會議召開",
       date: m.meetingAt,
       action: "meeting",
-      hint: "會議當天。",
+      hint: isAssembly
+        ? "會議當天。常會由議長每月召開一次；臨時會由議長主動召開，或經至少全體議員五分之二連署召開。"
+        : "會議當天。",
+      ...(isAssembly
+        ? { source: "學生議會組織及實行準則 §10", sourceHref: "/law/2.0#art-10" }
+        : {}),
     },
   ];
 

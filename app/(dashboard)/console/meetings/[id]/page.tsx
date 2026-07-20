@@ -208,7 +208,7 @@ export default async function MeetingDetailPage({ params }: { params: { id: stri
                 <p className="mt-0.5 font-sans text-body font-medium text-ink">{ms.title}</p>
                 <p className="font-sans text-caption text-meta">{ms.hint}</p>
 
-                {ms.action === "law" && ms.source ? (
+                {ms.source ? (
                   <a
                     href={ms.sourceHref}
                     target="_blank"
