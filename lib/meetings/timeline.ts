@@ -28,6 +28,11 @@ export const PREP_OFFSETS = { notice: 14, deadline: 10, agenda: 3, remind: 1 } a
 // 法源：《國立臺東大學學生議會各委員會實行細則》§21（已驗於 DB，資料保真）。
 export const COMMITTEE_LAW_OFFSET = 6;
 
+// 法定會議資料期限：祕書處應於「常會前四日」主動提供議員會議資料（含議程、提案單、附件）並公告。
+// 法源：《國立臺東大學學生議會組織及實行準則》§21（已驗於 DB）。條文明定「常會」→ 僅常會適用；
+// 臨時會/委員會沿用非法定預設 PREP_OFFSETS.agenda，不硬套法定日數。
+export const AGENDA_LAW_OFFSET = 4;
+
 const DAY = 24 * 60 * 60 * 1000;
 
 export function buildTimeline(
@@ -37,6 +42,8 @@ export function buildTimeline(
   const M = m.meetingAt.getTime();
   // §10《會議之種類》、§20《提案日程》為議會常會/臨時會之法定條文；委員會會議不適用（不掛）。
   const isAssembly = m.kind !== "COMMITTEE";
+  // §21《會議資料獲取》條文明定「常會」→ 僅常會掛法源並採法定 4 日。
+  const isRegular = m.kind === "REGULAR";
   const items: Milestone[] = [
     {
       key: "notice",
@@ -59,9 +66,14 @@ export function buildTimeline(
     {
       key: "agenda",
       title: "函送會議議程",
-      date: new Date(M - PREP_OFFSETS.agenda * DAY),
+      date: new Date(M - (isRegular ? AGENDA_LAW_OFFSET : PREP_OFFSETS.agenda) * DAY),
       action: "agenda",
-      hint: "生成會議通知（含議程附件），寄給出席、列席與旁聽人員。",
+      hint: isRegular
+        ? "生成會議通知（含議程附件），寄給出席、列席與旁聽人員。祕書處應於常會前四日主動提供議員會議資料並公告相關網站。"
+        : "生成會議通知（含議程附件），寄給出席、列席與旁聽人員。",
+      ...(isRegular
+        ? { source: "學生議會組織及實行準則 §21", sourceHref: "/law/2.0#art-21" }
+        : {}),
     },
     {
       key: "remind",
