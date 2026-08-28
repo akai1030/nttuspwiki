@@ -151,6 +151,7 @@ export async function addProposal(fd: FormData) {
       serialNo: int(fd, "serialNo", 0),
       section: str(fd, "section") || "討論事項",
       title,
+      matterType: optStr(fd, "matterType"),
       proposer: optStr(fd, "proposer"),
       explanation: optStr(fd, "explanation"),
       fileUrl: optStr(fd, "fileUrl"),
@@ -193,9 +194,15 @@ export async function setProposalReview(fd: FormData) {
   const raw = str(fd, "reviewStatus");
   const reviewStatus = (REVIEW_STATUSES as readonly string[]).includes(raw) ? raw : "pending";
   const orderRaw = str(fd, "order");
+  // matterType 一併在這裡改：擬案當下未必分得出類型，會前確認議程時再補是常態。
+  const matterType = fd.has("matterType") ? optStr(fd, "matterType") : undefined;
   await prisma.proposal.update({
     where: { id },
-    data: { reviewStatus, ...(orderRaw ? { order: int(fd, "order", 0) } : {}) },
+    data: {
+      reviewStatus,
+      ...(orderRaw ? { order: int(fd, "order", 0) } : {}),
+      ...(matterType !== undefined ? { matterType } : {}),
+    },
   });
   revalidateMeetingRoutes();
 }

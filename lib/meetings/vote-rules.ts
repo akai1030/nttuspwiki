@@ -55,6 +55,12 @@ export function rulesFor(kind: string, section: string): VoteRule[] {
   return VOTE_RULES.filter((r) => r.scope === scope && r.sections.includes(section));
 }
 
+/** 依 id 取單筆（Proposal.matterType 存的就是 id）。 */
+export function ruleById(id: string | null | undefined): VoteRule | null {
+  if (!id) return null;
+  return VOTE_RULES.find((r) => r.id === id) ?? null;
+}
+
 /** 該會議類別下所有規定（供整頁對照用）。 */
 export function rulesForKind(kind: string): VoteRule[] {
   const scope = kind === "COMMITTEE" ? "committee" : "assembly";

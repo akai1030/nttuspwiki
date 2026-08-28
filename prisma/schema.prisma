@@ -216,6 +216,10 @@ model Proposal {
   // pending（待審，預設）/ passed（通過）/ rejected（不列入議程）。
   // 議程只排除 rejected；pending 照舊會出現，故既有資料行為完全不變。
   reviewStatus String  @default("pending")
+  // 議案類型，對應 data/vote-rules.json 的 id（如 consent／reconsider／impeach）。
+  // 承辦於擬案時選定，決定會中要套哪一條法定表決方式與門檻。
+  // nullable：未選＝未指定，系統不代為歸類（人在迴路）。
+  matterType   String?
   fileUrl     String? // 附件連結（R2 待設定前先用雲端硬碟/URL）
   order       Int      @default(0)
 

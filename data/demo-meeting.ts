@@ -48,6 +48,7 @@ const PROPOSALS = [
     serialNo: 2,
     section: "報告事項",
     title: "祕書處一一五學年度第一學期工作報告",
+    matterType: null,
     proposer: "祕書處",
     explanation: "報告本學期會務推動情形、議事文書處理量與待辦事項。",
     resolution: "洽悉。",
@@ -58,6 +59,7 @@ const PROPOSALS = [
     serialNo: 3,
     section: "討論事項",
     title: "茲提名示範同學擔任財務部部長，請審議案",
+    matterType: "consent",
     proposer: "學生會會長",
     explanation:
       "依《國立臺東大學學生會組織章程》第二十一條規定提請行使人事同意權。\n" +
@@ -71,6 +73,7 @@ const PROPOSALS = [
     serialNo: 4,
     section: "討論事項",
     title: "一一五學年度學生會總預算案，請審議案",
+    matterType: "assembly-general",
     proposer: "行政中心財務部",
     explanation: "預算書、收支明細與各部會編列說明詳附件。本案依 2.3 §8② 應經三讀會議決。",
     resolution: "修正後通過。\n修正為：刪除第三項第二款，其餘照案通過。",
@@ -80,9 +83,13 @@ const PROPOSALS = [
   {
     serialNo: 5,
     section: "選舉事項",
-    title: "程序暨法規委員會正、副主任委員選舉案",
+    title: "第二十一屆學生議會正、副議長選舉案",
+    matterType: "speaker-election",
     proposer: null,
-    explanation: "依《國立臺東大學學生議會各委員會實行細則》第四條，以無記名投票選舉。",
+    // 相對多數決無固定票數門檻，正好示範「無法換算」該長什麼樣。
+    explanation:
+      "依《國立臺東大學學生會組織章程》第三十三條及《國立臺東大學學生議會正、副議長產生及繼任與補選辦法》" +
+      "第二條第二項，由議員以無記名投票互選之，並採相對多數決。",
     resolution: null, // 刻意留空，示範議程會印出空白的「決議：」供現場手寫
     reviewStatus: "passed",
     order: 3,
@@ -91,6 +98,7 @@ const PROPOSALS = [
     serialNo: 6,
     section: "討論事項",
     title: "（示範：程序委員會審定不列入本次議程之提案）",
+    matterType: null,
     proposer: "示範單位",
     explanation: "本案用來示範程委標記「不列入議程」後，該提案不會出現在議程文字上。",
     resolution: null,

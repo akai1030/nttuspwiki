@@ -328,7 +328,8 @@ export const copy = {
       conflict: "條文措辭衝突",
       present: "出席人數",
       totalMembers: "議員總額",
-      tallyHint: "填人數即換算需要幾票（整數運算，不四捨五入）。",
+      tallyHint: "會中點名後填入即可換算（整數運算，不四捨五入）。",
+      tallyLater: "可決門檻的票數換算在下方各提案的決議區 —— 出席人數要到會中點名後才知道。",
       totalMembersConflict:
         "※「議員總額」的定義本身有衝突：2.3 §4② 為「實際報到人數，減除辭職／去職／亡故者」，" +
         "2.0 §13①② 為「扣除請假及離職者之實際在任人數」。兩者會算出不同分母，系統不代為擇一。",
@@ -396,6 +397,10 @@ export const copy = {
       add: "新增提案",
       empty: "尚無提案。",
       delete: "刪除",
+      matterType: "議案類型",
+      matterTypeNone: "未指定（不套用法定表決方式）",
+      matterTypeHint: "選定議案類型後，會顯示該類議案的法定表決方式、可決門檻與法源原文。",
+      matterTypeUnset: "未指定議案類型 —— 在下方「程委審核」列選定後，會中即可換算所需票數。",
       resolution: "決議",
       resolutionPlaceholder: "如：照案通過。／修正後通過，修正為…",
       resolutionSave: "儲存決議",
@@ -590,5 +595,6 @@ export const copy = {
   foot: {
     zh: "國立臺東大學學生議會 · 數位法典暨議事系統",
     en: "NTTU STUDENT ASSOCIATION · 2026",
+    versionHint: "版本 · commit 短碼 · 建置時間（台北）。推版後這裡的時間沒變，就是那次部署沒生效。",
   },
 } as const;

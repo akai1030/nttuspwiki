@@ -9,9 +9,10 @@ import { buildTimeline, daysBetween, PREP_OFFSETS } from "@/lib/meetings/timelin
 import { AGENDA_SECTIONS } from "@/lib/meetings/sections";
 import { formatAddressList, formatEmailList } from "@/lib/meetings/recipients";
 import { meetingKey } from "@/lib/meetings/slug";
-import { rulesForKind } from "@/lib/meetings/vote-rules";
+import { rulesForKind, ruleById } from "@/lib/meetings/vote-rules";
 import { attachmentBaseName, attachmentNameList } from "@/lib/meetings/attachments";
 import { AgendaSectionField } from "@/components/AgendaSectionField";
+import { ProposalTally } from "@/components/ProposalTally";
 import { DEFAULT_OFFSETS } from "@/lib/meetings/reminders";
 import { Input } from "@/components/SearchBox";
 import { CopyBlock, CopyButton } from "@/components/CopyBlock";
@@ -447,6 +448,7 @@ export default async function MeetingDetailPage({ params }: { params: { slug: st
           ) : (
             m.proposals.map((p) => (
               <li key={p.id} className="py-3">
+                {/* 這一案的法定表決方式：由承辦選定的 matterType 決定，系統不代為歸類。 */}
                 <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                   <span className="shrink-0 border border-line-soft px-2 py-0.5 font-ui text-chip leading-none text-meta">
                     附件{p.serialNo}
@@ -490,6 +492,24 @@ export default async function MeetingDetailPage({ params }: { params: { slug: st
                     <option value="passed">{c.proposal.reviewPassed}</option>
                     <option value="rejected">{c.proposal.reviewRejected}</option>
                   </select>
+                  <label className="font-sans text-caption text-meta" htmlFor={`mt-${p.id}`}>
+                    {c.proposal.matterType}
+                  </label>
+                  <select
+                    id={`mt-${p.id}`}
+                    name="matterType"
+                    defaultValue={p.matterType ?? ""}
+                    className="rounded-sm border border-line bg-paper px-2 py-1 font-sans text-caption text-ink focus:border-accent"
+                  >
+                    <option value="">{c.proposal.matterTypeNone}</option>
+                    {rulesForKind(m.kind)
+                      .filter((r) => r.sections.includes(p.section))
+                      .map((r) => (
+                        <option key={r.id} value={r.id}>
+                          {r.matter}
+                        </option>
+                      ))}
+                  </select>
                   <label className="font-sans text-caption text-meta" htmlFor={`ord-${p.id}`}>
                     {c.proposal.order}
                   </label>
@@ -515,6 +535,13 @@ export default async function MeetingDetailPage({ params }: { params: { slug: st
                     {c.proposal.resolution}
                     {p.resolution?.trim() ? "" : `（${c.proposal.resolutionEmpty}）`}
                   </summary>
+                  {ruleById(p.matterType) ? (
+                    <ProposalTally rule={ruleById(p.matterType)!} />
+                  ) : (
+                    <p className="mt-1.5 font-sans text-caption text-meta">
+                      {c.proposal.matterTypeUnset}
+                    </p>
+                  )}
                   <form action={updateProposalResolution} className="mt-1.5">
                     <input type="hidden" name="id" value={p.id} />
                     <textarea
