@@ -39,6 +39,8 @@ function revalidateMeetingRoutes() {
   revalidatePath("/console/meetings/[slug]", "page");
   revalidatePath("/meetings");
   revalidatePath("/meetings/[slug]", "page");
+  revalidatePath("/meetings/[slug]/live", "page");
+  revalidatePath("/console/meetings/[slug]/live", "page");
 }
 
 // —— 會議 ——
@@ -411,4 +413,86 @@ export async function deleteRecipient(fd: FormData) {
     await prisma.recipient.delete({ where: { id } });
     revalidatePath("/console/meetings/recipients");
   }
+}
+
+// ── 現場議事（開會系統）──────────────────────────────────────────────
+// 全部由人操作推進：沒有任何一支 action 會被時鐘或排程觸發。
+// 伺服器存狀態，與會人的畫面只跟隨（既有紀律：主席喊開始才開始）。
+
+const TOTAL_BASIS = ["2.3-4-2", "2.0-13-1"] as const;
+
+/** 開啟／關閉現場議事頁。與 isPublic 無關：後者是議事公開頁的長期公開。 */
+export async function toggleMeetingLive(fd: FormData) {
+  await requireUser();
+  const id = str(fd, "id");
+  if (!id) return;
+  const m = await prisma.meeting.findUnique({ where: { id }, select: { liveOpen: true } });
+  if (!m) return;
+  await prisma.meeting.update({
+    where: { id },
+    data: { liveOpen: !m.liveOpen, liveUpdatedAt: new Date() },
+  });
+  revalidateMeetingRoutes();
+}
+
+/** 主席宣告進入某一案；空值＝目前無進行中議案（休息、宣讀報告等）。 */
+export async function setLiveProposal(fd: FormData) {
+  await requireUser();
+  const id = str(fd, "id");
+  if (!id) return;
+  const proposalId = optStr(fd, "proposalId");
+  // 只接受屬於本場會議的提案，避免手動改表單值指到別場。
+  if (proposalId) {
+    const p = await prisma.proposal.findFirst({
+      where: { id: proposalId, meetingId: id },
+      select: { id: true },
+    });
+    if (!p) return;
+  }
+  await prisma.meeting.update({
+    where: { id },
+    data: { liveProposalId: proposalId, liveUpdatedAt: new Date() },
+  });
+  revalidateMeetingRoutes();
+}
+
+/**
+ * 點名結果。
+ * liveTotalBasis 逐次記錄本次採用哪一部法規的「議員總額」定義 ——
+ * 2.3 §4②（實際報到人數，減除辭職／去職／亡故）與 2.0 §13①②（扣除請假及離職之在任人數）
+ * 兩條衝突且會算出不同分母，系統不代為擇一，只忠實記錄承辦與主席的認定。
+ */
+export async function setLiveAttendance(fd: FormData) {
+  await requireUser();
+  const id = str(fd, "id");
+  if (!id) return;
+  const presentRaw = str(fd, "present");
+  const totalRaw = str(fd, "total");
+  const basisRaw = str(fd, "totalBasis");
+  const num = (v: string) => {
+    const n = Number.parseInt(v, 10);
+    return Number.isFinite(n) && n >= 0 ? n : null;
+  };
+  await prisma.meeting.update({
+    where: { id },
+    data: {
+      livePresent: presentRaw ? num(presentRaw) : null,
+      liveTotal: totalRaw ? num(totalRaw) : null,
+      liveTotalBasis: (TOTAL_BASIS as readonly string[]).includes(basisRaw) ? basisRaw : null,
+      liveUpdatedAt: new Date(),
+    },
+  });
+  revalidateMeetingRoutes();
+}
+
+/** 主席公告（如「休息十分鐘」）。純文字，渲染時轉義。 */
+export async function setLiveNote(fd: FormData) {
+  await requireUser();
+  const id = str(fd, "id");
+  if (!id) return;
+  await prisma.meeting.update({
+    where: { id },
+    data: { liveNote: optStr(fd, "note"), liveUpdatedAt: new Date() },
+  });
+  revalidateMeetingRoutes();
 }

@@ -150,6 +150,12 @@ export default async function MeetingDetailPage({ params }: { params: { slug: st
             </button>
           </form>
           <a
+            href={`/console/meetings/${meetingKey(m)}/live`}
+            className="font-ui text-chip text-accent hover:underline"
+          >
+            {c.live.nav} →
+          </a>
+          <a
             href={`/console/meetings/${meetingKey(m)}/edit`}
             className="border border-line px-4 py-2 font-ui text-caption font-medium leading-none tracking-snug text-ink transition-colors hover:border-accent hover:text-accent"
           >

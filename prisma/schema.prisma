@@ -190,6 +190,16 @@ model Meeting {
   notes            String?           @db.Text // 備註一、二…
   status           MeetingStatus     @default(DRAFT)
   isPublic         Boolean           @default(false) // admin 逐場開；true 才出現在免登入公開頁
+  // ── 現場議事（開會系統）。狀態全部由人操作推進，不得以時鐘自動推算。 ──
+  // liveOpen 與 isPublic 是兩回事：isPublic 是議事公開頁的長期公開，
+  // liveOpen 只在開會當下開啟，讓與會人憑連結看到「現在念到哪一案」。
+  liveOpen         Boolean           @default(false)
+  liveProposalId   String? // 目前進行中的提案（Proposal.id）；null＝尚未開始或已休息
+  livePresent      Int? // 點名後的出席人數
+  liveTotal        Int? // 議員總額
+  liveTotalBasis   String? // 本次採用的總額定義：'2.3-4-2' 或 '2.0-13-1'（兩條衝突，須逐次記錄）
+  liveNote         String? // 主席公告（如「休息十分鐘」），純文字
+  liveUpdatedAt    DateTime? // 最後一次人工操作時間，供與會人判斷畫面是否卡住
   createdById      String // User.id（幹部）
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt

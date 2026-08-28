@@ -318,6 +318,47 @@ export const copy = {
       open: "進入 →",
     },
     kind: { REGULAR: "常會", SPECIAL: "臨時會", COMMITTEE: "委員會" },
+    // 現場議事（開會系統）。祕書／議長的控制台與與會人的看板是同一份資料。
+    live: {
+      nav: "現場議事",
+      title: "現場議事",
+      consoleTitle: "現場議事控制台",
+      lead:
+        "開會當下用。主席宣告進到哪一案、點名結果幾人，按下去與會人的畫面才會跟著變 —— " +
+        "系統不以時鐘推算議程，也沒有倒數計時。",
+      open: "開啟現場議事",
+      close: "關閉現場議事",
+      openState: "現場議事已開啟",
+      closedState: "現場議事未開啟",
+      closedHint: "開啟後，與會人憑下方連結即可看到議程進度（不需登入）。關閉後連結立即失效。",
+      shareLink: "與會人連結",
+      copyLink: "複製連結",
+      current: "現在討論",
+      currentNone: "目前無進行中的議案（尚未開始、休息中，或正在處理程序事項）。",
+      setCurrent: "宣告進入本案",
+      clearCurrent: "結束本案（回到無進行中議案）",
+      agenda: "議程進度",
+      done: "已有決議",
+      attendance: "點名結果",
+      attendanceNone: "尚未登記出席人數。",
+      saveAttendance: "登記",
+      totalBasis: "議員總額採用之定義",
+      totalBasisLabel: {
+        "2.3-4-2": "《議會暨常會職權行使法》§4② 實際報到人數，減除辭職／去職／亡故者",
+        "2.0-13-1": "《議會組織及實行準則》§13①② 扣除請假及離職者之實際在任人數",
+      } as Record<string, string>,
+      totalBasisNone: "未指定",
+      totalBasisHint:
+        "兩部法規對「議員總額」的定義不同，會算出不同的開議與表決分母。系統不代為擇一，" +
+        "請依主席或議會決議選定並逐次記錄。",
+      note: "主席公告",
+      notePlaceholder: "如：休息十分鐘、本案暫緩討論",
+      saveNote: "公告",
+      noRule: "本案未指定議案類型，故不顯示法定表決方式。可於中控台的提案列補選。",
+      lastUpdated: "最後操作",
+      notOpen: "本場會議目前未開啟現場議事。",
+      notOpenHint: "會議進行中由祕書處開啟；若你正在與會而看到這頁，請通知祕書處。",
+    },
     // 法定表決方式提示。法規全庫查無「匿名」一詞，一律寫「無記名／記名」。
     voteRule: {
       heading: "本分節相關的法定表決方式",

@@ -112,3 +112,55 @@ export function getPublicMeetingByKey(key: string) {
 }
 
 export type PublicMeetingDetail = NonNullable<Awaited<ReturnType<typeof getPublicMeetingByKey>>>;
+
+/**
+ * 現場議事頁（與會人用，免登入）。
+ * 只有主席／祕書按下「開啟現場議事」後才查得到；關掉即刻消失。
+ *
+ * 白名單同 getPublicMeetingByKey 的精神：不露收件人、通知草稿、內部備註、建立者。
+ * 提案只露議程上本來就會印的欄位（案由／分節／提案人／說明／決議），
+ * 說明在此露出是因為主席宣讀議案時與會人需要跟著看 —— 這比公開頁多一項，
+ * 但現場議事頁本來就是給與會人的，且僅在會議進行中開啟。
+ */
+export function getLiveMeetingByKey(key: string) {
+  return prisma.meeting.findFirst({
+    where: { liveOpen: true, OR: [{ slug: key }, { id: key }] },
+    select: {
+      id: true,
+      slug: true,
+      session: true,
+      academicYear: true,
+      name: true,
+      kind: true,
+      meetingAt: true,
+      location: true,
+      status: true,
+      liveOpen: true,
+      liveProposalId: true,
+      livePresent: true,
+      liveTotal: true,
+      liveTotalBasis: true,
+      liveNote: true,
+      liveUpdatedAt: true,
+      proposals: {
+        where: { reviewStatus: { not: "rejected" } },
+        orderBy: [{ order: "asc" }, { serialNo: "asc" }],
+        select: {
+          id: true,
+          serialNo: true,
+          section: true,
+          title: true,
+          proposer: true,
+          explanation: true,
+          resolution: true,
+          matterType: true,
+          order: true,
+        },
+      },
+      // 明確不選：meetingUrl（連結只發給收件人，公開等於繞過身分控管）、
+      // notes、docNumber、recipients、notices、createdById
+    },
+  });
+}
+
+export type LiveMeeting = NonNullable<Awaited<ReturnType<typeof getLiveMeetingByKey>>>;

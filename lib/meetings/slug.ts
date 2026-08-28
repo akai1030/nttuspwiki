@@ -20,6 +20,7 @@ export const RESERVED = new Set([
   "schedule",
   "api",
   "votes",
+  "live",
 ]);
 
 /** slug 不得長得像 cuid，否則 `OR: [{slug}, {id}]` 查詢有歧義。 */
