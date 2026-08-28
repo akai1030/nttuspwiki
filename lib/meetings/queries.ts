@@ -164,3 +164,15 @@ export function getLiveMeetingByKey(key: string) {
 }
 
 export type LiveMeeting = NonNullable<Awaited<ReturnType<typeof getLiveMeetingByKey>>>;
+
+/**
+ * 建立新會議時的預設值來源：最近一場會議的「不太會變」欄位。
+ * 只取屆別與地點 —— 會議名稱、連結、文號、時間每場都不同，沿用反而會出錯
+ * （尤其會議連結：帶錯房號的開會通知寄出去就收不回來了）。
+ */
+export function latestMeetingDefaults() {
+  return prisma.meeting.findFirst({
+    orderBy: { meetingAt: "desc" },
+    select: { session: true, location: true },
+  });
+}

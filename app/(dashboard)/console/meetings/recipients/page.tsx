@@ -13,6 +13,17 @@ export const metadata: Metadata = {
 
 const c = copy.meetings.recipients;
 
+/**
+ * 名冊列的欄寬。標題列與每一列共用同一組 template，各列才會對齊成表格。
+ * 姓名與 Email 彈性、身分與屆別固定、儲存鈕自適應、最右是狀態與操作。
+ * hero 斷點以下改為單欄堆疊（手機上欄位擠在一起反而更難點）。
+ */
+const COLS =
+  "hero:grid-cols-[minmax(0,1fr)_minmax(0,2.2fr)_6rem_4.5rem_auto_minmax(0,auto)]";
+
+/** 列內輸入框：填滿自己的 grid 格子，高度壓到 caption 級距。 */
+const cell = "!py-1 text-caption";
+
 export default async function RecipientsPage() {
   // 名冊含學號/手機/科系（個資），viewer 不得讀；officer（祕書處）需要維護名單故保留。
   await requireRole(["admin", "officer"]);
@@ -85,69 +96,102 @@ export default async function RecipientsPage() {
             {c.empty}
           </p>
         ) : (
-          <ul className="divide-y divide-line-soft border-y border-line-soft">
-            {recipients.map((r) => {
-              const roster = [
-                r.studentId && `${c.studentId} ${r.studentId}`,
-                [r.department, r.grade].filter(Boolean).join(" "),
-                r.district && r.district !== r.department && `${c.district} ${r.district}`,
-                r.phone && `${c.phone} ${r.phone}`,
-              ].filter(Boolean);
-              return (
-              <li key={r.id} className="py-3">
-                <div className="flex flex-wrap items-end gap-2">
-                <form action={updateRecipient} className="flex flex-1 flex-wrap items-end gap-2">
-                  <input type="hidden" name="id" value={r.id} />
-                  <Input name="name" defaultValue={r.name} aria-label={c.name} className="w-28 !py-1.5 text-caption" />
-                  <Input name="email" type="email" defaultValue={r.email} aria-label={c.email} className="w-52 !py-1.5 text-caption" />
-                  <select
-                    name="roleTag"
-                    defaultValue={r.roleTag}
-                    aria-label={c.roleTag}
-                    className="rounded-sm border border-line bg-paper px-2 py-1.5 font-sans text-caption text-ink focus:border-accent"
-                  >
-                    <option>議員</option>
-                    <option>列席</option>
-                    <option>旁聽</option>
-                    <option>祕書處</option>
-                  </select>
-                  <Input name="session" type="number" defaultValue={r.session} aria-label={c.session} className="w-16 !py-1.5 text-caption" />
-                  <button
-                    type="submit"
-                    className="border border-ink bg-ink px-2.5 py-1.5 font-ui text-chip leading-none text-white transition-colors hover:border-accent hover:bg-accent"
-                  >
-                    {c.save}
-                  </button>
-                </form>
-                <span className={"font-ui text-chip " + (r.active ? "text-accent" : "text-meta")}>
-                  {r.active ? c.active : c.inactive}
-                </span>
-                <form action={toggleRecipient}>
-                  <input type="hidden" name="id" value={r.id} />
-                  <button
-                    type="submit"
-                    className="border border-line px-2.5 py-1.5 font-ui text-chip leading-none text-ink transition-colors hover:border-accent hover:text-accent"
-                  >
-                    {c.toggle}
-                  </button>
-                </form>
-                <form action={deleteRecipient}>
-                  <input type="hidden" name="id" value={r.id} />
-                  <button
-                    type="submit"
-                    className="font-ui text-chip text-meta transition-colors hover:text-warn-ink"
-                  >
-                    {c.del}
-                  </button>
-                </form>
-                </div>
-                {roster.length > 0 && (
-                  <p className="mt-1.5 font-sans text-caption text-meta">{roster.join("・")}</p>
-                )}
-              </li>
-              );
-            })}
-          </ul>
+          <>
+            {/* 欄位標題只出現一次；每列的輸入框改用 aria-label 對應。 */}
+            <div
+              className={`hidden border-b border-line pb-1.5 font-sans text-caption text-meta hero:grid ${COLS}`}
+            >
+              <span>{c.name}</span>
+              <span>{c.email}</span>
+              <span>{c.roleTag}</span>
+              <span>{c.session}</span>
+              <span className="sr-only">{c.save}</span>
+              <span className="justify-self-end">{c.state}</span>
+            </div>
+
+            <ul className="divide-y divide-line-soft border-b border-line-soft">
+              {recipients.map((r) => {
+                const roster = [
+                  r.studentId && `${c.studentId} ${r.studentId}`,
+                  [r.department, r.grade].filter(Boolean).join(" "),
+                  r.district && r.district !== r.department && `${c.district} ${r.district}`,
+                  r.phone && `${c.phone} ${r.phone}`,
+                ].filter(Boolean);
+                return (
+                  <li key={r.id} className={`items-center gap-x-2 gap-y-1.5 py-1.5 hero:grid ${COLS}`}>
+                    {/* display:contents 讓表單的欄位直接落進外層 grid，各列才會對齊成表格。 */}
+                    <form action={updateRecipient} className="contents">
+                      <input type="hidden" name="id" value={r.id} />
+                      <Input name="name" defaultValue={r.name} aria-label={c.name} className={cell} />
+                      <Input
+                        name="email"
+                        type="email"
+                        defaultValue={r.email}
+                        aria-label={c.email}
+                        className={cell}
+                      />
+                      <select
+                        name="roleTag"
+                        defaultValue={r.roleTag}
+                        aria-label={c.roleTag}
+                        className={`w-full rounded-sm border border-line bg-paper px-2 py-1 font-sans text-caption text-ink focus:border-accent`}
+                      >
+                        <option>議員</option>
+                        <option>列席</option>
+                        <option>旁聽</option>
+                        <option>祕書處</option>
+                      </select>
+                      <Input
+                        name="session"
+                        type="number"
+                        defaultValue={r.session}
+                        aria-label={c.session}
+                        className={cell}
+                      />
+                      <button
+                        type="submit"
+                        className="border border-ink bg-ink px-2.5 py-1 font-ui text-chip leading-none text-white transition-colors hover:border-accent hover:bg-accent"
+                      >
+                        {c.save}
+                      </button>
+                    </form>
+
+                    <div className="flex items-center justify-end gap-2">
+                      <span
+                        className={"font-ui text-chip " + (r.active ? "text-accent" : "text-meta")}
+                      >
+                        {r.active ? c.active : c.inactive}
+                      </span>
+                      <form action={toggleRecipient}>
+                        <input type="hidden" name="id" value={r.id} />
+                        <button
+                          type="submit"
+                          className="border border-line px-2 py-1 font-ui text-chip leading-none text-ink transition-colors hover:border-accent hover:text-accent"
+                        >
+                          {c.toggle}
+                        </button>
+                      </form>
+                      <form action={deleteRecipient}>
+                        <input type="hidden" name="id" value={r.id} />
+                        <button
+                          type="submit"
+                          className="font-ui text-chip text-meta transition-colors hover:text-warn-ink"
+                        >
+                          {c.del}
+                        </button>
+                      </form>
+                    </div>
+
+                    {roster.length > 0 && (
+                      <p className="font-sans text-caption text-meta hero:col-span-6">
+                        {roster.join("・")}
+                      </p>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </>
         )}
       </div>
     </main>

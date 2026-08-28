@@ -565,6 +565,7 @@ export const copy = {
       active: "啟用中",
       inactive: "已停用",
       toggle: "啟用／停用",
+      state: "狀態",
       save: "儲存",
       del: "刪除",
       memberN: (n: number) => `第21屆議員名冊 ${n} 位`,

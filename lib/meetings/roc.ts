@@ -106,3 +106,22 @@ export function toTaipeiInputValue(d: Date): string {
   for (const p of f.formatToParts(d)) m[p.type] = p.value;
   return `${m.year}-${m.month}-${m.day}T${m.hour}:${m.minute}`;
 }
+
+/**
+ * 由日期推出「N學年度第M學期」。
+ *
+ * 台灣學年度以 8 月為界，**上學期會跨年**：
+ *   8–12 月 → 該民國年學年度、第 1 學期
+ *   1 月    → 前一民國年學年度、第 1 學期（上學期的尾巴，不是下學期）
+ *   2–7 月  → 前一民國年學年度、第 2 學期
+ * 例：115年8月 → 115學年度第1學期；115年1月 → 114學年度第1學期；
+ *     115年7月 → 114學年度第2學期（與既有的七月議會臨時會資料相符）。
+ *
+ * 供「建立會議」表單預填 —— 這個欄位每學期只會變一次，不該每場手打。
+ */
+export function academicTermOf(d: Date): string {
+  const { rocYear, month } = rocParts(d);
+  const year = month >= 8 ? rocYear : rocYear - 1;
+  const term = month >= 8 || month === 1 ? 1 : 2;
+  return `${year}學年度第${term}學期`;
+}
