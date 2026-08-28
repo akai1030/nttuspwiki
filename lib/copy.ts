@@ -224,6 +224,7 @@ export const copy = {
     upcoming: "即將召開",
     past: "已召開",
     detail: {
+      resolution: "決議",
       infoTitle: "會議資訊",
       agendaTitle: "議程",
       timelineTitle: "籌備時程",
@@ -304,6 +305,8 @@ export const copy = {
     backToConsole: "← 回中控台",
     copy: "複製",
     copied: "已複製",
+    copiedRich: "已複製（含格式）",
+    copyFailed: "複製失敗，改按純文字",
     list: {
       newMeeting: "建立會議",
       recipients: "收件人名單",
@@ -315,6 +318,29 @@ export const copy = {
       open: "進入 →",
     },
     kind: { REGULAR: "常會", SPECIAL: "臨時會", COMMITTEE: "委員會" },
+    // 法定表決方式提示。法規全庫查無「匿名」一詞，一律寫「無記名／記名」。
+    voteRule: {
+      heading: "本分節相關的法定表決方式",
+      intro: "以下為本會自治法規對這個分節可能涉及之議案的規定，供承辦擬案時參考。",
+      method: "表決方式",
+      threshold: "可決門檻",
+      unspecified: "法未規定",
+      conflict: "條文措辭衝突",
+      present: "出席人數",
+      totalMembers: "議員總額",
+      tallyHint: "填人數即換算需要幾票（整數運算，不四捨五入）。",
+      totalMembersConflict:
+        "※「議員總額」的定義本身有衝突：2.3 §4② 為「實際報到人數，減除辭職／去職／亡故者」，" +
+        "2.0 §13①② 為「扣除請假及離職者之實際在任人數」。兩者會算出不同分母，系統不代為擇一。",
+      need: "需要 ",
+      votesOf: (base: string, n: number) => ` 票（${base} ${n} 人）`,
+      needInput: (base: string) => `填入${base}即可換算`,
+      cannotCompute: "無法換算",
+      none: "本分節在 38 部法規中查無表決方式之特別規定，適用一般表決規定。",
+      disclaimer:
+        "系統只列出規定，不判斷本案屬於哪一類議案、不計票、不認定通過與否。" +
+        "議案歸類與表決結果之宣告，由承辦與主席依法為之。",
+    },
     status: { DRAFT: "建置中", NOTICED: "已發通知", HELD: "已召開", CLOSED: "已結案" },
     form: {
       createTitle: "建立會議",
@@ -336,6 +362,10 @@ export const copy = {
       notesPlaceholder: "二、…（一為提案截止，系統自動帶入）",
       submit: "建立",
       required: "屆別、學年度學期、會議名稱、會議時間為必填。",
+      slug: "網址",
+      slugHint: "小寫英數與連字號。留空維持原網址。改網址後舊網址會自動轉址，不會失效。",
+      slugInvalid: "網址格式不正確（限小寫英數與連字號，2–64 字，且不得為保留字）。",
+      slugTaken: "這個網址已被其他會議使用。",
     },
     detail: {
       infoTitle: "會議資訊",
@@ -366,6 +396,29 @@ export const copy = {
       add: "新增提案",
       empty: "尚無提案。",
       delete: "刪除",
+      resolution: "決議",
+      resolutionPlaceholder: "如：照案通過。／修正後通過，修正為…",
+      resolutionSave: "儲存決議",
+      resolutionEmpty: "尚未填寫",
+      review: "程委審核",
+      reviewPending: "待審",
+      reviewPassed: "通過",
+      reviewRejected: "不列入議程",
+      reviewSave: "儲存",
+      order: "議程順序",
+      reviewHint:
+        "程序委員會審定的順序與結果。標為「不列入議程」的提案不會出現在議程文字上；" +
+        "「待審」照常列入。法源：《國立臺東大學學生議會暨常會職權行使法》第 9 條第 2 款" +
+        "「行政中心或學生議員提出之議案，應先送程序委員會」。",
+      fileName: "附件檔名",
+      copyFileName: "複製檔名",
+      copyAllFileNames: "複製全部檔名",
+      fileNameHint:
+        "照你現行的「附件序_案由」慣例產生，複製後直接貼去改檔名，案由不用再打第二次。",
+      resolutionHint:
+        "會後補填。決議會帶進議程文字，並在會議設為公開後顯示於議事公開頁。" +
+        "《國立臺東大學學生會組織章程》第 27 條第 3 款：會長應於收到議會決議案七日內公告，" +
+        "未公告亦未移請覆議者，由學生議會祕書處公告，公告後決議案即生效。",
     },
     timeline: {
       title: "籌備時間軸",
@@ -406,6 +459,21 @@ export const copy = {
       copySubject: "複製主旨",
       copyBody: "複製內文",
       copyRecipients: "複製收件人",
+      copyRecipientsPlain: "複製收件人（僅信箱）",
+      copyBodyPlain: "複製內文（純文字）",
+      previewRich: "格式預覽",
+      richHint:
+        "「複製內文」會連同格式一起複製（日期紅字粗體、附件綠字底線、〔…〕螢光底），" +
+        "貼進 Gmail 撰寫視窗即為下方預覽的樣子。若瀏覽器不支援，請改按「複製內文（純文字）」。",
+      openInGmail: "在 Gmail 開啟草稿",
+      openInGmailHint:
+        "會在瀏覽器開啟 Gmail 撰寫視窗並帶入密件副本與主旨（網站不會碰到你的信箱，也不會代寄）。" +
+        "若同時登入多個帳號，請先確認開出來的是官方信箱那個。",
+      subjectPrefix: "主旨前綴",
+      subjectPrefixPlaceholder: "檔案更正",
+      subjectPrefixHint: "補寄更正版時用；留空即為一般主旨。",
+      recipientsSent: "收件人",
+      recipientsMissing: (n: number) => `${n} 筆已從名冊移除`,
       latest: "最近生成",
       none: "尚未生成任何通知。",
       del: "刪除",

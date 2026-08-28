@@ -1,12 +1,17 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/guard";
-import { getMeeting, listRecipients } from "@/lib/meetings/queries";
+import { getMeetingByKey, listRecipients } from "@/lib/meetings/queries";
 import { rocDateTimeFull, rocDeadline, rocDate } from "@/lib/meetings/roc";
 import { buildAgendaText } from "@/lib/meetings/agenda";
 import { buildTimeline, daysBetween, PREP_OFFSETS } from "@/lib/meetings/timeline";
 import { AGENDA_SECTIONS } from "@/lib/meetings/sections";
+import { formatAddressList, formatEmailList } from "@/lib/meetings/recipients";
+import { meetingKey } from "@/lib/meetings/slug";
+import { rulesForKind } from "@/lib/meetings/vote-rules";
+import { attachmentBaseName, attachmentNameList } from "@/lib/meetings/attachments";
+import { AgendaSectionField } from "@/components/AgendaSectionField";
 import { DEFAULT_OFFSETS } from "@/lib/meetings/reminders";
 import { Input } from "@/components/SearchBox";
 import { CopyBlock, CopyButton } from "@/components/CopyBlock";
@@ -15,6 +20,8 @@ import { copy } from "@/lib/copy";
 import {
   addProposal,
   deleteProposal,
+  updateProposalResolution,
+  setProposalReview,
   generateNoticeAction,
   addReminder,
   markReminderDone,
@@ -66,10 +73,13 @@ function SecHead({
   );
 }
 
-export default async function MeetingDetailPage({ params }: { params: { id: string } }) {
+export default async function MeetingDetailPage({ params }: { params: { slug: string } }) {
   await requireUser();
-  const m = await getMeeting(params.id);
+  const m = await getMeetingByKey(params.slug);
   if (!m) notFound();
+  // 以舊 cuid 或非正規鍵進來 → 轉到 slug。用 307（Next 預設）不用 308：
+  // slug 允許手動改，308 會被瀏覽器永久快取成一條清不掉的死映射。
+  if (m.slug && m.slug !== params.slug) redirect(`/console/meetings/${m.slug}`);
 
   const allRecipients = await listRecipients();
   const activeRecipients = allRecipients.filter((r) => r.active);
@@ -116,7 +126,7 @@ export default async function MeetingDetailPage({ params }: { params: { id: stri
         <div className="flex flex-wrap items-center gap-2">
           {m.isPublic ? (
             <a
-              href={`/meetings/${m.id}`}
+              href={`/meetings/${meetingKey(m)}`}
               target="_blank"
               rel="noreferrer"
               className="font-ui text-caption text-accent hover:underline"
@@ -139,7 +149,7 @@ export default async function MeetingDetailPage({ params }: { params: { id: stri
             </button>
           </form>
           <a
-            href={`/console/meetings/${m.id}/edit`}
+            href={`/console/meetings/${meetingKey(m)}/edit`}
             className="border border-line px-4 py-2 font-ui text-caption font-medium leading-none tracking-snug text-ink transition-colors hover:border-accent hover:text-accent"
           >
             {c.detail.edit}
@@ -418,30 +428,112 @@ export default async function MeetingDetailPage({ params }: { params: { id: stri
 
       {/* 提案 */}
       <section className={`${SEC.proposals.card} mt-6`}>
-        <SecHead s={SEC.proposals} title={c.detail.proposalsTitle} />
+        <SecHead
+          s={SEC.proposals}
+          title={c.detail.proposalsTitle}
+          right={
+            m.proposals.length > 0 ? (
+              <CopyButton text={attachmentNameList(m.proposals)} label={c.proposal.copyAllFileNames} />
+            ) : undefined
+          }
+        />
+        <p className="mt-2 font-sans text-caption text-meta">{c.proposal.fileNameHint}</p>
+        <p className="mt-1 font-sans text-caption text-meta">{c.proposal.reviewHint}</p>
+        <p className="mt-1 font-sans text-caption text-meta">{c.proposal.resolutionHint}</p>
 
         <ul className="mt-4 divide-y divide-line-soft">
           {m.proposals.length === 0 ? (
             <li className="py-2 font-sans text-caption text-meta">{c.proposal.empty}</li>
           ) : (
             m.proposals.map((p) => (
-              <li key={p.id} className="flex flex-wrap items-baseline gap-x-3 gap-y-1 py-3">
-                <span className="shrink-0 border border-line-soft px-2 py-0.5 font-ui text-chip leading-none text-meta">
-                  附件{p.serialNo}
-                </span>
-                <span className="shrink-0 font-ui text-chip text-accent">{p.section}</span>
-                <span className="min-w-0 flex-1 font-sans text-body text-ink">{p.title}</span>
-                {p.proposer ? <span className="font-sans text-caption text-meta">{p.proposer}</span> : null}
-                <form action={deleteProposal}>
+              <li key={p.id} className="py-3">
+                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                  <span className="shrink-0 border border-line-soft px-2 py-0.5 font-ui text-chip leading-none text-meta">
+                    附件{p.serialNo}
+                  </span>
+                  <span className="shrink-0 font-ui text-chip text-accent">{p.section}</span>
+                  <span className="min-w-0 flex-1 font-sans text-body text-ink">{p.title}</span>
+                  {p.proposer ? <span className="font-sans text-caption text-meta">{p.proposer}</span> : null}
+                  <form action={deleteProposal}>
+                    <input type="hidden" name="id" value={p.id} />
+                    <input type="hidden" name="meetingId" value={m.id} />
+                    <button
+                      type="submit"
+                      className="font-ui text-chip text-meta transition-colors hover:text-warn-ink"
+                    >
+                      {c.proposal.delete}
+                    </button>
+                  </form>
+                </div>
+                <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1.5">
+                  <span className="font-sans text-caption text-meta">{c.proposal.fileName}</span>
+                  <code className="min-w-0 break-all font-sans text-caption text-ink">
+                    {attachmentBaseName(p.serialNo, p.title)}
+                  </code>
+                  <CopyButton
+                    text={attachmentBaseName(p.serialNo, p.title)}
+                    label={c.proposal.copyFileName}
+                  />
+                </div>
+                <form
+                  action={setProposalReview}
+                  className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1.5"
+                >
                   <input type="hidden" name="id" value={p.id} />
-                  <input type="hidden" name="meetingId" value={m.id} />
+                  <span className="font-sans text-caption text-meta">{c.proposal.review}</span>
+                  <select
+                    name="reviewStatus"
+                    defaultValue={p.reviewStatus}
+                    className="rounded-sm border border-line bg-paper px-2 py-1 font-sans text-caption text-ink focus:border-accent"
+                  >
+                    <option value="pending">{c.proposal.reviewPending}</option>
+                    <option value="passed">{c.proposal.reviewPassed}</option>
+                    <option value="rejected">{c.proposal.reviewRejected}</option>
+                  </select>
+                  <label className="font-sans text-caption text-meta" htmlFor={`ord-${p.id}`}>
+                    {c.proposal.order}
+                  </label>
+                  <input
+                    id={`ord-${p.id}`}
+                    name="order"
+                    type="number"
+                    defaultValue={p.order}
+                    className="w-20 rounded-sm border border-line bg-paper px-2 py-1 font-sans text-caption text-ink focus:border-accent"
+                  />
                   <button
                     type="submit"
-                    className="font-ui text-chip text-meta transition-colors hover:text-warn-ink"
+                    className="border border-line px-3 py-1 font-ui text-caption font-medium leading-none tracking-snug text-ink transition-colors hover:border-accent hover:text-accent"
                   >
-                    {c.proposal.delete}
+                    {c.proposal.reviewSave}
                   </button>
+                  {p.reviewStatus === "rejected" ? (
+                    <span className="font-ui text-chip text-warn-ink">{c.proposal.reviewRejected}</span>
+                  ) : null}
                 </form>
+                <details className="mt-1.5" open={Boolean(p.resolution?.trim())}>
+                  <summary className="cursor-pointer font-sans text-caption font-medium text-accent">
+                    {c.proposal.resolution}
+                    {p.resolution?.trim() ? "" : `（${c.proposal.resolutionEmpty}）`}
+                  </summary>
+                  <form action={updateProposalResolution} className="mt-1.5">
+                    <input type="hidden" name="id" value={p.id} />
+                    <textarea
+                      name="resolution"
+                      rows={2}
+                      defaultValue={p.resolution ?? ""}
+                      placeholder={c.proposal.resolutionPlaceholder}
+                      className="w-full rounded-sm border border-line bg-paper px-3.5 py-2.5 font-sans text-body text-ink placeholder:text-meta focus:border-accent"
+                    />
+                    <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                      <button
+                        type="submit"
+                        className="border border-line px-3 py-1.5 font-ui text-caption font-medium leading-none tracking-snug text-ink transition-colors hover:border-accent hover:text-accent"
+                      >
+                        {c.proposal.resolutionSave}
+                      </button>
+                    </div>
+                  </form>
+                </details>
               </li>
             ))
           )}
@@ -456,23 +548,11 @@ export default async function MeetingDetailPage({ params }: { params: { id: stri
             </label>
             <Input id="p-serial" name="serialNo" type="number" defaultValue={m.proposals.length + 2} />
           </div>
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="p-section" className="font-sans text-caption font-medium text-ink">
-              {c.proposal.section}
-            </label>
-            <select
-              id="p-section"
-              name="section"
-              defaultValue="討論事項"
-              className="w-full rounded-sm border border-line bg-paper px-3.5 py-2.5 font-sans text-body text-ink focus:border-accent"
-            >
-              {AGENDA_SECTIONS.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
-          </div>
+          <AgendaSectionField
+            rules={rulesForKind(m.kind)}
+            sections={AGENDA_SECTIONS}
+            defaultSection="討論事項"
+          />
           <div className="flex flex-col gap-1.5 hero:col-span-2">
             <label htmlFor="p-title" className="font-sans text-caption font-medium text-ink">
               {c.proposal.title}
@@ -574,6 +654,13 @@ export default async function MeetingDetailPage({ params }: { params: { id: stri
               </label>
               <Input id="n-email" name="contactEmail" type="email" />
             </div>
+            <div className="flex flex-col gap-1.5 hero:col-span-2">
+              <label htmlFor="n-prefix" className="font-sans text-caption font-medium text-ink">
+                {c.notice.subjectPrefix}
+              </label>
+              <Input id="n-prefix" name="subjectPrefix" placeholder={c.notice.subjectPrefixPlaceholder} />
+              <p className="font-sans text-caption text-meta">{c.notice.subjectPrefixHint}</p>
+            </div>
           </div>
 
           <div className="mt-4">
@@ -619,11 +706,12 @@ export default async function MeetingDetailPage({ params }: { params: { id: stri
             <ul className="mt-3 flex flex-col gap-5">
               {m.notices.slice(0, 5).map((n) => {
                 const ids = Array.isArray(n.recipientIds) ? (n.recipientIds as string[]) : [];
-                const emails = ids
+                const picked = ids
                   .map((id) => recipientMap.get(id))
-                  .filter((r): r is NonNullable<typeof r> => Boolean(r))
-                  .map((r) => r.email)
-                  .join(", ");
+                  .filter((r): r is NonNullable<typeof r> => Boolean(r));
+                const addressList = formatAddressList(picked);
+                const emailList = formatEmailList(picked);
+                const missing = ids.length - picked.length;
                 return (
                   <li key={n.id} className="border border-line-soft">
                     <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line-soft bg-paper2 px-3 py-2">
@@ -632,8 +720,12 @@ export default async function MeetingDetailPage({ params }: { params: { id: stri
                       </span>
                       <div className="flex flex-wrap gap-2">
                         <CopyButton text={n.subject} label={c.notice.copySubject} />
-                        <CopyButton text={n.bodyText} label={c.notice.copyBody} />
-                        {emails ? <CopyButton text={emails} label={c.notice.copyRecipients} /> : null}
+                        <CopyButton
+                          text={n.bodyText}
+                          html={n.bodyHtml ?? undefined}
+                          label={c.notice.copyBody}
+                        />
+                        {addressList ? <CopyButton text={addressList} label={c.notice.copyRecipients} /> : null}
                         <PrintButton heading={n.subject} body={n.bodyText} label={c.notice.pdf} filename={n.subject} />
                         <form action={deleteNotice}>
                           <input type="hidden" name="id" value={n.id} />
@@ -658,10 +750,52 @@ export default async function MeetingDetailPage({ params }: { params: { id: stri
                           {n.bodyText}
                         </pre>
                       </details>
-                      {emails ? (
-                        <p className="mt-2 break-words font-sans text-caption text-meta">
-                          {c.notice.recipients}：{emails}
-                        </p>
+                      {addressList ? (
+                        <details className="mt-2">
+                          <summary className="cursor-pointer font-sans text-caption font-medium text-accent">
+                            {c.notice.recipientsSent}（{picked.length}
+                            {missing > 0 ? `／${ids.length}` : ""}）
+                          </summary>
+                          <p className="mt-1.5 break-words font-sans text-caption text-meta">{addressList}</p>
+                          {missing > 0 ? (
+                            <p className="mt-1 font-sans text-caption text-meta">
+                              {c.notice.recipientsMissing(missing)}
+                            </p>
+                          ) : null}
+                          <div className="mt-2 flex flex-wrap items-center gap-2">
+                            <CopyButton text={emailList} label={c.notice.copyRecipientsPlain} />
+                            <a
+                              href={`https://mail.google.com/mail/u/0/?fs=1&tf=cm&bcc=${encodeURIComponent(
+                                emailList
+                              )}&su=${encodeURIComponent(n.subject)}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="border border-line px-3 py-1.5 font-ui text-caption font-medium leading-none tracking-snug text-ink transition-colors hover:border-accent hover:text-accent"
+                            >
+                              {c.notice.openInGmail}
+                            </a>
+                          </div>
+                          <p className="mt-1.5 font-sans text-caption text-meta">
+                            {c.notice.openInGmailHint}
+                          </p>
+                        </details>
+                      ) : null}
+                      {n.bodyHtml ? (
+                        <details className="mt-2">
+                          <summary className="cursor-pointer font-sans text-caption font-medium text-accent">
+                            {c.notice.previewRich}
+                          </summary>
+                          <p className="mt-1.5 font-sans text-caption text-meta">{c.notice.richHint}</p>
+                          <div className="mt-1.5 flex flex-wrap gap-2">
+                            <CopyButton text={n.bodyText} label={c.notice.copyBodyPlain} />
+                          </div>
+                          <iframe
+                            title={c.notice.previewRich}
+                            srcDoc={`<meta charset="utf-8"><div style="font-family:Arial,'Noto Sans TC',sans-serif;font-size:small;line-height:1.4;color:#222;background:#fff;padding:8px">${n.bodyHtml}</div>`}
+                            sandbox=""
+                            className="mt-1.5 h-[24rem] w-full border border-line-soft bg-white"
+                          />
+                        </details>
                       ) : null}
                     </div>
                   </li>

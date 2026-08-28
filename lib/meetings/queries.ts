@@ -11,12 +11,16 @@ export function listMeetings() {
   });
 }
 
-export function getMeeting(id: string) {
-  return prisma.meeting.findUnique({
-    where: { id },
+/**
+ * 會議詳情。`key` 可為 slug 或舊 cuid（外流的 cuid 網址無法枚舉通知，故永久支援）。
+ * slug.ts 的 validateSlug 已禁止 slug 長成 cuid 形，兩者不會互相誤命中。
+ */
+export function getMeetingByKey(key: string) {
+  return prisma.meeting.findFirst({
+    where: { OR: [{ slug: key }, { id: key }] },
     include: {
       proposals: { orderBy: [{ order: "asc" }, { serialNo: "asc" }] },
-      notices: { orderBy: { createdAt: "desc" } },
+      notices: { orderBy: { createdAt: "desc" }, take: 5 },
       reminders: { orderBy: { fireAt: "asc" } },
       milestones: { orderBy: { at: "asc" } },
     },
@@ -47,7 +51,7 @@ export function listUpcomingReminders(limit = 50) {
 }
 
 export type MeetingWithCounts = Awaited<ReturnType<typeof listMeetings>>[number];
-export type MeetingDetail = NonNullable<Awaited<ReturnType<typeof getMeeting>>>;
+export type MeetingDetail = NonNullable<Awaited<ReturnType<typeof getMeetingByKey>>>;
 
 // ── 公開（免登入）：只回安全欄位，絕不含收件人/通知草稿/內部備註 ──
 
@@ -57,6 +61,7 @@ export function listPublicMeetings() {
     orderBy: { meetingAt: "desc" },
     select: {
       id: true,
+      slug: true,
       session: true,
       academicYear: true,
       name: true,
@@ -68,11 +73,13 @@ export function listPublicMeetings() {
   });
 }
 
-export function getPublicMeeting(id: string) {
+/** 公開會議詳情。`key` 同上吃 slug 或舊 cuid；isPublic 白名單不變。 */
+export function getPublicMeetingByKey(key: string) {
   return prisma.meeting.findFirst({
-    where: { id, isPublic: true },
+    where: { isPublic: true, OR: [{ slug: key }, { id: key }] },
     select: {
       id: true,
+      slug: true,
       session: true,
       academicYear: true,
       name: true,
@@ -83,10 +90,20 @@ export function getPublicMeeting(id: string) {
       docNumber: true,
       proposalDeadline: true,
       status: true,
-      // 提案只露案由/分節/提案人；不露說明與附件連結（可能未定/內部）
+      // 提案只露案由/分節/提案人/決議；不露說明與附件連結（可能未定/內部）。
+      // resolution 刻意公開：0.0《組織章程》§27③ 以公告為決議案生效要件，
+      // 且明定祕書處為備位公告機關 —— 決議本就應對外公開。仍受 isPublic 逐場控管。
       proposals: {
         orderBy: [{ order: "asc" }, { serialNo: "asc" }],
-        select: { id: true, serialNo: true, section: true, title: true, proposer: true, order: true },
+        select: {
+          id: true,
+          serialNo: true,
+          section: true,
+          title: true,
+          proposer: true,
+          resolution: true,
+          order: true,
+        },
       },
       milestones: { orderBy: { at: "asc" }, select: { id: true, title: true, at: true, note: true } },
       // 明確不選：notes（內部備註）、recipients、notices（郵件草稿）、createdById
@@ -94,4 +111,4 @@ export function getPublicMeeting(id: string) {
   });
 }
 
-export type PublicMeetingDetail = NonNullable<Awaited<ReturnType<typeof getPublicMeeting>>>;
+export type PublicMeetingDetail = NonNullable<Awaited<ReturnType<typeof getPublicMeetingByKey>>>;

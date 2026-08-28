@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/guard";
-import { getMeeting } from "@/lib/meetings/queries";
+import { getMeetingByKey } from "@/lib/meetings/queries";
 import { toTaipeiInputValue } from "@/lib/meetings/roc";
+import { meetingKey } from "@/lib/meetings/slug";
 import { copy } from "@/lib/copy";
 import { MeetingFields } from "../../MeetingFields";
 import { updateMeeting } from "../../actions";
@@ -15,15 +16,22 @@ export const metadata: Metadata = {
 
 const c = copy.meetings;
 
-export default async function EditMeetingPage({ params }: { params: { id: string } }) {
+export default async function EditMeetingPage({
+  params,
+  searchParams,
+}: {
+  params: { slug: string };
+  searchParams?: { error?: string };
+}) {
   await requireUser();
-  const m = await getMeeting(params.id);
+  const m = await getMeetingByKey(params.slug);
   if (!m) notFound();
+  if (m.slug && m.slug !== params.slug) redirect(`/console/meetings/${m.slug}/edit`);
 
   return (
     <main className="mx-auto max-w-reader px-wrap-sm py-section-sm hero:px-wrap">
       <a
-        href={`/console/meetings/${m.id}`}
+        href={`/console/meetings/${meetingKey(m)}`}
         className="font-sans text-caption text-accent hover:underline"
       >
         ← {m.name}
@@ -31,11 +39,17 @@ export default async function EditMeetingPage({ params }: { params: { id: string
       <h1 className="mt-4 font-serif text-h2">
         {c.detail.edit}｜{m.name}
       </h1>
+      {searchParams?.error === "slug" || searchParams?.error === "slugTaken" ? (
+        <p className="mt-3 border border-warn-border bg-warn-surface px-3 py-2 font-sans text-caption text-warn-ink">
+          {searchParams.error === "slugTaken" ? c.form.slugTaken : c.form.slugInvalid}
+        </p>
+      ) : null}
 
       <form action={updateMeeting} className="mt-6">
         <input type="hidden" name="id" value={m.id} />
         <MeetingFields
           d={{
+            slug: m.slug ?? "",
             session: m.session,
             academicYear: m.academicYear,
             name: m.name,

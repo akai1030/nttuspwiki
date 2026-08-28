@@ -175,6 +175,9 @@ enum MeetingStatus {
 
 model Meeting {
   id               String            @id @default(cuid())
+  slug             String?           @unique // 語意網址段（21-115-1-0827-special）；見 lib/meetings/slug.ts。
+  //                                          刻意可為 NULL：舊資料未回填時仍以 cuid 開得起來，
+  //                                          避免「先部署 code 後跑 migration」順序反了就整頁 500。
   session          Int // 屆別，如 21
   academicYear     String // 「114學年度第2學期」
   name             String // 「七月議會臨時會」
@@ -209,6 +212,10 @@ model Proposal {
   proposer    String? // 提案人 / 提案單位
   explanation String?  @db.Text // 說明
   resolution  String?  @db.Text // 決議（會後補）
+  // 程序委員會審核狀態。法源：2.3《議會暨常會職權行使法》§9②「應先送程序委員會」。
+  // pending（待審，預設）/ passed（通過）/ rejected（不列入議程）。
+  // 議程只排除 rejected；pending 照舊會出現，故既有資料行為完全不變。
+  reviewStatus String  @default("pending")
   fileUrl     String? // 附件連結（R2 待設定前先用雲端硬碟/URL）
   order       Int      @default(0)
 
@@ -254,6 +261,9 @@ model MeetingNotice {
   kind         String // notice（開會通知）/ agenda（會議通知含議程）
   subject      String // 套版生成主旨
   bodyText     String   @db.Text // 套版生成內文
+  bodyHtml     String?  @db.Text // Gmail 相容 HTML 版（見 lib/meetings/notice.ts）。
+  //                             可為 NULL：本欄位之前建立的通知照舊只有純文字，行為不變。
+  //                             不做回填——回填等於用 regex 反推標記，誤標了沒人會發現。
   recipientIds Json // 勾選收件人快照（Recipient.id[]）
   status       String   @default("draft") // draft / sent（sent 僅人工回記，系統不觸發送出）
   createdById  String

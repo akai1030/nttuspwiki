@@ -11,8 +11,18 @@ export type ProposalForAgenda = {
   title: string;
   proposer: string | null;
   explanation: string | null;
+  /** 決議（會後補）。未填時討論/選舉類仍印空白的「決議：」供現場手寫。 */
+  resolution: string | null;
+  /** 程委審核狀態。只排除 rejected；pending 照舊列入，故既有資料輸出不變。 */
+  reviewStatus?: string;
   order: number;
 };
+
+/** 決議可能多行；第一行接在「決議：」後，其餘行對齊縮排。 */
+function resolutionLines(text: string, indent: string): string[] {
+  const [first, ...rest] = text.split("\n");
+  return [`${indent}決議：${first}`, ...rest.map((t) => `${indent}　　${t}`)];
+}
 
 export type MeetingForAgenda = {
   session: number;
@@ -24,7 +34,9 @@ export type MeetingForAgenda = {
 
 const CASE_SECTIONS = new Set(["討論事項", "選舉事項"]);
 
-export function buildAgendaText(m: MeetingForAgenda, proposals: ProposalForAgenda[]): string {
+export function buildAgendaText(m: MeetingForAgenda, all: ProposalForAgenda[]): string {
+  // 程序委員會審定不列入者不出現在議程（2.3 §9② 應先送程序委員會）。
+  const proposals = all.filter((p) => p.reviewStatus !== "rejected");
   const lines: string[] = [];
   lines.push(`國立臺東大學第${zhNumber(m.session)}屆議會 ${m.name} 議程`);
   lines.push("");
@@ -56,12 +68,17 @@ export function buildAgendaText(m: MeetingForAgenda, proposals: ProposalForAgend
         lines.push(`　　案由：${p.title}`);
         if (p.proposer?.trim()) lines.push(`　　提案人：${p.proposer.trim()}`);
         if (p.explanation?.trim()) lines.push(`　　說明：${p.explanation.trim()}`);
-        lines.push(`　　決議：`);
+        const res = p.resolution?.trim();
+        if (res) lines.push(...resolutionLines(res, "　　"));
+        else lines.push(`　　決議：`);
       });
     } else {
       items.forEach((p, i) => {
         lines.push(`　${zhParenIndex(i + 1)}${p.title}`);
         if (p.explanation?.trim()) lines.push(`　　　${p.explanation.trim()}`);
+        // 報告事項類原本不印決議；有填才印，未填維持原樣（輸出不變）。
+        const res = p.resolution?.trim();
+        if (res) lines.push(...resolutionLines(res, "　　　"));
       });
     }
     lines.push("");

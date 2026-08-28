@@ -3,10 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
-import { requireUser } from "@/lib/auth/guard";
+import { requireUser, requireAdmin } from "@/lib/auth/guard";
 import { parseTaipeiLocal } from "@/lib/meetings/roc";
 import { generateNotice, type NoticeKind, type MeetingForNotice } from "@/lib/meetings/notice";
 import { computeFireAt } from "@/lib/meetings/reminders";
+import { buildMeetingSlug, normalizeSlug, pickAvailableSlug, validateSlug } from "@/lib/meetings/slug";
 
 // —— FormData 小工具 ——
 function str(fd: FormData, k: string): string {
@@ -20,6 +21,24 @@ function optStr(fd: FormData, k: string): string | null {
 function int(fd: FormData, k: string, fallback = 0): number {
   const n = Number(str(fd, k));
   return Number.isFinite(n) ? Math.trunc(n) : fallback;
+}
+
+/** 目前已被占用的 slug（可排除自己，供編輯時檢查）。 */
+async function takenSlugs(exceptId?: string): Promise<Set<string>> {
+  const rows = await prisma.meeting.findMany({
+    where: exceptId ? { NOT: { id: exceptId } } : undefined,
+    select: { slug: true },
+  });
+  return new Set(rows.map((r) => r.slug).filter((x): x is string => Boolean(x)));
+}
+
+// 路由已改以 slug 為鍵，逐筆 revalidate 需先查 slug；改用路由樣板一次失效整條動態路由。
+// 會議數量是數十筆等級，成本可忽略，且不會因為忘了查 slug 而失效到錯的路徑。
+function revalidateMeetingRoutes() {
+  revalidatePath("/console/meetings");
+  revalidatePath("/console/meetings/[slug]", "page");
+  revalidatePath("/meetings");
+  revalidatePath("/meetings/[slug]", "page");
 }
 
 // —— 會議 ——
@@ -37,9 +56,14 @@ export async function createMeeting(fd: FormData) {
     ? (kindRaw as "REGULAR" | "SPECIAL" | "COMMITTEE")
     : "REGULAR";
   const deadline = parseTaipeiLocal(str(fd, "proposalDeadline"));
+  const slug = pickAvailableSlug(
+    buildMeetingSlug({ session, academicYear, kind, meetingAt: meetingAt! }),
+    await takenSlugs()
+  );
 
   const m = await prisma.meeting.create({
     data: {
+      slug,
       session,
       academicYear,
       name,
@@ -53,7 +77,7 @@ export async function createMeeting(fd: FormData) {
       createdById: user.sub,
     },
   });
-  redirect(`/console/meetings/${m.id}`);
+  redirect(`/console/meetings/${m.slug ?? m.id}`);
 }
 
 export async function updateMeeting(fd: FormData) {
@@ -65,9 +89,19 @@ export async function updateMeeting(fd: FormData) {
   const kind = (["REGULAR", "SPECIAL", "COMMITTEE"] as const).includes(kindRaw as never)
     ? (kindRaw as "REGULAR" | "SPECIAL" | "COMMITTEE")
     : "REGULAR";
+  // 網址可手動改；空白＝維持原值。不合法或撞名一律退回編輯頁，不靜默改成別的字串。
+  const slugRaw = str(fd, "slug");
+  let slug: string | undefined;
+  if (slugRaw) {
+    slug = normalizeSlug(slugRaw);
+    if (validateSlug(slug) !== null) redirect(`/console/meetings/${id}/edit?error=slug`);
+    if ((await takenSlugs(id)).has(slug)) redirect(`/console/meetings/${id}/edit?error=slugTaken`);
+  }
+
   await prisma.meeting.update({
     where: { id },
     data: {
+      ...(slug ? { slug } : {}),
       session: int(fd, "session"),
       academicYear: str(fd, "academicYear"),
       name: str(fd, "name"),
@@ -80,19 +114,18 @@ export async function updateMeeting(fd: FormData) {
       notes: optStr(fd, "notes"),
     },
   });
-  redirect(`/console/meetings/${id}`);
+  redirect(`/console/meetings/${slug ?? id}`);
 }
 
 export async function toggleMeetingPublic(fd: FormData) {
-  await requireUser();
+  // 對外公開整場會議＝擴大公開範圍，限 admin（對齊 schema.prisma Meeting.isPublic 註解）。
+  await requireAdmin();
   const id = str(fd, "id");
   if (!id) return;
   const m = await prisma.meeting.findUnique({ where: { id }, select: { isPublic: true } });
   if (!m) return;
   await prisma.meeting.update({ where: { id }, data: { isPublic: !m.isPublic } });
-  revalidatePath(`/console/meetings/${id}`);
-  revalidatePath("/meetings");
-  revalidatePath(`/meetings/${id}`);
+  revalidateMeetingRoutes();
 }
 
 export async function setMeetingStatus(fd: FormData) {
@@ -102,7 +135,7 @@ export async function setMeetingStatus(fd: FormData) {
   const ok = (["DRAFT", "NOTICED", "HELD", "CLOSED"] as const).includes(statusRaw as never);
   if (id && ok) {
     await prisma.meeting.update({ where: { id }, data: { status: statusRaw as never } });
-    revalidatePath(`/console/meetings/${id}`);
+    revalidateMeetingRoutes();
   }
 }
 
@@ -124,7 +157,47 @@ export async function addProposal(fd: FormData) {
       order: int(fd, "order", 0),
     },
   });
-  revalidatePath(`/console/meetings/${meetingId}`);
+  revalidateMeetingRoutes();
+}
+
+/**
+ * 更新提案決議（會後補）。
+ * 《國立臺東大學學生會組織章程》第 27 條第 3 款：會長應於收到議會決議案七日內公告，
+ * 未公告亦未移請覆議者，由學生議會祕書處公告，公告後決議案即生效。
+ * 本欄位是該項公告作業的內容來源；系統只保存與呈現文字，不代為認定決議效力。
+ */
+export async function updateProposalResolution(fd: FormData) {
+  await requireUser();
+  const id = str(fd, "id");
+  if (!id) return;
+  await prisma.proposal.update({
+    where: { id },
+    data: { resolution: optStr(fd, "resolution") },
+  });
+  revalidateMeetingRoutes();
+}
+
+const REVIEW_STATUSES = ["pending", "passed", "rejected"] as const;
+
+/**
+ * 程序委員會審核結果與議程順序。
+ * 法源：2.3《國立臺東大學學生議會暨常會職權行使法》§9②
+ *「行政中心或學生議員提出之議案，應先送程序委員會，提報常會朗讀標題後，即應交付有關委員會審查。」
+ * 註：該條只規定「應先送程序委員會」，未明文授權程委得決定是否列入議程；
+ * 本欄位僅記錄承辦與程委的實際處理結果，系統不代為認定其效力。
+ */
+export async function setProposalReview(fd: FormData) {
+  await requireUser();
+  const id = str(fd, "id");
+  if (!id) return;
+  const raw = str(fd, "reviewStatus");
+  const reviewStatus = (REVIEW_STATUSES as readonly string[]).includes(raw) ? raw : "pending";
+  const orderRaw = str(fd, "order");
+  await prisma.proposal.update({
+    where: { id },
+    data: { reviewStatus, ...(orderRaw ? { order: int(fd, "order", 0) } : {}) },
+  });
+  revalidateMeetingRoutes();
 }
 
 export async function deleteProposal(fd: FormData) {
@@ -133,7 +206,7 @@ export async function deleteProposal(fd: FormData) {
   const meetingId = str(fd, "meetingId");
   if (id) {
     await prisma.proposal.delete({ where: { id } });
-    revalidatePath(`/console/meetings/${meetingId}`);
+    revalidateMeetingRoutes();
   }
 }
 
@@ -161,6 +234,7 @@ export async function generateNoticeAction(fd: FormData) {
   const signer = str(fd, "signer") || undefined;
   const contactPhone = str(fd, "contactPhone") || undefined;
   const contactEmail = str(fd, "contactEmail") || undefined;
+  const subjectPrefix = str(fd, "subjectPrefix") || undefined;
   const forNotice: MeetingForNotice = {
     session: meeting.session,
     academicYear: meeting.academicYear,
@@ -172,12 +246,13 @@ export async function generateNoticeAction(fd: FormData) {
     proposalDeadline: meeting.proposalDeadline,
     notes: meeting.notes,
   };
-  const { subject, body } = generateNotice(forNotice, kind, {
+  const { subject, body, html } = generateNotice(forNotice, kind, {
     proposalCount: meeting._count.proposals,
     audience,
     signer,
     contactPhone,
     contactEmail,
+    subjectPrefix,
   });
 
   await prisma.meetingNotice.create({
@@ -186,11 +261,12 @@ export async function generateNoticeAction(fd: FormData) {
       kind,
       subject,
       bodyText: body,
+      bodyHtml: html,
       recipientIds,
       createdById: user.sub,
     },
   });
-  revalidatePath(`/console/meetings/${meetingId}`);
+  revalidateMeetingRoutes();
 }
 
 export async function deleteNotice(fd: FormData) {
@@ -199,7 +275,7 @@ export async function deleteNotice(fd: FormData) {
   const meetingId = str(fd, "meetingId");
   if (id) {
     await prisma.meetingNotice.delete({ where: { id } });
-    revalidatePath(`/console/meetings/${meetingId}`);
+    revalidateMeetingRoutes();
   }
 }
 
@@ -219,7 +295,7 @@ export async function addReminder(fd: FormData) {
       channel: "inapp",
     },
   });
-  revalidatePath(`/console/meetings/${meetingId}`);
+  revalidateMeetingRoutes();
 }
 
 export async function markReminderDone(fd: FormData) {
@@ -228,7 +304,7 @@ export async function markReminderDone(fd: FormData) {
   const meetingId = str(fd, "meetingId");
   if (id) {
     await prisma.meetingReminder.update({ where: { id }, data: { sentAt: new Date() } });
-    revalidatePath(`/console/meetings/${meetingId}`);
+    revalidateMeetingRoutes();
   }
 }
 
@@ -238,7 +314,7 @@ export async function unmarkReminderDone(fd: FormData) {
   const meetingId = str(fd, "meetingId");
   if (id) {
     await prisma.meetingReminder.update({ where: { id }, data: { sentAt: null } });
-    revalidatePath(`/console/meetings/${meetingId}`);
+    revalidateMeetingRoutes();
   }
 }
 
@@ -248,7 +324,7 @@ export async function deleteReminder(fd: FormData) {
   const meetingId = str(fd, "meetingId");
   if (id) {
     await prisma.meetingReminder.delete({ where: { id } });
-    revalidatePath(`/console/meetings/${meetingId}`);
+    revalidateMeetingRoutes();
   }
 }
 
@@ -262,7 +338,7 @@ export async function addMilestone(fd: FormData) {
   await prisma.meetingMilestone.create({
     data: { meetingId, title, at, note: optStr(fd, "note") },
   });
-  revalidatePath(`/console/meetings/${meetingId}`);
+  revalidateMeetingRoutes();
 }
 
 export async function deleteMilestone(fd: FormData) {
@@ -271,7 +347,7 @@ export async function deleteMilestone(fd: FormData) {
   const meetingId = str(fd, "meetingId");
   if (id) {
     await prisma.meetingMilestone.delete({ where: { id } });
-    revalidatePath(`/console/meetings/${meetingId}`);
+    revalidateMeetingRoutes();
   }
 }
 

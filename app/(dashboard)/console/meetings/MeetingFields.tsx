@@ -4,6 +4,7 @@ import { copy } from "@/lib/copy";
 const f = copy.meetings.form;
 
 export type MeetingDefaults = {
+  slug?: string | null;
   session?: number;
   academicYear?: string;
   name?: string;
@@ -23,6 +24,15 @@ const fieldCls = "flex flex-col gap-1.5";
 export function MeetingFields({ d = {} }: { d?: MeetingDefaults }) {
   return (
     <div className="grid gap-4 hero:grid-cols-2">
+      {d.slug !== undefined ? (
+        <div className={`${fieldCls} hero:col-span-2`}>
+          <label htmlFor="mf-slug" className={labelCls}>
+            {f.slug}
+          </label>
+          <Input id="mf-slug" name="slug" defaultValue={d.slug ?? ""} placeholder="21-115-1-0827-special" />
+          <p className="font-sans text-caption text-meta">{f.slugHint}</p>
+        </div>
+      ) : null}
       <div className={fieldCls}>
         <label htmlFor="mf-session" className={labelCls}>
           {f.session}

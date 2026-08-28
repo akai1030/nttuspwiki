@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { cache } from "react";
+import { notFound, redirect } from "next/navigation";
 import { copy } from "@/lib/copy";
-import { getPublicMeeting } from "@/lib/meetings/queries";
+import { getPublicMeetingByKey } from "@/lib/meetings/queries";
 import { rocDateTimeFull, rocDate, rocDeadline } from "@/lib/meetings/roc";
 import { buildTimeline, daysBetween } from "@/lib/meetings/timeline";
 import { AGENDA_SECTIONS } from "@/lib/meetings/sections";
@@ -13,20 +14,27 @@ export const dynamic = "force-dynamic";
 const c = copy.publicMeetings.detail;
 const tl = copy.meetings.timeline;
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  let m: Awaited<ReturnType<typeof getPublicMeeting>> = null;
+/** generateMetadata 與 page 各查一次 DB；同一次請求內以 React cache 去重。 */
+const loadMeeting = cache((key: string) => getPublicMeetingByKey(key));
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  let m: Awaited<ReturnType<typeof getPublicMeetingByKey>> = null;
   try {
-    m = await getPublicMeeting(params.id);
+    m = await loadMeeting(params.slug);
   } catch {
     /* ignore */
   }
   const title = m ? m.name : copy.publicMeetings.title;
-  return { title: `${title}｜${copy.home.org}${copy.home.sys}` };
+  return {
+    title: `${title}｜${copy.home.org}${copy.home.sys}`,
+    ...(m?.slug ? { alternates: { canonical: `/meetings/${m.slug}` } } : {}),
+  };
 }
 
-export default async function PublicMeetingDetail({ params }: { params: { id: string } }) {
-  const m = await getPublicMeeting(params.id);
+export default async function PublicMeetingDetail({ params }: { params: { slug: string } }) {
+  const m = await loadMeeting(params.slug);
   if (!m) notFound();
+  if (m.slug && m.slug !== params.slug) redirect(`/meetings/${m.slug}`);
 
   const now = new Date();
   const timeline = buildTimeline(
@@ -111,10 +119,18 @@ export default async function PublicMeetingDetail({ params }: { params: { id: st
                     <h3 className="font-sans text-body font-bold text-ink">{section}</h3>
                     <ul className="mt-1.5 space-y-1.5">
                       {items.map((p) => (
-                        <li key={p.id} className="flex flex-wrap items-baseline gap-x-2 font-sans text-body text-ink">
-                          <span className="shrink-0 text-meta tnum">附件{p.serialNo}</span>
-                          <span className="min-w-0 flex-1">{p.title}</span>
-                          {p.proposer ? <span className="text-caption text-meta">{p.proposer}</span> : null}
+                        <li key={p.id} className="font-sans text-body text-ink">
+                          <div className="flex flex-wrap items-baseline gap-x-2">
+                            <span className="shrink-0 text-meta tnum">附件{p.serialNo}</span>
+                            <span className="min-w-0 flex-1">{p.title}</span>
+                            {p.proposer ? <span className="text-caption text-meta">{p.proposer}</span> : null}
+                          </div>
+                          {p.resolution?.trim() ? (
+                            <p className="mt-0.5 whitespace-pre-wrap border-l-2 border-line pl-2.5 text-caption text-ink">
+                              <span className="text-meta">{c.resolution}：</span>
+                              {p.resolution.trim()}
+                            </p>
+                          ) : null}
                         </li>
                       ))}
                     </ul>

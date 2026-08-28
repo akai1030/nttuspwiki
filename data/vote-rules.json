@@ -1,0 +1,317 @@
+[
+  {
+    "id": "assembly-general",
+    "matter": "議會一般表決",
+    "scope": "assembly",
+    "sections": [
+      "討論事項",
+      "臨時動議",
+      "其他"
+    ],
+    "method": null,
+    "methodNote": "法未指定表決方式",
+    "threshold": "出席議員過半數之同意為通過；可否同數時取決於主席",
+    "lawNumber": "2.0",
+    "lawName": "國立臺東大學學生議會組織及實行準則",
+    "article": "13",
+    "articleName": "成會及表決之門檻",
+    "quote": "議會之表決，除特別規定者外，以出席議員過半數之同意為通過，否則為否決，可否同數時，取決於主席。",
+    "thresholdRules": [
+      {
+        "base": "present",
+        "num": 1,
+        "den": 2,
+        "comparator": "gt"
+      }
+    ]
+  },
+  {
+    "id": "assembly-general-alt",
+    "matter": "常會決議（同旨另一條）",
+    "scope": "assembly",
+    "sections": [
+      "討論事項",
+      "臨時動議",
+      "其他"
+    ],
+    "method": null,
+    "methodNote": "法未指定表決方式",
+    "threshold": "出席委員過半數之同意；可否同數時取決於主席",
+    "lawNumber": "2.3",
+    "lawName": "國立臺東大學學生議會暨常會職權行使法",
+    "article": "5",
+    "articleName": "出席及決議門檻",
+    "quote": "學生議會常會會議之決議，除法令另有規定外，以出席委員過半數之同意行之；可否同數時，取決於主席。",
+    "note": "本條原文用「出席委員」，2.0 §13 用「出席議員」，指同一件事。措辭不同故分列，不合併。",
+    "thresholdRules": [
+      {
+        "base": "present",
+        "num": 1,
+        "den": 2,
+        "comparator": "gt"
+      }
+    ]
+  },
+  {
+    "id": "consent",
+    "matter": "人事同意權",
+    "scope": "assembly",
+    "sections": [
+      "討論事項"
+    ],
+    "method": "無記名投票",
+    "threshold": "出席學生議員二分之一以上同意為通過",
+    "lawNumber": "2.3",
+    "lawName": "國立臺東大學學生議會暨常會職權行使法",
+    "article": "30",
+    "articleName": "人事同意權決議之門檻",
+    "quote": "不經討論，交付議會常會審查，審查後提出常會以無記名投票表決，經出席學生議員二分之一以上同意為通過。",
+    "thresholdRules": [
+      {
+        "base": "present",
+        "num": 1,
+        "den": 2,
+        "comparator": "gte"
+      }
+    ]
+  },
+  {
+    "id": "reconsider",
+    "matter": "覆議案",
+    "scope": "assembly",
+    "sections": [
+      "討論事項"
+    ],
+    "method": "記名投票",
+    "threshold": "贊成維持原決議者超過出席學生議員三分之二",
+    "lawNumber": "2.3",
+    "lawName": "國立臺東大學學生議會暨常會職權行使法",
+    "article": "35",
+    "articleName": "覆議案之門檻",
+    "quote": "覆議案審查後，應於常會以記名投票表決。如贊成維持原決議者，超過出席學生議員三分之二，即維持原決議",
+    "conflict": "本條寫「超過三分之二」，但《組織章程》0.0 §27 第 3 款與 2.0 §28 第 2 項寫「三分之二以上」。出席 18 人時是 13 票與 12 票之差。系統不代為擇一，請主席依議會決議認定。",
+    "thresholdRules": [
+      {
+        "label": "依 2.3 §35「超過三分之二」",
+        "base": "present",
+        "num": 2,
+        "den": 3,
+        "comparator": "gt"
+      },
+      {
+        "label": "依 0.0 §27③／2.0 §28②「三分之二以上」",
+        "base": "present",
+        "num": 2,
+        "den": 3,
+        "comparator": "gte"
+      }
+    ]
+  },
+  {
+    "id": "impeach",
+    "matter": "彈劾案",
+    "scope": "assembly",
+    "sections": [
+      "討論事項"
+    ],
+    "method": "不記名投票",
+    "threshold": "全體議員出席人數達三分之二，且出席議員總人數達三分之二同意",
+    "lawNumber": "2.6",
+    "lawName": "國立臺東大學學生會彈劾法",
+    "article": "3",
+    "articleName": "",
+    "quote": "各項彈劾案經全體議員出席人數達三分之二，且經出席議員總人數達三分之二同意，立即停權",
+    "note": "同條末段另定「彈劾案之表決應以不記名投票為之。」為複合門檻，且分母措辭（出席議員總人數）與其他條文不同。",
+    "thresholdRules": [
+      {
+        "label": "出席門檻：全體議員出席人數達三分之二",
+        "base": "total",
+        "num": 2,
+        "den": 3,
+        "comparator": "gte"
+      },
+      {
+        "label": "同意門檻：出席議員總人數達三分之二",
+        "base": "present",
+        "num": 2,
+        "den": 3,
+        "comparator": "gte"
+      }
+    ]
+  },
+  {
+    "id": "speaker-election",
+    "matter": "正副議長選舉",
+    "scope": "assembly",
+    "sections": [
+      "選舉事項"
+    ],
+    "method": "無記名投票",
+    "threshold": "相對多數決",
+    "lawNumber": "2.7",
+    "lawName": "國立臺東大學學生議會正、副議長產生及繼任與補選辦法",
+    "article": "2",
+    "articleName": "正副議長之產生",
+    "quote": "議會置議長一人、副議長一至二人，由議員以無記名投票互選之，並採相對多數決。",
+    "note": "《組織章程》0.0 §33 亦定「由議員以無記名投票互選之」。補選另有規定（2.7 §8），本列不涵蓋。",
+    "thresholdRules": [
+      {
+        "base": "present",
+        "num": 0,
+        "den": 1,
+        "comparator": null,
+        "unresolvedNote": "相對多數決（最高票當選），無固定票數門檻。同票時依 2.7 §8 進入第二輪。"
+      }
+    ]
+  },
+  {
+    "id": "committee-chair-election",
+    "matter": "委員會正副主任委員選舉",
+    "scope": "committee",
+    "sections": [
+      "選舉事項"
+    ],
+    "method": "無記名投票",
+    "threshold": null,
+    "thresholdNote": "法未規定可決門檻",
+    "lawNumber": "2.1",
+    "lawName": "國立臺東大學學生議會各委員會實行細則",
+    "article": "4",
+    "articleName": "主任委員之選舉",
+    "quote": "委員以無記名投票選舉正、副主任委員。",
+    "thresholdRules": [
+      {
+        "base": "present",
+        "num": 0,
+        "den": 1,
+        "comparator": null,
+        "unresolvedNote": "2.1 §4 只規定以無記名投票選舉，未規定可決門檻。"
+      }
+    ]
+  },
+  {
+    "id": "committee-general",
+    "matter": "委員會一般表決",
+    "scope": "committee",
+    "sections": [
+      "討論事項",
+      "臨時動議",
+      "其他"
+    ],
+    "method": null,
+    "methodNote": "法未指定表決方式",
+    "threshold": "出席議員過半數之同意為通過；同數或關鍵票數時取決於主席",
+    "lawNumber": "2.1",
+    "lawName": "國立臺東大學學生議會各委員會實行細則",
+    "article": "8",
+    "articleName": "表決方式",
+    "quote": "除有特別規定之外，表決是以出席議員過半數之同意為通過，沒過半則是否決，當贊成與否決同數或關鍵票數時，取決於主席。",
+    "note": "「關鍵票數」一詞在 38 部法規中無定義。",
+    "thresholdRules": [
+      {
+        "base": "present",
+        "num": 1,
+        "den": 2,
+        "comparator": "gt"
+      }
+    ]
+  },
+  {
+    "id": "override-committee",
+    "matter": "逕行變更委員會決議",
+    "scope": "assembly",
+    "sections": [
+      "討論事項"
+    ],
+    "method": null,
+    "methodNote": "法未指定表決方式",
+    "threshold": "出席學生議員二分之一以上同意",
+    "lawNumber": "2.3",
+    "lawName": "國立臺東大學學生議會暨常會職權行使法",
+    "article": "57",
+    "articleName": "委員會決議違法之救濟程序",
+    "quote": "得經決議重付該委員會議決；或經出席學生議員二分之一以上同意逕行變更之。",
+    "thresholdRules": [
+      {
+        "base": "present",
+        "num": 1,
+        "den": 2,
+        "comparator": "gte"
+      }
+    ]
+  },
+  {
+    "id": "suspend-member",
+    "matter": "議員停權處分",
+    "scope": "assembly",
+    "sections": [
+      "討論事項"
+    ],
+    "method": null,
+    "methodNote": "法未指定表決方式",
+    "threshold": "出席大會委員三分之二同意",
+    "lawNumber": "2.8",
+    "lawName": "國立臺東大學學生議會議員行為法",
+    "article": "18",
+    "articleName": "",
+    "quote": "經出席大會委員三分之二同意，得予學生議員停權。",
+    "note": "原文為光桿「三分之二」，既未寫「以上」亦未寫「超過」。出席 18 人時 12 票是否足夠，系統不代為判斷。",
+    "thresholdRules": [
+      {
+        "base": "present",
+        "num": 2,
+        "den": 3,
+        "comparator": null,
+        "unresolvedNote": "2.8 §18④ 原文為光桿「三分之二」，既未寫「以上」亦未寫「超過」。出席 18 人時 12 票是否足夠，系統不代為判斷。"
+      }
+    ]
+  },
+  {
+    "id": "third-reading",
+    "matter": "三讀會",
+    "scope": "assembly",
+    "sections": [
+      "討論事項"
+    ],
+    "method": null,
+    "methodNote": "法未指定表決方式",
+    "threshold": "應將議案全案付表決",
+    "lawNumber": "2.3",
+    "lawName": "國立臺東大學學生議會暨常會職權行使法",
+    "article": "13",
+    "articleName": "第三讀會之程序",
+    "quote": "三、第三讀會，應將議案全案付表決。"
+  },
+  {
+    "id": "second-reading",
+    "matter": "二讀會",
+    "scope": "assembly",
+    "sections": [
+      "討論事項"
+    ],
+    "method": null,
+    "methodNote": "法未指定表決方式",
+    "threshold": "得就議案逐條表決、部分表決或全案表決",
+    "lawNumber": "2.3",
+    "lawName": "國立臺東大學學生議會暨常會職權行使法",
+    "article": "12",
+    "articleName": "對立法原旨有異議之補救程序",
+    "quote": "一、第二讀會，得就議案逐條表決、部分表決或全案表決。"
+  },
+  {
+    "id": "third-reading-scope",
+    "matter": "應經三讀之議案",
+    "scope": "assembly",
+    "sections": [
+      "討論事項"
+    ],
+    "method": null,
+    "methodNote": "非表決方式規定，供判斷議案是否須三讀",
+    "threshold": "組織章程修正案、法律案、預算案、決算案、特殊預算案應經三讀；其餘二讀",
+    "lawNumber": "2.3",
+    "lawName": "國立臺東大學學生議會暨常會職權行使法",
+    "article": "8",
+    "articleName": "議案之議決",
+    "quote": "二、前項議案除組織章程修正案、法律案、預算案、決算案、特殊預算案應經三讀會議決外，其餘均經二讀會議決之。"
+  }
+]

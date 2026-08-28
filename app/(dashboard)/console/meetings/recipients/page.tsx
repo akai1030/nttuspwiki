@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { requireUser } from "@/lib/auth/guard";
+import { requireRole } from "@/lib/auth/guard";
 import { listRecipients } from "@/lib/meetings/queries";
 import { Input } from "@/components/SearchBox";
 import { copy } from "@/lib/copy";
@@ -14,7 +14,8 @@ export const metadata: Metadata = {
 const c = copy.meetings.recipients;
 
 export default async function RecipientsPage() {
-  await requireUser();
+  // 名冊含學號/手機/科系（個資），viewer 不得讀；officer（祕書處）需要維護名單故保留。
+  await requireRole(["admin", "officer"]);
   const recipients = await listRecipients();
   const memberCount = recipients.filter((r) => r.studentId).length;
 

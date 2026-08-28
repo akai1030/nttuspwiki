@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { copy } from "@/lib/copy";
+import { meetingKey } from "@/lib/meetings/slug";
 import { listPublicMeetings } from "@/lib/meetings/queries";
 import { rocDateTime } from "@/lib/meetings/roc";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -28,7 +29,7 @@ export default async function PublicMeetingsPage() {
   const Row = ({ m }: { m: (typeof meetings)[number] }) => (
     <li>
       <a
-        href={`/meetings/${m.id}`}
+        href={`/meetings/${meetingKey(m)}`}
         className="group flex flex-wrap items-baseline gap-x-4 gap-y-1 py-4 transition-colors hover:bg-paper2"
       >
         <span className="shrink-0 border border-line-soft px-2 py-0.5 font-ui text-chip leading-none text-meta">

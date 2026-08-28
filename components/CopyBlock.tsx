@@ -2,26 +2,44 @@
 
 import { useState } from "react";
 import { copy } from "@/lib/copy";
+import { copyRich, type CopyResult } from "@/lib/clipboard";
 
-/** 複製按鈕（把 text 寫入剪貼簿）。 */
-export function CopyButton({ text, label }: { text: string; label?: string }) {
-  const [done, setDone] = useState(false);
+/**
+ * 複製按鈕。
+ * 只給 text → 純文字複製（與改版前行為相同，既有呼叫點不受影響）。
+ * 另給 html → 同時寫入 text/html，貼進 Gmail 撰寫視窗會保留格式。
+ */
+export function CopyButton({ text, html, label }: { text: string; html?: string; label?: string }) {
+  const [state, setState] = useState<CopyResult | null>(null);
+
   async function onCopy() {
-    try {
-      await navigator.clipboard.writeText(text);
-      setDone(true);
-      window.setTimeout(() => setDone(false), 1500);
-    } catch {
-      /* 剪貼簿不可用時靜默略過 */
-    }
+    const r = await copyRich(text, html);
+    setState(r);
+    // 失敗要留久一點讓人看得到，並由旁邊的「純文字」鈕接手。
+    window.setTimeout(() => setState(null), r === "failed" ? 4000 : 1500);
   }
+
+  const shown =
+    state === null
+      ? (label ?? copy.meetings.copy)
+      : state === "failed"
+        ? copy.meetings.copyFailed
+        : state === "rich"
+          ? copy.meetings.copiedRich
+          : copy.meetings.copied;
+
   return (
     <button
       type="button"
       onClick={onCopy}
-      className="border border-line px-3 py-1.5 font-ui text-caption font-medium leading-none tracking-snug text-ink transition-colors hover:border-accent hover:text-accent"
+      aria-live="polite"
+      className={`border px-3 py-1.5 font-ui text-caption font-medium leading-none tracking-snug transition-colors ${
+        state === "failed"
+          ? "border-warn-border text-warn-ink"
+          : "border-line text-ink hover:border-accent hover:text-accent"
+      }`}
     >
-      {done ? copy.meetings.copied : label ?? copy.meetings.copy}
+      {shown}
     </button>
   );
 }

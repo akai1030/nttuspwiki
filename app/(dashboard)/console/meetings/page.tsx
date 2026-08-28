@@ -3,6 +3,7 @@ import { requireUser } from "@/lib/auth/guard";
 import { listMeetings } from "@/lib/meetings/queries";
 import { rocDateTime } from "@/lib/meetings/roc";
 import { copy } from "@/lib/copy";
+import { meetingKey } from "@/lib/meetings/slug";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -53,7 +54,7 @@ export default async function MeetingsPage() {
             {meetings.map((m) => (
               <li key={m.id}>
                 <a
-                  href={`/console/meetings/${m.id}`}
+                  href={`/console/meetings/${meetingKey(m)}`}
                   className="group flex flex-wrap items-baseline gap-x-4 gap-y-1 py-4 transition-colors hover:bg-paper2"
                 >
                   <span className="shrink-0 border border-line-soft px-2 py-0.5 font-ui text-chip leading-none text-meta">
