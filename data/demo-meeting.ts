@@ -108,6 +108,7 @@ const PROPOSALS = [
 ];
 
 async function drop() {
+  say("尋找示範會議…");
   const m = await prisma.meeting.findFirst({ where: { slug: SLUG }, select: { id: true } });
   if (m) {
     // Proposal / MeetingNotice 皆為 onDelete: Cascade，刪會議即一併清乾淨。
@@ -125,7 +126,15 @@ async function drop() {
   }
 }
 
+/** 每一步都先印再做：中途被 kill（例如容器 OOM）時，畫面上看得出死在哪一步。 */
+let step = 0;
+function say(msg: string) {
+  step += 1;
+  console.log(`[${step}] ${msg}`);
+}
+
 async function seed() {
+  say("連線資料庫、建立示範建立者帳號…");
   // 建立者：passwordHash 為 null ＝ 白名單已建但不得登入（見 schema User.passwordHash）。
   const user = await prisma.user.upsert({
     where: { email: DEMO_EMAIL },
@@ -134,6 +143,7 @@ async function seed() {
     select: { id: true },
   });
 
+  say(`建立示範收件人 ${RECIPIENTS.length} 位…`);
   // 示範收件人：第 0 屆、active=false，不會混進真實名冊的勾選清單。
   const recipientIds: string[] = [];
   for (const r of RECIPIENTS) {
@@ -173,11 +183,13 @@ async function seed() {
     createdById: user.id,
   };
 
+  say("建立／更新示範會議…");
   const existing = await prisma.meeting.findFirst({ where: { slug: SLUG }, select: { id: true } });
   const meeting = existing
     ? await prisma.meeting.update({ where: { id: existing.id }, data, select: { id: true } })
     : await prisma.meeting.create({ data: { ...data, slug: SLUG }, select: { id: true } });
 
+  say(`寫入提案 ${PROPOSALS.length} 件…`);
   // 提案與通知整批換掉，確保重跑結果一致。
   await prisma.proposal.deleteMany({ where: { meetingId: meeting.id } });
   await prisma.meetingNotice.deleteMany({ where: { meetingId: meeting.id } });
@@ -185,6 +197,7 @@ async function seed() {
     await prisma.proposal.create({ data: { ...p, meetingId: meeting.id, fileUrl: null } });
   }
 
+  say("生成開會通知與會議通知各一份…");
   // 兩種通知都生一份，示範「複製內文（含格式）」與格式預覽。
   const forNotice: MeetingForNotice = {
     session: data.session,
@@ -220,6 +233,8 @@ async function seed() {
     });
   }
 
+  say("完成。");
+  console.log("");
   console.log("示範會議已就緒。");
   console.log(`  後台：/console/meetings/${SLUG}`);
   console.log(`  提案 ${PROPOSALS.length} 件（其中 1 件程委標為不列入議程）、通知 2 份、收件人 ${recipientIds.length} 位`);
@@ -227,8 +242,13 @@ async function seed() {
 }
 
 const run = process.argv.includes("--drop") ? drop : seed;
+console.log("demo-meeting 開始（若以下完全沒有輸出，代表行程在啟動階段就被中止，"
+  + "通常是容器記憶體不足或容器被重新部署，不是腳本邏輯問題）。");
+
 run()
   .catch((e) => {
+    console.error("");
+    console.error(`✗ 第 ${step} 步之後失敗：`);
     console.error(e);
     process.exitCode = 1;
   })
