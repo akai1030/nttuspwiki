@@ -1,19 +1,38 @@
 /**
- * 開會通知／會議通知 套版 — 依 MEETINGS-MODULE.md §1 與 Kai 提供的多份真本。
- * 注意：真本格式因會議/祕書而異（稱謂、時段稱謂、有無地點/注意事項、署名皆不同），
- * 故本套版產「乾淨完整的草稿」，稱謂可帶入、其餘複製後由承辦自行增刪。
- * 站內生成後複製、人工貼到官方信箱寄出（決策：只生草稿、不自動外寄）。
+ * 開會通知／會議通知 套版。
  *
- * 內部以 Line[]（每行為 Seg[]）表示，再分別 render 成純文字與 Gmail 相容 HTML：
- * 兩種輸出同源，不會各自漂移。buildBody() 的簽章與輸出與改版前逐字節相同。
+ * 【「開會通知單」與「議程」是兩種不同的文件，格式不同】
+ * 2026-08-28 比對 nttusp@ 實際寄出的三封真本（兩位不同祕書長、跨兩個學期）：
+ *   19f19c79c3ddbdb6  開會通知單  114-2 七月議會臨時會（章洺嫙）
+ *   1974e428ae8ed788  開會通知單  113-2 六月議會常會（李文晶）
+ *   19f5b6b9bd6bdd65  議程        114-2 七月議會臨時會（章洺嫙）
+ * 三封一致地呈現下列差異，故非承辦臨時手改，而是文件本身的體例：
+ *
+ *   元素            開會通知單                    議程
+ *   ─────────────────────────────────────────────────────────────────
+ *   函送語          會議通知…出席與列席            會議議程…出席、列席與旁聽
+ *   附件行          無                            有，且前面空一行
+ *   會議時間        115年7月15日（星期三）晚間19:00  115年07月15日（三）19:00
+ *   會議地點行      無                            有
+ *   會議連結        會議連結：URL                  （會議連結：URL）。
+ *   〔會議注意事項〕 無                            有
+ *
+ * 〔會議重要資訊〕首行則依會議類別而非文件類型：
+ *   議會常會/臨時會 →「議會常會｜<名稱>」；委員會 →「會議名稱：<名稱>」。
+ *
+ * 內部以 Line[]（每行為 Seg[]）表示，再分別 render 成純文字與 Gmail 相容 HTML，
+ * 兩種輸出同源不會各自漂移。站內生成後複製、人工貼到官方信箱寄出
+ * （決策：只生草稿、不自動外寄）。
  */
-import { rocDateTime, mmddWeek, rocDeadline } from "./roc";
+import { rocDateTime, rocDateTimeFull, rocDateTimeLead, mmddWeek, rocDeadline } from "./roc";
 import { zhNumber } from "./sections";
 
 export type NoticeKind = "notice" | "agenda";
 
 export type MeetingForNotice = {
   session: number;
+  /** 議會常會/臨時會與委員會的〔會議重要資訊〕首行寫法不同，故需要類別。 */
+  kind?: "REGULAR" | "SPECIAL" | "COMMITTEE";
   academicYear: string;
   name: string;
   meetingAt: Date;
@@ -32,6 +51,9 @@ export type Seg = string | { v: string; as: MarkKind };
 export type Line = Seg[];
 
 const AUDIENCE_DEFAULT = "議員代表";
+
+/** 署名與聯絡資訊之間的分隔線。真本為 70 個半形連字號。 */
+const SEPARATOR = "-".repeat(70);
 
 // 會議注意事項（線上會議常用；非線上或不需要時複製後刪除即可）。
 const ATTENTION = [
@@ -74,6 +96,12 @@ export function buildNoticeLines(
   const location = m.location?.trim() || "線上視訊會議";
   const docNumber = m.docNumber?.trim() || "東議字第＿＿＿＿號";
   const proposalCount = opts.proposalCount ?? 0;
+  const isAgenda = kind === "agenda";
+  const isCommittee = m.kind === "COMMITTEE";
+  // 開會通知單：開頭句用短週次＋時段（三）晚間19:00，「會議時間：」用長週次（星期三）晚間19:00。
+  // 議程：兩處都用短格式（三）19:00、不加時段稱謂。
+  const lead = isAgenda ? rocDateTime(m.meetingAt) : rocDateTimeLead(m.meetingAt);
+  const when = isAgenda ? rocDateTime(m.meetingAt) : rocDateTimeFull(m.meetingAt);
 
   const lines: Line[] = [];
   // 真本：稱謂加粗（<b>議員</b>）。
@@ -84,14 +112,20 @@ export function buildNoticeLines(
   ]);
   lines.push([]);
   // 真本：只有這一句的日期時間標紅粗；下方「會議時間：」那行不標。
+  lines.push(
+    isAgenda
+      ? [`本次${m.name}將於`, { v: lead, as: "critical" }, `至${location}，`]
+      : [`本次${m.name}將於`, { v: lead, as: "critical" }, `，至${location}召開，`]
+  );
+  // 函送語兩種文件不同：通知單送出席與列席，議程另送旁聽。
   lines.push([
-    `本次${m.name}將於`,
-    { v: rocDateTime(m.meetingAt), as: "critical" },
-    `，至${location}召開，`,
+    isAgenda
+      ? `會議議程已於${mmddWeek(noticeDate)}函送至出席、列席與旁聽人員單位（${docNumber}）。`
+      : `會議通知已於${mmddWeek(noticeDate)}函送至出席與列席人員單位（${docNumber}）。`,
   ]);
-  lines.push([`會議通知已於${mmddWeek(noticeDate)}函送至出席、列席與旁聽人員單位（${docNumber}）。`]);
 
-  if (kind === "agenda") {
+  if (isAgenda) {
+    lines.push([]); // 真本：附件那行之前有一個空行
     const lastAttach = 1 + Math.max(proposalCount, 0);
     // 真本：附件字樣綠色＋粗體＋底線（三重）。
     const seg: Line = ["檢附本次", { v: "會議議程（附件1）", as: "attachment" }];
@@ -105,10 +139,14 @@ export function buildNoticeLines(
   lines.push(["**註：會議須達二分之一以上代表出席方得開議，敬請代表撥冗與會。"]);
   lines.push([]);
   lines.push([{ v: "〔會議重要資訊〕", as: "highlight" }]);
-  lines.push([`會議名稱：${m.name}`]);
-  lines.push([`會議時間：${rocDateTime(m.meetingAt)}`]);
-  lines.push([`會議地點：${location}`]);
-  if (m.meetingUrl?.trim()) lines.push([`會議連結：${m.meetingUrl.trim()}`]);
+  // 議會層級的常會/臨時會用「議會常會｜名稱」；委員會用「會議名稱：名稱」。
+  lines.push([isCommittee ? `會議名稱：${m.name}` : `議會常會｜${m.name}`]);
+  lines.push([`會議時間：${when}`]);
+  if (isAgenda) lines.push([`會議地點：${location}`]); // 通知單真本無此行
+  if (m.meetingUrl?.trim()) {
+    const url = m.meetingUrl.trim();
+    lines.push([isAgenda ? `（會議連結：${url}）。` : `會議連結：${url}`]);
+  }
 
   const notesBlock: string[] = [];
   if (m.proposalDeadline) {
@@ -124,21 +162,25 @@ export function buildNoticeLines(
     for (const b of notesBlock) for (const t of b.split("\n")) lines.push([t]);
   }
 
-  lines.push([]);
-  lines.push([{ v: "〔會議注意事項〕", as: "highlight" }]);
-  ATTENTION.forEach((t, i) => lines.push([`${i + 1}. ${t}`]));
+  // 〔會議注意事項〕只出現在議程版：三封真本（兩位不同祕書長）的開會通知單皆無此段。
+  if (isAgenda) {
+    lines.push([]);
+    lines.push([{ v: "〔會議注意事項〕", as: "highlight" }]);
+    ATTENTION.forEach((t, i) => lines.push([`${i + 1}. ${t}`]));
+  }
 
   const org = `國立臺東大學${sessionZh(m.session)}學生議會`;
   const signer = opts.signer?.trim() || "祕書處";
   lines.push([]);
   lines.push(["敬祝"]);
   lines.push(["平安順心"]);
-  lines.push([`${org} ${signer} 敬上`]);
+  lines.push([]); // 真本：平安順心與署名之間有空行
+  lines.push([`${org} ${signer}敬上`]); // 真本無空格
 
   const phone = opts.contactPhone?.trim();
   const email = opts.contactEmail?.trim();
   if (phone || email) {
-    lines.push(["────────────────────"]);
+    lines.push([SEPARATOR]);
     lines.push([`${org} ${signer}`]);
     if (phone) lines.push([`M：${phone}`]);
     if (email) lines.push([`e-mail：${email}`]);

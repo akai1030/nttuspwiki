@@ -246,6 +246,7 @@ export async function generateNoticeAction(fd: FormData) {
   const subjectPrefix = str(fd, "subjectPrefix") || undefined;
   const forNotice: MeetingForNotice = {
     session: meeting.session,
+    kind: meeting.kind,
     academicYear: meeting.academicYear,
     name: meeting.name,
     meetingAt: meeting.meetingAt,

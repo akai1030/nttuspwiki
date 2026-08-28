@@ -201,6 +201,7 @@ async function seed() {
   // 兩種通知都生一份，示範「複製內文（含格式）」與格式預覽。
   const forNotice: MeetingForNotice = {
     session: data.session,
+    kind: data.kind,
     academicYear: data.academicYear,
     name: data.name,
     meetingAt: data.meetingAt,

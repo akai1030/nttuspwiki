@@ -125,3 +125,15 @@ export function academicTermOf(d: Date): string {
   const term = month >= 8 || month === 1 ? 1 : 2;
   return `${year}學年度第${term}學期`;
 }
+
+/**
+ * 「115年07月15日（三）晚間19:00」— 開會通知單開頭句用。
+ *
+ * 真本體例：開頭那句用短週次＋時段稱謂，下方「會議時間：」那行才用長週次
+ * （見 lib/meetings/notice.ts 檔頭的三封真本比對）。月日一律補零 ——
+ * 真本自己不一致（七月那封未補零、六月那封有補零），取與全站其他輸出一致的補零。
+ */
+export function rocDateTimeLead(d: Date): string {
+  const p = rocParts(d);
+  return `${p.rocYear}年${pad2(p.month)}月${pad2(p.day)}日（${p.weekdayShort}）${period(p.hour)}${p.hour}:${pad2(p.minute)}`;
+}
