@@ -441,6 +441,9 @@ export const copy = {
       matterType: "議案類型",
       matterTypeNone: "未指定（不套用法定表決方式）",
       matterTypeHint: "選定議案類型後，會顯示該類議案的法定表決方式、可決門檻與法源原文。",
+      liveHint:
+        "會議進行中請用「現場議事」那頁：宣告進入某案、記決議、看所需票數都在同一畫面，" +
+        "而且出席人數登記一次即全場沿用。這裡的決議欄留給會後補填。",
       matterTypeUnset: "未指定議案類型 —— 在下方「程委審核」列選定後，會中即可換算所需票數。",
       resolution: "決議",
       resolutionPlaceholder: "如：照案通過。／修正後通過，修正為…",

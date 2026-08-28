@@ -7,11 +7,14 @@ import { meetingKey } from "@/lib/meetings/slug";
 import { copy } from "@/lib/copy";
 import { CopyButton } from "@/components/CopyBlock";
 import { AutoRefresh } from "@/components/AutoRefresh";
+import { ruleById, citeOf } from "@/lib/meetings/vote-rules";
+import { evaluate } from "@/lib/meetings/tally";
 import {
   toggleMeetingLive,
   setLiveProposal,
   setLiveAttendance,
   setLiveNote,
+  updateProposalResolution,
 } from "../../actions";
 
 export const dynamic = "force-dynamic";
@@ -45,6 +48,13 @@ export default async function LiveConsolePage({ params }: { params: { slug: stri
   const key = meetingKey(m);
   const listed = m.proposals.filter((p) => p.reviewStatus !== "rejected");
   const shareUrl = `/meetings/${key}/live`;
+
+  // 現在討論的那一案。決議與票數換算都在這裡完成 ——
+  // 會中祕書就守在這一頁，不該為了記一句決議跳回提案頁。
+  const current = listed.find((p) => p.id === m.liveProposalId) ?? null;
+  const rule = ruleById(current?.matterType);
+  // 出席人數已在上方點名區登記，換算直接沿用，不要求再填一次。
+  const attendance = { present: m.livePresent ?? undefined, total: m.liveTotal ?? undefined };
 
   return (
     <main className="mx-auto max-w-wrap px-wrap-sm py-section-sm hero:px-wrap">
@@ -149,6 +159,100 @@ export default async function LiveConsolePage({ params }: { params: { slug: stri
             {c.saveNote}
           </button>
         </form>
+      </section>
+
+      {/* 現在討論的議案：案由、法定表決方式、所需票數、決議 —— 一頁完成 */}
+      <section className="mt-5 border border-line border-l-[3px] border-l-accent bg-paper p-card">
+        <p className="font-ui text-chip uppercase tracking-kicker text-accent">{c.current}</p>
+        {current ? (
+          <>
+            <div className="mt-1.5 flex flex-wrap items-baseline gap-x-2.5">
+              <span className="shrink-0 border border-line-soft px-2 py-0.5 font-ui text-chip leading-none text-meta">
+                附件{current.serialNo}
+              </span>
+              <span className="shrink-0 font-ui text-chip text-accent">{current.section}</span>
+            </div>
+            <h2 className="mt-1.5 font-serif text-h4 text-ink">{current.title}</h2>
+            {current.proposer ? (
+              <p className="mt-1 font-sans text-caption text-meta">
+                {copy.meetings.proposal.proposer}：{current.proposer}
+              </p>
+            ) : null}
+            {current.explanation?.trim() ? (
+              <p className="mt-2 whitespace-pre-wrap font-sans text-body leading-relaxed text-ink">
+                {current.explanation.trim()}
+              </p>
+            ) : null}
+
+            {rule ? (
+              <div className="mt-3 border-t border-line-soft pt-2.5">
+                <p className="font-sans text-caption text-ink">
+                  <span className="text-meta">{v.method}：</span>
+                  {rule.method ?? rule.methodNote ?? v.unspecified}
+                  <span className="mx-1.5 text-line">·</span>
+                  <span className="text-meta">{v.threshold}：</span>
+                  {rule.threshold ?? rule.thresholdNote ?? v.unspecified}
+                </p>
+                <p className="mt-0.5 font-ui text-chip text-meta">{citeOf(rule)}</p>
+                {(rule.thresholdRules ?? []).map((t, i) => {
+                  const o = evaluate(t, attendance);
+                  return (
+                    <p key={i} className="mt-0.5 font-sans text-caption">
+                      {t.label ? <span className="text-meta">{t.label}　</span> : null}
+                      {o.kind === "votes" ? (
+                        <span className="text-ink">
+                          {v.need}
+                          <strong className="tnum">{o.need}</strong>
+                          {v.votesOf(o.base === "total" ? v.totalMembers : v.present, o.of)}
+                        </span>
+                      ) : o.kind === "missing" ? (
+                        <span className="text-meta">
+                          {v.needInput(o.base === "total" ? v.totalMembers : v.present)}
+                        </span>
+                      ) : (
+                        <span className="text-warn-ink">
+                          {v.cannotCompute}：{o.reason}
+                        </span>
+                      )}
+                    </p>
+                  );
+                })}
+                {rule.conflict ? (
+                  <p className="mt-1 border border-warn-border bg-warn-surface px-2 py-1 font-sans text-caption text-warn-ink">
+                    {v.conflict}：{rule.conflict}
+                  </p>
+                ) : null}
+              </div>
+            ) : (
+              <p className="mt-3 border-t border-line-soft pt-2.5 font-sans text-caption text-meta">
+                {c.noRule}
+              </p>
+            )}
+
+            <form action={updateProposalResolution} className="mt-3 border-t border-line-soft pt-2.5">
+              <input type="hidden" name="id" value={current.id} />
+              <label
+                htmlFor={`live-res-${current.id}`}
+                className="font-sans text-caption font-medium text-ink"
+              >
+                {copy.meetings.proposal.resolution}
+              </label>
+              <textarea
+                id={`live-res-${current.id}`}
+                name="resolution"
+                rows={3}
+                defaultValue={current.resolution ?? ""}
+                placeholder={copy.meetings.proposal.resolutionPlaceholder}
+                className="mt-1.5 w-full rounded-sm border border-line bg-paper px-3.5 py-2.5 font-sans text-body text-ink placeholder:text-meta focus:border-accent"
+              />
+              <button type="submit" className={`mt-2 ${btnSolid}`}>
+                {copy.meetings.proposal.resolutionSave}
+              </button>
+            </form>
+          </>
+        ) : (
+          <p className="mt-1.5 font-sans text-body text-meta">{c.currentNone}</p>
+        )}
       </section>
 
       {/* 議程推進 */}

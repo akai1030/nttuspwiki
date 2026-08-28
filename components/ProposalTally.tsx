@@ -16,9 +16,18 @@ const c = copy.meetings;
  * 系統只算「依這條文字需要幾票」，不收實際票數、不宣告通過與否。
  * 條文措辭無法機械判定者（如光桿的「三分之二」）一律回報無法換算並附原文。
  */
-export function ProposalTally({ rule }: { rule: VoteRule }) {
-  const [present, setPresent] = useState("");
-  const [total, setTotal] = useState("");
+export function ProposalTally({
+  rule,
+  defaultPresent,
+  defaultTotal,
+}: {
+  rule: VoteRule;
+  /** 現場議事台已登記的點名數字，帶進來當預設，不必再填一次。 */
+  defaultPresent?: number | null;
+  defaultTotal?: number | null;
+}) {
+  const [present, setPresent] = useState(defaultPresent != null ? String(defaultPresent) : "");
+  const [total, setTotal] = useState(defaultTotal != null ? String(defaultTotal) : "");
 
   const toN = (v: string) => {
     const n = Number.parseInt(v, 10);

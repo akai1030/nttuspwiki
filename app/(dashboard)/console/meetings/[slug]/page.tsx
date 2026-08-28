@@ -447,6 +447,7 @@ export default async function MeetingDetailPage({ params }: { params: { slug: st
         <p className="mt-2 font-sans text-caption text-meta">{c.proposal.fileNameHint}</p>
         <p className="mt-1 font-sans text-caption text-meta">{c.proposal.reviewHint}</p>
         <p className="mt-1 font-sans text-caption text-meta">{c.proposal.resolutionHint}</p>
+        <p className="mt-1 font-sans text-caption text-meta">{c.proposal.liveHint}</p>
 
         <ul className="mt-4 divide-y divide-line-soft">
           {m.proposals.length === 0 ? (
@@ -542,7 +543,11 @@ export default async function MeetingDetailPage({ params }: { params: { slug: st
                     {p.resolution?.trim() ? "" : `（${c.proposal.resolutionEmpty}）`}
                   </summary>
                   {ruleById(p.matterType) ? (
-                    <ProposalTally rule={ruleById(p.matterType)!} />
+                    <ProposalTally
+                      rule={ruleById(p.matterType)!}
+                      defaultPresent={m.livePresent}
+                      defaultTotal={m.liveTotal}
+                    />
                   ) : (
                     <p className="mt-1.5 font-sans text-caption text-meta">
                       {c.proposal.matterTypeUnset}
