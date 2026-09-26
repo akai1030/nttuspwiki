@@ -22,6 +22,7 @@
     "fidelity:source": "tsx data/fidelity/source-check.ts",
     "fidelity:levelB": "tsx data/fidelity/levelB-check.ts",
     "fidelity:dom": "tsx data/fidelity/dom-check.ts",
+    "search:trim-dict": "tsx lib/search/trim-dict.ts",
     "search:index": "tsx lib/search/build-index.ts",
     "search:embed": "tsx lib/search/build-embeddings.ts",
     "refs:build": "tsx lib/references/build.ts",

@@ -9,6 +9,7 @@
  * 資料保真紅線（CLAUDE.md）：只做欄位映射，不改寫任何法條文字；缺漏一律報錯停手。
  * 保留 Law.id 不變 → 掛在該 Law 上的 ScheduleRule 不受影響（本專案目前為 0 筆）。
  * Article 為全換（deleteMany + create）；新條文的 tsv/embedding 需事後補建：
+ *   npm run search:trim-dict（新條文若有新詞，先重裁查詢用字典）
  *   npm run search:index   （tsv，必要，公開查詢用）
  *   npm run search:embed   （embedding，可選；語意層目前自部署切離，不影響執行時）
  *
@@ -101,7 +102,7 @@ async function main() {
       ?.toISOString()
       .slice(0, 10)}、sourceFile=${after?.sourceFile}`
   );
-  console.log("請接著跑：npm run search:index（tsv）、npm run refs:build（參照）、npm run db:verify（全庫逐字把關）。");
+  console.log("請接著跑：npm run search:trim-dict（字典）、npm run search:index（tsv）、npm run refs:build（參照）、npm run db:verify（全庫逐字把關）。");
 }
 
 main()

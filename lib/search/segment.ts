@@ -13,9 +13,12 @@ import { readFileSync } from "node:fs";
 import { gunzipSync } from "node:zlib";
 import path from "node:path";
 
-// 字典放 repo（gzip ~3MB）。用 Node fs 讀（處理 CJK 路徑沒問題），解壓後以 Buffer 交給 jieba。
+// 讀的是從 dict.txt.big 裁出來的 dict.trimmed.txt.gz（只留法規語料用得到的詞，約 5 千詞）。
+// 完整字典載入後常駐約 150MB，裁過的幾乎不佔記憶體；語料斷詞結果與完整字典逐段比對一致，
+// 既有 tsv 不必重建。原理與重產方式見 lib/search/trim-dict.ts（法規 JSON 有改就重跑）。
+// 用 Node fs 讀（處理 CJK 路徑沒問題），解壓後以 Buffer 交給 jieba。
 // 部署（Next standalone）需在 next.config 的 outputFileTracingIncludes 帶上此檔（Phase 6）。
-const DICT_PATH = path.join(process.cwd(), "lib", "search", "dict.txt.big.gz");
+const DICT_PATH = path.join(process.cwd(), "lib", "search", "dict.trimmed.txt.gz");
 
 let jieba: Jieba | null = null;
 function getJieba(): Jieba {
