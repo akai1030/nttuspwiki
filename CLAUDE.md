@@ -18,8 +18,9 @@
 6. **公開/私密邊界**：法規查詢全站公開唯讀；檢核與時程後台需幹部登入。別把後台資料洩到公開路由。
 
 ## 技術棧（沿用「網站建立流」，勿自行更換）
-- Next.js 14 App Router + TypeScript（strict）+ Tailwind
-- Zeabur PostgreSQL + Prisma
+- Next.js 16 App Router + React 19 + TypeScript（strict）+ Tailwind 3
+- Zeabur PostgreSQL + Prisma 6（**刻意不升 7**：7 的 WebAssembly 查詢編譯器本機量測多吃約 100MB 記憶體，共用主機吃不消；2026-09-29 量測見該次升級 commit）
+- Node 22（`zbpack.json` 的 `node_version`）；`proxy.ts`＝Next 16 前的 middleware
 - Cloudflare R2（上傳待檢核文件）
 - 全文檢索：`nodejieba` 應用端斷詞 → Postgres `tsvector`/GIN（**免資料庫擴充、可攜**為主力）；`pgvector` 語意檢索為可選輔助（待確認 Zeabur PG image 支援）
 - 排程：Zeabur cron worker（提醒發送）

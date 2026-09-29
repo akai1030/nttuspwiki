@@ -141,6 +141,7 @@ export const copy = {
       errorMissing: "請輸入信箱與密碼。",
       errorInvalid: "信箱或密碼不正確。",
       errorServer: "登入服務暫時無法使用，請稍後再試。",
+      errorTooMany: "嘗試次數過多，請 15 分鐘後再試。",
       errorNetwork: "連線失敗，請檢查網路後再試。",
       noAccount: "尚無帳號？議會帳號由管理員建立，請洽議會祕書處。",
     },

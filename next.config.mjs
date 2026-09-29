@@ -44,6 +44,26 @@ const nextConfig = {
   // 原生 addon（@node-rs/jieba）必須外部化，不讓 bundler 打包，改由 Node 於執行期 require。
   // 註：@xenova/transformers（onnxruntime，~1GB）已自部署切離（見 lib/search/query.ts）。
   serverExternalPackages: ["@node-rs/jieba"],
+  // 基本安全標頭。不上 CSP：Next 的內嵌腳本要逐頁配 nonce，會把全站改成動態渲染，代價不成比例。
+  async headers() {
+    const base = [
+      { key: "X-Content-Type-Options", value: "nosniff" },
+      // 跨站只送出來源網域、不送路徑。
+      { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+      { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+      // 不加 includeSubDomains：zeabur.app 的其他子網域不是我們的。
+      { key: "Strict-Transport-Security", value: "max-age=15552000" },
+    ];
+    // 有按鈕會改資料的頁面禁止被別站嵌進 iframe（點擊劫持）。
+    // 公開法規頁不擋：可能有人嵌在學生會網站上，嵌了也無害。
+    const noFrame = { key: "X-Frame-Options", value: "DENY" };
+    return [
+      { source: "/:path*", headers: base },
+      { source: "/console/:path*", headers: [noFrame] },
+      { source: "/console", headers: [noFrame] },
+      { source: "/login", headers: [noFrame] },
+    ];
+  },
   experimental: {
     // Next 15 起預設開機就把所有路由載進記憶體；後台頁一個月才開幾次，維持 Next 14 的「用到才載」。
     // 本機量測（Next 16）：開啟 252MB、關閉 221MB（打完全部公開頁與搜尋後的 RSS）。

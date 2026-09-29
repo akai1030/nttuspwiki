@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { verifyPassword, hashPassword } from "@/lib/auth/password";
 import { createSession } from "@/lib/auth/session";
 import { copy } from "@/lib/copy";
+import { clearKey, clientIp, isLimited, recordFailure } from "@/lib/auth/rate-limit";
 
 // Prisma + scrypt 需 Node runtime；讀 cookie/DB 一律 runtime。
 export const runtime = "nodejs";
@@ -57,10 +58,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: copy.login.form.errorMissing }, { status: 400 });
   }
 
+  const emailKey = `email:${email}`;
+  const ip = clientIp(req.headers);
+  const keys = ip ? [emailKey, `ip:${ip}`] : [emailKey];
+  if (isLimited(keys)) {
+    return NextResponse.json({ error: copy.login.form.errorTooMany }, { status: 429 });
+  }
+
   try {
     // 先試 env 引導管理員（密碼設在環境變數，Zeabur 好找好改）。
     const envAdmin = await tryEnvAdmin(email, password);
     if (envAdmin) {
+      clearKey(emailKey);
       await createSession(envAdmin);
       await prisma.user.update({ where: { id: envAdmin.id }, data: { lastLoginAt: new Date() } });
       return NextResponse.json({ ok: true, role: envAdmin.role });
@@ -70,9 +79,11 @@ export async function POST(req: NextRequest) {
     const ok = await verifyPassword(password, user?.passwordHash ?? (await dummyHash()));
 
     if (!user || !user.passwordHash || !ok) {
+      recordFailure(keys);
       return NextResponse.json({ error: copy.login.form.errorInvalid }, { status: 401 });
     }
 
+    clearKey(emailKey);
     await createSession(user);
     await prisma.user.update({
       where: { id: user.id },
