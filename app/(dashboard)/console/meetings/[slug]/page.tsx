@@ -706,6 +706,10 @@ export default async function MeetingDetailPage(props: { params: Promise<{ slug:
               <Input id="n-prefix" name="subjectPrefix" placeholder={c.notice.subjectPrefixPlaceholder} />
               <p className="font-sans text-caption text-meta">{c.notice.subjectPrefixHint}</p>
             </div>
+            <label className="flex items-center gap-2 font-sans text-caption text-ink hero:col-span-2">
+              <input type="checkbox" name="includeVoteUrl" value="1" defaultChecked />
+              {c.vote.noticeVoteUrl}
+            </label>
           </div>
 
           <div className="mt-4">
