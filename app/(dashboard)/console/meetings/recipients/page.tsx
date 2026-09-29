@@ -4,6 +4,10 @@ import { listRecipients } from "@/lib/meetings/queries";
 import { Input } from "@/components/SearchBox";
 import { copy } from "@/lib/copy";
 import { addRecipient, toggleRecipient, updateRecipient, deleteRecipient } from "../actions";
+import { reissueVoteLink } from "../vote-actions";
+import { CopyButton } from "@/components/CopyBlock";
+import { gmailComposeUrl, voteLinkMail, votePath } from "@/lib/meetings/vote-link";
+import { siteOrigin } from "@/lib/site-origin";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -12,6 +16,7 @@ export const metadata: Metadata = {
 };
 
 const c = copy.meetings.recipients;
+const vr = copy.meetings.vote.roster;
 
 /**
  * 名冊列的欄寬。標題列與每一列共用同一組 template，各列才會對齊成表格。
@@ -29,6 +34,8 @@ export default async function RecipientsPage() {
   await requireRole(["admin", "officer"]);
   const recipients = await listRecipients();
   const memberCount = recipients.filter((r) => r.studentId).length;
+  const origin = await siteOrigin();
+  const hasVoters = recipients.some((r) => r.active && r.roleTag === "議員");
 
   return (
     <main className="mx-auto max-w-wrap px-wrap-sm py-section-sm hero:px-wrap">
@@ -41,6 +48,13 @@ export default async function RecipientsPage() {
         <p className="mt-2 font-ui text-caption text-accent">{c.memberN(memberCount)}</p>
       )}
       <p className="mt-2 max-w-reader font-sans text-caption text-meta">{c.placeholderNote}</p>
+      {hasVoters ? (
+        <div className="mt-4 max-w-reader border-l-[3px] border-accent bg-paper2 px-3.5 py-2.5">
+          <p className="font-sans text-caption font-medium text-ink">{vr.heading}</p>
+          <p className="mt-1 font-sans text-caption text-meta">{vr.lede}</p>
+          <p className="mt-1 font-sans text-caption text-meta">{vr.reissueHint}</p>
+        </div>
+      ) : null}
 
       {/* 新增 */}
       <form
@@ -187,6 +201,9 @@ export default async function RecipientsPage() {
                         {roster.join("・")}
                       </p>
                     )}
+
+                    {/* 議員專屬投票連結：只給啟用中的議員 */}
+                    {r.active && r.roleTag === "議員" ? <VoteLinkRow r={r} origin={origin} /> : null}
                   </li>
                 );
               })}
@@ -195,5 +212,36 @@ export default async function RecipientsPage() {
         )}
       </div>
     </main>
+  );
+}
+
+function VoteLinkRow({
+  r,
+  origin,
+}: {
+  r: { id: string; name: string; email: string; session: number; voteLinkVersion: number };
+  origin: string;
+}) {
+  const url = origin + votePath(r.id, r.voteLinkVersion);
+  const mail = voteLinkMail(r, url);
+  return (
+    <div className="flex flex-wrap items-center gap-2 hero:col-span-6">
+      <span className="font-ui text-chip text-meta">{vr.link}</span>
+      <CopyButton text={url} label={vr.copyLink} />
+      <a
+        href={gmailComposeUrl(r.email, mail.subject, mail.body)}
+        target="_blank"
+        rel="noreferrer"
+        className="border border-line px-3 py-1.5 font-ui text-caption font-medium leading-none tracking-snug text-ink transition-colors hover:border-accent hover:text-accent"
+      >
+        {vr.mail} ↗
+      </a>
+      <form action={reissueVoteLink}>
+        <input type="hidden" name="id" value={r.id} />
+        <button type="submit" className="font-ui text-chip text-meta transition-colors hover:text-warn-ink">
+          {vr.reissue}
+        </button>
+      </form>
+    </div>
   );
 }

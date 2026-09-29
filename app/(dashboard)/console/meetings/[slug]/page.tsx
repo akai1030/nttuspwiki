@@ -656,6 +656,12 @@ export default async function MeetingDetailPage(props: { params: Promise<{ slug:
         <SecHead s={SEC.notice} title={c.detail.noticeTitle} />
         <p className="mt-2 font-sans text-caption text-meta">{c.notice.pick}</p>
         <p className="mt-1 font-sans text-caption text-warn-ink">{c.notice.draftOnly}</p>
+        <p className="mt-1 font-sans text-caption text-meta">
+          {c.vote.noticeHint}{" "}
+          <a href="/console/meetings/recipients" className="text-accent hover:underline">
+            {c.notice.manageRecipients}
+          </a>
+        </p>
 
         <form action={generateNoticeAction} className="mt-4">
           <input type="hidden" name="meetingId" value={m.id} />

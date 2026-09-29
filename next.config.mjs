@@ -62,6 +62,7 @@ const nextConfig = {
       { source: "/console/:path*", headers: [noFrame] },
       { source: "/console", headers: [noFrame] },
       { source: "/login", headers: [noFrame] },
+      { source: "/v/:path*", headers: [noFrame] },
     ];
   },
   experimental: {

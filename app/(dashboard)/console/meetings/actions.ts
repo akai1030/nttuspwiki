@@ -8,6 +8,7 @@ import { parseTaipeiLocal } from "@/lib/meetings/roc";
 import { generateNotice, type NoticeKind, type MeetingForNotice } from "@/lib/meetings/notice";
 import { computeFireAt } from "@/lib/meetings/reminders";
 import { buildMeetingSlug, normalizeSlug, pickAvailableSlug, validateSlug } from "@/lib/meetings/slug";
+import { sessionMembers } from "@/lib/meetings/vote-queries";
 
 // —— FormData 小工具 ——
 function str(fd: FormData, k: string): string {
@@ -474,10 +475,21 @@ export async function setLiveAttendance(fd: FormData) {
     const n = Number.parseInt(v, 10);
     return Number.isFinite(n) && n >= 0 ? n : null;
   };
+  // 有名冊的場次用勾選點名：出席人數＝勾選人數，名單同時是線上表決的可投票者。
+  // 只收該屆啟用中的議員，避免手動改表單值塞進別屆或非議員。
+  let attendees: string[] | null = null;
+  if (str(fd, "rollcall") === "1") {
+    const m = await prisma.meeting.findUnique({ where: { id }, select: { session: true } });
+    if (!m) return;
+    const members = new Set((await sessionMembers(m.session)).map((r) => r.id));
+    const picked = fd.getAll("attendee").filter((v): v is string => typeof v === "string" && members.has(v));
+    attendees = [...new Set(picked)];
+  }
   await prisma.meeting.update({
     where: { id },
     data: {
-      livePresent: presentRaw ? num(presentRaw) : null,
+      ...(attendees ? { liveAttendeeIds: attendees } : {}),
+      livePresent: attendees ? attendees.length : presentRaw ? num(presentRaw) : null,
       liveTotal: totalRaw ? num(totalRaw) : null,
       liveTotalBasis: (TOTAL_BASIS as readonly string[]).includes(basisRaw) ? basisRaw : null,
       liveUpdatedAt: new Date(),

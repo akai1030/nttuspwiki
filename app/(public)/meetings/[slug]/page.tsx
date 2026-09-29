@@ -8,6 +8,8 @@ import { buildTimeline, daysBetween } from "@/lib/meetings/timeline";
 import { AGENDA_SECTIONS } from "@/lib/meetings/sections";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { VoteResultCard } from "@/components/VoteBlocks";
+import { loadVoteViews } from "@/lib/meetings/vote-queries";
 
 export const dynamic = "force-dynamic";
 
@@ -37,6 +39,11 @@ export default async function PublicMeetingDetail(props: { params: Promise<{ slu
   const m = await loadMeeting(params.slug);
   if (!m) notFound();
   if (m.slug && m.slug !== params.slug) redirect(`/meetings/${m.slug}`);
+
+  // 公開頁只放已截止的表決（投票中的進度看現場議事頁）。記名表決列名，無記名只有票數。
+  const votes = (await loadVoteViews(m.id, "public")).filter((x) => x.status === "closed");
+  const proposalIds = new Set(m.proposals.map((p) => p.id));
+  const looseVotes = votes.filter((x) => !x.proposalId || !proposalIds.has(x.proposalId));
 
   const now = new Date();
   const timeline = buildTimeline(
@@ -133,6 +140,13 @@ export default async function PublicMeetingDetail(props: { params: Promise<{ slu
                               {p.resolution.trim()}
                             </p>
                           ) : null}
+                          {votes
+                            .filter((x) => x.proposalId === p.id)
+                            .map((x) => (
+                              <div key={x.id} className="mt-2">
+                                <VoteResultCard vote={x} />
+                              </div>
+                            ))}
                         </li>
                       ))}
                     </ul>
@@ -142,6 +156,17 @@ export default async function PublicMeetingDetail(props: { params: Promise<{ slu
             </div>
           )}
         </section>
+
+        {looseVotes.length > 0 ? (
+          <section className="mt-8">
+            <h2 className="font-serif text-h4">{copy.meetings.vote.history}</h2>
+            <div className="mt-3 flex flex-col gap-3">
+              {looseVotes.map((x) => (
+                <VoteResultCard key={x.id} vote={x} />
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         {/* 籌備時程 */}
         <section className="mt-8">

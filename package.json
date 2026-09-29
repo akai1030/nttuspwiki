@@ -17,6 +17,7 @@
     "db:verify": "tsx data/verify.ts",
     "meetings:backfill-slug": "tsx data/backfill-meeting-slug.ts",
     "verify:vote-rules": "tsx data/verify-vote-rules.ts",
+    "verify:voting": "tsx data/verify-voting.ts",
     "demo:seed": "tsx data/demo-meeting.ts",
     "demo:drop": "tsx data/demo-meeting.ts --drop",
     "fidelity:source": "tsx data/fidelity/source-check.ts",

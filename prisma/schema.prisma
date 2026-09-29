@@ -33,15 +33,15 @@ model Law {
 }
 
 model Article {
-  id      String  @id @default(cuid())
-  lawId   String
-  law     Law     @relation(fields: [lawId], references: [id])
-  number  String // "16" "3-1"
-  name    String? // 條名
-  chapter String? // 第一章
-  body    String  @db.Text // 純文字全文（款項以換行合併，供搜尋/顯示）
-  items   Json // 結構化款項陣列（string[]）
-  version   Int                        @default(20) // = session，供跨屆 diff
+  id        String                      @id @default(cuid())
+  lawId     String
+  law       Law                         @relation(fields: [lawId], references: [id])
+  number    String // "16" "3-1"
+  name      String? // 條名
+  chapter   String? // 第一章
+  body      String                      @db.Text // 純文字全文（款項以換行合併，供搜尋/顯示）
+  items     Json // 結構化款項陣列（string[]）
+  version   Int                         @default(20) // = session，供跨屆 diff
   tsv       Unsupported("tsvector")? // 應用端斷詞後寫入（Phase 2）
   embedding Unsupported("vector(384)")? // 語意向量：@xenova multilingual-e5-small（Phase 2 可選層）
 
@@ -174,54 +174,58 @@ enum MeetingStatus {
 }
 
 model Meeting {
-  id               String            @id @default(cuid())
-  slug             String?           @unique // 語意網址段（21-115-1-0827-special）；見 lib/meetings/slug.ts。
+  id               String             @id @default(cuid())
+  slug             String?            @unique // 語意網址段（21-115-1-0827-special）；見 lib/meetings/slug.ts。
   //                                          刻意可為 NULL：舊資料未回填時仍以 cuid 開得起來，
   //                                          避免「先部署 code 後跑 migration」順序反了就整頁 500。
   session          Int // 屆別，如 21
   academicYear     String // 「114學年度第2學期」
   name             String // 「七月議會臨時會」
-  kind             MeetingKind       @default(REGULAR)
+  kind             MeetingKind        @default(REGULAR)
   meetingAt        DateTime // 會議時間
   location         String? // 「線上視訊會議室」
   meetingUrl       String? // Google Meet 連結
   docNumber        String? // 東議字第1140246號
   proposalDeadline DateTime? // 提案截止
-  notes            String?           @db.Text // 備註一、二…
-  status           MeetingStatus     @default(DRAFT)
-  isPublic         Boolean           @default(false) // admin 逐場開；true 才出現在免登入公開頁
+  notes            String?            @db.Text // 備註一、二…
+  status           MeetingStatus      @default(DRAFT)
+  isPublic         Boolean            @default(false) // admin 逐場開；true 才出現在免登入公開頁
   // ── 現場議事（開會系統）。狀態全部由人操作推進，不得以時鐘自動推算。 ──
   // liveOpen 與 isPublic 是兩回事：isPublic 是議事公開頁的長期公開，
   // liveOpen 只在開會當下開啟，讓與會人憑連結看到「現在念到哪一案」。
-  liveOpen         Boolean           @default(false)
+  liveOpen         Boolean            @default(false)
   liveProposalId   String? // 目前進行中的提案（Proposal.id）；null＝尚未開始或已休息
   livePresent      Int? // 點名後的出席人數
   liveTotal        Int? // 議員總額
   liveTotalBasis   String? // 本次採用的總額定義：'2.3-4-2' 或 '2.0-13-1'（兩條衝突，須逐次記錄）
   liveNote         String? // 主席公告（如「休息十分鐘」），純文字
   liveUpdatedAt    DateTime? // 最後一次人工操作時間，供與會人判斷畫面是否卡住
+  // 點名勾選的出席議員（Recipient.id[]）。有名冊時 livePresent＝這份名單的人數；
+  // 線上表決開票時以這份名單為「可投票者」快照。NULL＝本場沒用名冊點名（只填數字）。
+  liveAttendeeIds  Json?
   createdById      String // User.id（幹部）
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
   proposals        Proposal[]
   agendaItems      AgendaItem[]
   notices          MeetingNotice[]
   reminders        MeetingReminder[]
   milestones       MeetingMilestone[]
+  votes            Vote[]
 
   @@index([session, meetingAt])
 }
 
 model Proposal {
-  id          String   @id @default(cuid())
-  meetingId   String
-  meeting     Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
-  serialNo    Int // 附件序 / 案號（2、3…）
-  section     String // 報告事項 / 討論事項 / 選舉事項 / 臨時動議
-  title       String // 案由
-  proposer    String? // 提案人 / 提案單位
-  explanation String?  @db.Text // 說明
-  resolution  String?  @db.Text // 決議（會後補）
+  id           String  @id @default(cuid())
+  meetingId    String
+  meeting      Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  serialNo     Int // 附件序 / 案號（2、3…）
+  section      String // 報告事項 / 討論事項 / 選舉事項 / 臨時動議
+  title        String // 案由
+  proposer     String? // 提案人 / 提案單位
+  explanation  String? @db.Text // 說明
+  resolution   String? @db.Text // 決議（會後補）
   // 程序委員會審核狀態。法源：2.3《議會暨常會職權行使法》§9②「應先送程序委員會」。
   // pending（待審，預設）/ passed（通過）/ rejected（不列入議程）。
   // 議程只排除 rejected；pending 照舊會出現，故既有資料行為完全不變。
@@ -230,8 +234,8 @@ model Proposal {
   // 承辦於擬案時選定，決定會中要套哪一條法定表決方式與門檻。
   // nullable：未選＝未指定，系統不代為歸類（人在迴路）。
   matterType   String?
-  fileUrl     String? // 附件連結（R2 待設定前先用雲端硬碟/URL）
-  order       Int      @default(0)
+  fileUrl      String? // 附件連結（R2 待設定前先用雲端硬碟/URL）
+  order        Int     @default(0)
 
   @@index([meetingId])
 }
@@ -250,19 +254,22 @@ model AgendaItem {
 }
 
 model Recipient {
-  id        String   @id @default(cuid())
-  session   Int
-  name      String
-  email     String
-  roleTag   String // 議員 / 列席 / 旁聽 / 祕書處
-  active    Boolean  @default(true)
+  id              String   @id @default(cuid())
+  session         Int
+  name            String
+  email           String
+  roleTag         String // 議員 / 列席 / 旁聽 / 祕書處
+  active          Boolean  @default(true)
   // 議員名冊（完整資料；非議員之列席/旁聽/祕書處留空）。皆屬個資，永不進公開路由。
-  district   String? // 選區：全校不分區 / 全校原住民不分區 / 碩博士不分區 / 系選區(系名)
-  department String? // 科系
-  grade      String? // 年級（原文保真，如「二年級」）
-  studentId  String? // 學號（議員唯一鍵，供冪等匯入）
-  phone      String? // 手機
-  createdAt DateTime @default(now())
+  district        String? // 選區：全校不分區 / 全校原住民不分區 / 碩博士不分區 / 系選區(系名)
+  department      String? // 科系
+  grade           String? // 年級（原文保真，如「二年級」）
+  studentId       String? // 學號（議員唯一鍵，供冪等匯入）
+  phone           String? // 手機
+  // 議員專屬投票連結的版本。連結＝HMAC(AUTH_SECRET, id＋版本)，不存連結本身；
+  // 「作廢重發」把版本加一，舊連結即失效（見 lib/meetings/vote-link.ts）。
+  voteLinkVersion Int      @default(1)
+  createdAt       DateTime @default(now())
 
   @@unique([session, studentId]) // 同屆同學號唯一；studentId 為 NULL 的非議員列不受限（PG 視 NULL 互異）
   @@index([session, active])
@@ -308,4 +315,65 @@ model MeetingMilestone {
   createdAt DateTime @default(now())
 
   @@index([meetingId])
+}
+
+// ── 線上表決（現場議事的延伸，見 lib/meetings/voting.ts）──
+// 無記名（secret=true）：只記「誰投過」（VoteVoter）與各選項總數（VoteOption.count），
+//   資料庫裡沒有任何一列記著「誰投了哪一項」。
+// 記名（secret=false）：另寫 VoteBallot（誰投了哪一項），看板與公開頁列名。
+// 沒投票的出席議員即為廢票（2026-09-29 議會決定：同意／不同意兩個選項，可以不投）。
+
+model Vote {
+  id          String       @id @default(cuid())
+  meetingId   String
+  meeting     Meeting      @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  proposalId  String? // 對應議案；選舉或未列入議程的事項可不掛
+  kind        String // motion（同意／不同意）/ election（選人）
+  secret      Boolean // true＝無記名投票、false＝記名投票
+  title       String // 表決事項，預設帶案由
+  seats       Int? // election 的應選名額，僅供顯示；當選由主席宣布
+  matterType  String? // 開票當下議案類型（VoteRule.id）快照，事後可查依據
+  status      String       @default("open") // open / closed / voided
+  eligibleIds Json // 開票當下點名出席的議員（Recipient.id[]）；只有這份名單能投
+  openedById  String // User.id
+  openedAt    DateTime     @default(now())
+  closedAt    DateTime?
+  options     VoteOption[]
+  voters      VoteVoter[]
+  ballots     VoteBallot[]
+
+  @@index([meetingId])
+}
+
+model VoteOption {
+  id      String       @id @default(cuid())
+  voteId  String
+  vote    Vote         @relation(fields: [voteId], references: [id], onDelete: Cascade)
+  label   String // 同意／不同意，或候選人姓名
+  order   Int
+  count   Int          @default(0) // 得票數（無記名表決只留這個數字）
+  ballots VoteBallot[]
+
+  @@index([voteId])
+}
+
+/// 已投票者。只記「投過了」，不記投了什麼；主鍵擋重複投票。
+model VoteVoter {
+  voteId      String
+  vote        Vote   @relation(fields: [voteId], references: [id], onDelete: Cascade)
+  recipientId String
+
+  @@id([voteId, recipientId])
+}
+
+/// 記名表決的每一張票。無記名表決不寫這張表。
+model VoteBallot {
+  voteId      String
+  vote        Vote       @relation(fields: [voteId], references: [id], onDelete: Cascade)
+  recipientId String
+  optionId    String
+  option      VoteOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+
+  @@id([voteId, recipientId])
+  @@index([optionId])
 }
