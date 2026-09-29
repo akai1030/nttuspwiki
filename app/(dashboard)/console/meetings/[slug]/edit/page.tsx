@@ -68,7 +68,7 @@ export default async function EditMeetingPage(
             type="submit"
             className="border border-ink bg-ink px-5 py-2.5 font-ui text-caption font-medium leading-none tracking-snug text-white transition-colors hover:border-accent hover:bg-accent"
           >
-            {c.form.submit}
+            {c.form.save}
           </button>
         </div>
       </form>

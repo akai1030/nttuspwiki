@@ -403,6 +403,7 @@ export const copy = {
       notes: "備註",
       notesPlaceholder: "二、…（一為提案截止，系統自動帶入）",
       submit: "建立",
+      save: "儲存變更",
       required: "屆別、學年度學期、會議名稱、會議時間為必填。",
       slug: "網址",
       slugHint: "小寫英數與連字號。留空維持原網址。改網址後舊網址會自動轉址，不會失效。",
