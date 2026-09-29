@@ -26,7 +26,8 @@ export const metadata: Metadata = {
  *
  * 畫面只跟隨伺服器狀態，議程進度由主席／祕書在中控台推進。
  */
-export default async function LiveMeetingPage({ params }: { params: { slug: string } }) {
+export default async function LiveMeetingPage(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const m = await getLiveMeetingByKey(params.slug);
 
   if (!m) {

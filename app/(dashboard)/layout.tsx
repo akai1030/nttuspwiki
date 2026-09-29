@@ -3,7 +3,7 @@ import { LogoutButton } from "@/components/LogoutButton";
 import { SiteFooter } from "@/components/SiteFooter";
 import { copy } from "@/lib/copy";
 
-// 幹部後台外殼：所有 (dashboard) 路由共用。middleware 已擋一層，這裡再 requireUser（縱深防禦）+ 取身分。
+// 幹部後台外殼：所有 (dashboard) 路由共用。proxy.ts 已擋一層，這裡再 requireUser（縱深防禦）+ 取身分。
 export const dynamic = "force-dynamic";
 
 const ROLE_LABEL: Record<string, string> = copy.console.roles;

@@ -41,16 +41,19 @@ const nextConfig = {
     NEXT_PUBLIC_BUILD_SHA: buildSha(),
     NEXT_PUBLIC_BUILD_TIME: new Date().toISOString(),
   },
-  // 原生 addon（@node-rs/jieba）必須外部化，不讓 webpack 打包，改由 Node 於執行期 require。
+  // 原生 addon（@node-rs/jieba）必須外部化，不讓 bundler 打包，改由 Node 於執行期 require。
   // 註：@xenova/transformers（onnxruntime，~1GB）已自部署切離（見 lib/search/query.ts）。
+  serverExternalPackages: ["@node-rs/jieba"],
   experimental: {
-    serverComponentsExternalPackages: ["@node-rs/jieba"],
-    // 部署（standalone）時把繁體字典檔一併帶上（供 lib/search/segment.ts 讀取）。
-    // /api/search 與 /search 頁都走 jieba 斷詞，兩者都要 trace 到字典。
-    outputFileTracingIncludes: {
-      "/api/search": ["./lib/search/dict.trimmed.txt.gz"],
-      "/search": ["./lib/search/dict.trimmed.txt.gz"],
-    },
+    // Next 15 起預設開機就把所有路由載進記憶體；後台頁一個月才開幾次，維持 Next 14 的「用到才載」。
+    // 本機量測（Next 16）：開啟 252MB、關閉 221MB（打完全部公開頁與搜尋後的 RSS）。
+    preloadEntriesOnStart: false,
+  },
+  // 部署時把繁體字典檔一併帶上（供 lib/search/segment.ts 讀取）。
+  // /api/search 與 /search 頁都走 jieba 斷詞，兩者都要 trace 到字典。
+  outputFileTracingIncludes: {
+    "/api/search": ["./lib/search/dict.trimmed.txt.gz"],
+    "/search": ["./lib/search/dict.trimmed.txt.gz"],
   },
 };
 

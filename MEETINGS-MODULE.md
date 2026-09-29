@@ -2,7 +2,7 @@
 
 > v0.1 草案 · 2026-07-15 · 待 Kai 拍板後才進實作
 > 本文只做架構規劃，不含實作程式碼。定位：把幹部後台的「會議營運」四項需求，長在既有資料層與 `DESIGN-SYSTEM.md` 之上。
-> 前置已完成：**幹部登入閘門**（`/login` + `/console` + middleware，見 `lib/auth/`）已上線並端到端驗證通過，本模組所有頁面都掛在 `(dashboard)` 之下。
+> 前置已完成：**幹部登入閘門**（`/login` + `/console` + proxy.ts（Next 16 前叫 middleware），見 `lib/auth/`）已上線並端到端驗證通過，本模組所有頁面都掛在 `(dashboard)` 之下。
 
 ---
 

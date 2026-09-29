@@ -14,11 +14,12 @@ export const metadata: Metadata = {
 
 const c = copy.meetings;
 
-export default async function NewMeetingPage({
-  searchParams,
-}: {
-  searchParams?: { error?: string };
-}) {
+export default async function NewMeetingPage(
+  props: {
+    searchParams?: Promise<{ error?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   await requireUser();
 
   // 每學期只變一次的欄位（學年度學期）用日期推算；屆別與地點沿用上一場。

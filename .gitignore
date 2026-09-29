@@ -31,3 +31,6 @@ Thumbs.db
 # 議員名冊（選舉結果原檔 + 轉出 JSON，含 email/手機/學號等個資，不進版控；由本機匯入 DB）
 *.xlsx
 /data/roster-session*.json
+
+# Next 16 起 next-env.d.ts 會 import .next/types（建置產物），由 next build / next typegen 自動產生
+next-env.d.ts

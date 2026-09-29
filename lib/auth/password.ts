@@ -1,7 +1,7 @@
 /**
  * 密碼雜湊 — 用 Node 內建 crypto.scrypt（零外部相依，符合 CLAUDE.md「勿上重型 auth 框架、維持精簡」）。
  * 儲存格式：`scrypt$<salt hex>$<hash hex>`。比對用 timingSafeEqual 防時序側漏。
- * 僅在 Node runtime 使用（登入 API、供裝腳本）；middleware（edge）不碰這裡。
+ * 僅在 Node runtime 使用（登入 API、供裝腳本）；proxy.ts 不碰這裡。
  */
 import { scrypt, randomBytes, timingSafeEqual } from "node:crypto";
 import { promisify } from "node:util";

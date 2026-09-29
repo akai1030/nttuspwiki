@@ -19,11 +19,12 @@ const roleName = (r: string) => (c.roleNames as Record<string, string>)[r] ?? r;
 const selectCls =
   "rounded-sm border border-line bg-paper px-3 py-2 font-sans text-body text-ink focus:border-accent";
 
-export default async function MembersPage({
-  searchParams,
-}: {
-  searchParams?: { err?: string; ok?: string };
-}) {
+export default async function MembersPage(
+  props: {
+    searchParams?: Promise<{ err?: string; ok?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const me = await requireAdmin();
   const users = await prisma.user.findMany({
     orderBy: [{ role: "asc" }, { createdAt: "asc" }],

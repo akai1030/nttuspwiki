@@ -20,11 +20,12 @@ function safeNext(next?: string): string {
   return next;
 }
 
-export default async function LoginPage({
-  searchParams,
-}: {
-  searchParams?: { next?: string };
-}) {
+export default async function LoginPage(
+  props: {
+    searchParams?: Promise<{ next?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const next = safeNext(searchParams?.next);
 
   // 已登入就直接進目的地，不用再看登入頁。

@@ -39,7 +39,8 @@ const field =
  * 這頁的每一個按鈕都是人按下去才會動：宣告進入某案、登記點名、發布公告、開關現場頁。
  * 沒有倒數計時、沒有排程、不以時鐘推進議程 —— 伺服器存狀態，與會人的畫面只跟隨。
  */
-export default async function LiveConsolePage({ params }: { params: { slug: string } }) {
+export default async function LiveConsolePage(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   await requireUser();
   const m = await getMeetingByKey(params.slug);
   if (!m) notFound();

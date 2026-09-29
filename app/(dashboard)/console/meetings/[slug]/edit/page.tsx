@@ -16,13 +16,14 @@ export const metadata: Metadata = {
 
 const c = copy.meetings;
 
-export default async function EditMeetingPage({
-  params,
-  searchParams,
-}: {
-  params: { slug: string };
-  searchParams?: { error?: string };
-}) {
+export default async function EditMeetingPage(
+  props: {
+    params: Promise<{ slug: string }>;
+    searchParams?: Promise<{ error?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   await requireUser();
   const m = await getMeetingByKey(params.slug);
   if (!m) notFound();

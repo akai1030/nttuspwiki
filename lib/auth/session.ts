@@ -1,6 +1,6 @@
 /**
  * Session cookie 讀寫 — server（node runtime：route handler / server component）專用。
- * 用 next/headers 的 cookies()；純 token 簽/驗在 ./token（edge-safe，middleware 也用那支）。
+ * 用 next/headers 的 cookies()；純 token 簽/驗在 ./token（edge-safe，proxy.ts 也用那支）。
  */
 import { cookies } from "next/headers";
 import {
@@ -25,15 +25,15 @@ export async function createSession(user: {
     role: user.role,
     name: user.name ?? undefined,
   });
-  cookies().set(SESSION_COOKIE, token, sessionCookieOptions());
+  (await cookies()).set(SESSION_COOKIE, token, sessionCookieOptions());
 }
 
 export async function readSession(): Promise<SessionPayload | null> {
-  const token = cookies().get(SESSION_COOKIE)?.value;
+  const token = (await cookies()).get(SESSION_COOKIE)?.value;
   if (!token) return null;
   return verifySession(token);
 }
 
-export function clearSession(): void {
-  cookies().set(SESSION_COOKIE, "", sessionCookieOptions(0));
+export async function clearSession(): Promise<void> {
+  (await cookies()).set(SESSION_COOKIE, "", sessionCookieOptions(0));
 }
