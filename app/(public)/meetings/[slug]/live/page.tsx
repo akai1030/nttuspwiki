@@ -6,6 +6,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { LiveAgendaBoard } from "@/components/LiveAgendaBoard";
 import { AutoRefresh } from "@/components/AutoRefresh";
+import { loadVoteViews } from "@/lib/meetings/vote-queries";
 
 export const dynamic = "force-dynamic";
 
@@ -44,6 +45,8 @@ export default async function LiveMeetingPage(props: { params: Promise<{ slug: s
     );
   }
 
+  const votes = await loadVoteViews(m.id, "public");
+
   return (
     <>
       <SiteHeader />
@@ -60,7 +63,7 @@ export default async function LiveMeetingPage(props: { params: Promise<{ slug: s
           <AutoRefresh seconds={5} />
         </div>
 
-        <LiveAgendaBoard m={m} />
+        <LiveAgendaBoard m={m} votes={votes} />
       </main>
       <SiteFooter />
     </>

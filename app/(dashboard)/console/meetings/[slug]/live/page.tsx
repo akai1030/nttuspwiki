@@ -16,6 +16,10 @@ import {
   setLiveNote,
   updateProposalResolution,
 } from "../../actions";
+import { openVote, closeVote, voidVote, applyVoteToResolution } from "../../vote-actions";
+import { loadVoteViews, sessionMembers } from "@/lib/meetings/vote-queries";
+import { idList, secretFromLawMethod } from "@/lib/meetings/voting";
+import { VoteOpenCard, VoteResultCard } from "@/components/VoteBlocks";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -25,6 +29,7 @@ export const metadata: Metadata = {
 
 const c = copy.meetings.live;
 const v = copy.meetings.voteRule;
+const vt = copy.meetings.vote;
 
 const btn =
   "border border-line px-3 py-1.5 font-ui text-caption font-medium leading-none tracking-snug text-ink transition-colors hover:border-accent hover:text-accent";
@@ -39,8 +44,12 @@ const field =
  * 這頁的每一個按鈕都是人按下去才會動：宣告進入某案、登記點名、發布公告、開關現場頁。
  * 沒有倒數計時、沒有排程、不以時鐘推進議程 —— 伺服器存狀態，與會人的畫面只跟隨。
  */
-export default async function LiveConsolePage(props: { params: Promise<{ slug: string }> }) {
+export default async function LiveConsolePage(props: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ voteError?: string }>;
+}) {
   const params = await props.params;
+  const { voteError } = await props.searchParams;
   await requireUser();
   const m = await getMeetingByKey(params.slug);
   if (!m) notFound();
@@ -56,6 +65,14 @@ export default async function LiveConsolePage(props: { params: Promise<{ slug: s
   const rule = ruleById(current?.matterType);
   // 出席人數已在上方點名區登記，換算直接沿用，不要求再填一次。
   const attendance = { present: m.livePresent ?? undefined, total: m.liveTotal ?? undefined };
+
+  // 點名名冊與線上表決。
+  const [members, votes] = await Promise.all([sessionMembers(m.session), loadVoteViews(m.id, "console")]);
+  const attendees = new Set(idList(m.liveAttendeeIds));
+  const openVoteView = votes.find((x) => x.status === "open") ?? null;
+  const pastVotes = votes.filter((x) => x.status !== "open");
+  const proposalTitle = new Map(m.proposals.map((p) => [p.id, p.title]));
+  const lawSecret = secretFromLawMethod(rule?.method);
 
   return (
     <main className="mx-auto max-w-wrap px-wrap-sm py-section-sm hero:px-wrap">
@@ -105,42 +122,67 @@ export default async function LiveConsolePage(props: { params: Promise<{ slug: s
         ) : null}
       </section>
 
-      {/* 點名 */}
+      {/* 點名：有名冊就勾選（出席名單同時是線上表決的可投票者），沒有名冊才填數字 */}
       <section className="mt-5 border border-line bg-paper p-card">
         <p className="font-sans text-body font-medium text-ink">{c.attendance}</p>
-        <form action={setLiveAttendance} className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+        <form action={setLiveAttendance} className="mt-3">
           <input type="hidden" name="id" value={m.id} />
-          <label className="font-sans text-caption text-meta">
-            {v.present}
-            <input
-              name="present"
-              type="number"
-              min={0}
-              defaultValue={m.livePresent ?? ""}
-              className={`ml-1.5 w-20 ${field}`}
-            />
-          </label>
-          <label className="font-sans text-caption text-meta">
-            {v.totalMembers}
-            <input
-              name="total"
-              type="number"
-              min={0}
-              defaultValue={m.liveTotal ?? ""}
-              className={`ml-1.5 w-20 ${field}`}
-            />
-          </label>
-          <label className="font-sans text-caption text-meta">
-            {c.totalBasis}
-            <select name="totalBasis" defaultValue={m.liveTotalBasis ?? ""} className={`ml-1.5 ${field}`}>
-              <option value="">{c.totalBasisNone}</option>
-              <option value="2.3-4-2">{c.totalBasisLabel["2.3-4-2"]}</option>
-              <option value="2.0-13-1">{c.totalBasisLabel["2.0-13-1"]}</option>
-            </select>
-          </label>
-          <button type="submit" className={btn}>
-            {c.saveAttendance}
-          </button>
+          {members.length > 0 ? (
+            <>
+              <input type="hidden" name="rollcall" value="1" />
+              <p className="font-sans text-caption text-meta">
+                {c.rollCallHint}　
+                <span className="text-ink">
+                  {v.present} <strong className="tnum">{attendees.size}</strong>／{members.length}
+                </span>
+              </p>
+              <ul className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 hero:grid-cols-4">
+                {members.map((r) => (
+                  <li key={r.id}>
+                    <label className="flex items-center gap-2 py-1 font-sans text-body text-ink">
+                      <input type="checkbox" name="attendee" value={r.id} defaultChecked={attendees.has(r.id)} className="h-4 w-4" />
+                      {r.name}
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : null}
+          <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+            {members.length === 0 ? (
+              <label className="font-sans text-caption text-meta">
+                {v.present}
+                <input
+                  name="present"
+                  type="number"
+                  min={0}
+                  defaultValue={m.livePresent ?? ""}
+                  className={`ml-1.5 w-20 ${field}`}
+                />
+              </label>
+            ) : null}
+            <label className="font-sans text-caption text-meta">
+              {v.totalMembers}
+              <input
+                name="total"
+                type="number"
+                min={0}
+                defaultValue={m.liveTotal ?? ""}
+                className={`ml-1.5 w-20 ${field}`}
+              />
+            </label>
+            <label className="font-sans text-caption text-meta">
+              {c.totalBasis}
+              <select name="totalBasis" defaultValue={m.liveTotalBasis ?? ""} className={`ml-1.5 ${field}`}>
+                <option value="">{c.totalBasisNone}</option>
+                <option value="2.3-4-2">{c.totalBasisLabel["2.3-4-2"]}</option>
+                <option value="2.0-13-1">{c.totalBasisLabel["2.0-13-1"]}</option>
+              </select>
+            </label>
+            <button type="submit" className={btn}>
+              {c.saveAttendance}
+            </button>
+          </div>
         </form>
         <p className="mt-2 font-sans text-caption text-meta">{c.totalBasisHint}</p>
       </section>
@@ -256,6 +298,139 @@ export default async function LiveConsolePage(props: { params: Promise<{ slug: s
         ) : (
           <p className="mt-1.5 font-sans text-body text-meta">{c.currentNone}</p>
         )}
+      </section>
+
+      {/* 線上表決 */}
+      <section id="vote" className="mt-5 scroll-mt-20 border border-line border-l-[3px] border-l-accent bg-paper p-card">
+        <p className="font-ui text-chip uppercase tracking-kicker text-accent">{vt.sectionTitle}</p>
+        <p className="mt-1.5 font-sans text-caption text-meta">
+          {vt.lead}
+          {vt.chairDeclares}
+        </p>
+
+        {voteError && vt.errors[voteError] ? (
+          <p role="alert" className="mt-3 border border-warn-border bg-warn-surface px-3 py-2 font-sans text-caption text-warn-ink">
+            {vt.errors[voteError]}
+          </p>
+        ) : null}
+
+        {openVoteView ? (
+          <div className="mt-3">
+            <VoteOpenCard vote={openVoteView} pendingNames={openVoteView.pendingNames} />
+            <div className="mt-2.5 flex flex-wrap items-center gap-2">
+              <form action={closeVote}>
+                <input type="hidden" name="voteId" value={openVoteView.id} />
+                <button type="submit" className={btnSolid}>
+                  {vt.close}
+                </button>
+              </form>
+              <form action={voidVote}>
+                <input type="hidden" name="voteId" value={openVoteView.id} />
+                <button type="submit" className={btn}>
+                  {vt.void}
+                </button>
+              </form>
+              <span className="font-sans text-caption text-meta">{vt.voidHint}</span>
+            </div>
+          </div>
+        ) : !m.liveOpen ? (
+          <p className="mt-3 font-sans text-body text-meta">{vt.needLive}</p>
+        ) : attendees.size === 0 ? (
+          <p className="mt-3 font-sans text-body text-meta">{vt.needRollCall}</p>
+        ) : (
+          // key：換案時整個表單重建。不重建的話，輸入框會留著上一案的案由（defaultValue 只在掛載時生效）。
+          <form key={current?.id ?? "none"} action={openVote} className="group mt-3 flex flex-col gap-3">
+            <input type="hidden" name="meetingId" value={m.id} />
+            <input type="hidden" name="proposalId" value={current?.id ?? ""} />
+            <label className="flex flex-col gap-1 font-sans text-caption font-medium text-ink">
+              {vt.title}
+              <input name="title" required maxLength={200} defaultValue={current?.title ?? ""} className={field} />
+            </label>
+            <fieldset className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
+              <legend className="mb-1 font-sans text-caption font-medium text-ink">{vt.kind}</legend>
+              <label className="flex items-center gap-1.5 font-sans text-body text-ink">
+                <input type="radio" name="kind" value="motion" defaultChecked /> {vt.kindMotion}
+              </label>
+              <label className="flex items-center gap-1.5 font-sans text-body text-ink">
+                <input type="radio" name="kind" value="election" id="kind-election" /> {vt.kindElection}
+              </label>
+            </fieldset>
+            <fieldset className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
+              <legend className="mb-1 font-sans text-caption font-medium text-ink">{vt.method}</legend>
+              {lawSecret !== null && rule ? (
+                <>
+                  <input type="hidden" name="secret" value={lawSecret ? "1" : "0"} />
+                  <p className="font-sans text-body text-ink">
+                    {vt.lawFixed(citeOf(rule), rule.method ?? "")}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <label className="flex items-center gap-1.5 font-sans text-body text-ink">
+                    <input type="radio" name="secret" value="1" required /> {vt.secret}
+                  </label>
+                  <label className="flex items-center gap-1.5 font-sans text-body text-ink">
+                    <input type="radio" name="secret" value="0" /> {vt.named}
+                  </label>
+                  <span className="basis-full font-sans text-caption text-meta">{vt.lawUnspecified}</span>
+                </>
+              )}
+            </fieldset>
+            {/* 選「選舉」才出現候選人欄（純 CSS :has，不用 client JS）。 */}
+            <div className="hidden flex-wrap gap-3 group-has-[#kind-election:checked]:flex">
+              <label className="flex min-w-[14rem] flex-1 flex-col gap-1 font-sans text-caption text-meta">
+                {vt.candidates}
+                <textarea name="candidates" rows={4} className={field} />
+              </label>
+              <label className="flex flex-col gap-1 font-sans text-caption text-meta">
+                {vt.seats}
+                <input name="seats" type="number" min={1} defaultValue={1} className={`w-20 ${field}`} />
+              </label>
+            </div>
+            <p className="font-sans text-caption text-meta">{vt.eligibleNote(attendees.size)}</p>
+            <div>
+              <button type="submit" className={btnSolid}>
+                {vt.open}
+              </button>
+            </div>
+          </form>
+        )}
+
+        <div className="mt-5 border-t border-line-soft pt-3">
+          <p className="font-sans text-caption font-medium text-ink">{vt.history}</p>
+          {pastVotes.length === 0 ? (
+            <p className="mt-1.5 font-sans text-caption text-meta">{vt.none}</p>
+          ) : (
+            <ul className="mt-2 flex flex-col gap-3">
+              {pastVotes.map((pv) => (
+                <li key={pv.id}>
+                  {pv.proposalId && proposalTitle.get(pv.proposalId) !== pv.title ? (
+                    <p className="mb-1 font-sans text-caption text-meta">{proposalTitle.get(pv.proposalId)}</p>
+                  ) : null}
+                  <VoteResultCard vote={pv} rule={ruleById(pv.matterType)} totalMembers={m.liveTotal} />
+                  {pv.status === "closed" ? (
+                    <div className="mt-1.5 flex flex-wrap gap-2">
+                      {pv.proposalId ? (
+                        <form action={applyVoteToResolution}>
+                          <input type="hidden" name="voteId" value={pv.id} />
+                          <button type="submit" className={btn}>
+                            {vt.applyResolution}
+                          </button>
+                        </form>
+                      ) : null}
+                      <form action={voidVote}>
+                        <input type="hidden" name="voteId" value={pv.id} />
+                        <button type="submit" className={btn}>
+                          {vt.void}
+                        </button>
+                      </form>
+                    </div>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </section>
 
       {/* 議程推進 */}

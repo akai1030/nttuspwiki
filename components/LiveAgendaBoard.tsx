@@ -2,6 +2,8 @@ import { copy } from "@/lib/copy";
 import { citeOf, ruleById } from "@/lib/meetings/vote-rules";
 import { evaluate } from "@/lib/meetings/tally";
 import type { LiveMeeting } from "@/lib/meetings/queries";
+import type { VoteView } from "@/lib/meetings/vote-queries";
+import { VoteOpenCard, VoteResultCard } from "@/components/VoteBlocks";
 
 const c = copy.meetings.live;
 const v = copy.meetings.voteRule;
@@ -13,8 +15,11 @@ const v = copy.meetings.voteRule;
  * 進到哪一案、出席幾人，都是主席／祕書在中控台按下去才會變（人工操控）。
  * 沒有倒數計時，也不依時鐘推算議程進度。
  */
-export function LiveAgendaBoard({ m }: { m: LiveMeeting }) {
+export function LiveAgendaBoard({ m, votes = [] }: { m: LiveMeeting; votes?: VoteView[] }) {
   const current = m.proposals.find((p) => p.id === m.liveProposalId) ?? null;
+  const openVote = votes.find((x) => x.status === "open") ?? null;
+  // 看板只放最近三次結果；完整紀錄在議事公開頁。
+  const recent = votes.filter((x) => x.status === "closed").slice(0, 3);
   const rule = ruleById(current?.matterType);
   const attendance = { present: m.livePresent ?? undefined, total: m.liveTotal ?? undefined };
 
@@ -29,6 +34,9 @@ export function LiveAgendaBoard({ m }: { m: LiveMeeting }) {
           </p>
         </div>
       ) : null}
+
+      {/* 線上表決：投票中只有進度，截止後才有票數 */}
+      {openVote ? <VoteOpenCard vote={openVote} /> : null}
 
       {/* 點名結果 */}
       <div className="border border-line bg-paper2 px-3.5 py-2.5">
@@ -137,6 +145,15 @@ export function LiveAgendaBoard({ m }: { m: LiveMeeting }) {
           <p className="mt-1.5 font-sans text-body text-meta">{c.currentNone}</p>
         )}
       </div>
+
+      {recent.length > 0 ? (
+        <div className="flex flex-col gap-3">
+          <p className="font-ui text-chip uppercase tracking-kicker text-meta">{copy.meetings.vote.history}</p>
+          {recent.map((rv) => (
+            <VoteResultCard key={rv.id} vote={rv} rule={ruleById(rv.matterType)} totalMembers={m.liveTotal} />
+          ))}
+        </div>
+      ) : null}
 
       {/* 議程全覽，標出目前位置 */}
       <div className="border border-line bg-paper p-card">
