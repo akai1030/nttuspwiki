@@ -22,6 +22,8 @@ export default async function PublicMeetingsPage() {
     /* runtime DB 暫時不可用 */
   }
 
+  // 伺服器元件、每次請求重新渲染（force-dynamic），「現在」本來就該每次不同；purity 規則是針對會重繪的客戶端元件。
+  // eslint-disable-next-line react-hooks/purity
   const now = Date.now();
   const upcoming = meetings.filter((m) => m.meetingAt.getTime() >= now);
   const past = meetings.filter((m) => m.meetingAt.getTime() < now);

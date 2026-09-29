@@ -24,11 +24,12 @@ export const dynamic = "force-dynamic";
 
 const loadReader = cache(getReaderData);
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { number: string };
-}): Promise<Metadata> {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ number: string }>;
+  }
+): Promise<Metadata> {
+  const params = await props.params;
   const data = await loadReader(params.number);
   if (!data) return { title: `找不到法規｜${copy.home.org}${copy.home.sys}` };
   return {
@@ -116,7 +117,8 @@ function refToNote(ref: ArticleRef): ArticleNote {
 
 /* ── 頁面 ─────────────────────────────────────────────────── */
 
-export default async function ReaderPage({ params }: { params: { number: string } }) {
+export default async function ReaderPage(props: { params: Promise<{ number: string }> }) {
+  const params = await props.params;
   const data = await loadReader(params.number);
   if (!data) notFound();
 

@@ -32,11 +32,12 @@ function highlight(snippet: string, matched: string[]): ReactNode {
   );
 }
 
-export default async function SearchPage({
-  searchParams,
-}: {
-  searchParams: { q?: string };
-}) {
+export default async function SearchPage(
+  props: {
+    searchParams: Promise<{ q?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const q = (searchParams.q ?? "").trim();
 
   // 關鍵字全文檢索（免費、離線、預設）。DB 失敗時顯示錯誤而非 500。

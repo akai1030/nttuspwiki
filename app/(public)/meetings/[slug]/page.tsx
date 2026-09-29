@@ -17,7 +17,8 @@ const tl = copy.meetings.timeline;
 /** generateMetadata 與 page 各查一次 DB；同一次請求內以 React cache 去重。 */
 const loadMeeting = cache((key: string) => getPublicMeetingByKey(key));
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const params = await props.params;
   let m: Awaited<ReturnType<typeof getPublicMeetingByKey>> = null;
   try {
     m = await loadMeeting(params.slug);
@@ -31,7 +32,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default async function PublicMeetingDetail({ params }: { params: { slug: string } }) {
+export default async function PublicMeetingDetail(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const m = await loadMeeting(params.slug);
   if (!m) notFound();
   if (m.slug && m.slug !== params.slug) redirect(`/meetings/${m.slug}`);

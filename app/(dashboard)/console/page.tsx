@@ -11,11 +11,12 @@ export const metadata: Metadata = {
 
 const TOOLS = [copy.console.tools.meetings, copy.console.tools.check];
 
-export default async function ConsolePage({
-  searchParams,
-}: {
-  searchParams?: { denied?: string };
-}) {
+export default async function ConsolePage(
+  props: {
+    searchParams?: Promise<{ denied?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const user = await requireUser();
   const displayName = user.name?.trim() || user.email;
 

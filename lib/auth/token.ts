@@ -1,7 +1,7 @@
 /**
  * Session token — 用 jose 簽 HS256 JWT（小型 crypto 函式庫，非 auth 框架）。
  * 這支刻意「edge-safe」：只用 jose + Web Crypto + process.env，不碰 next/headers、node:crypto，
- * 好讓 middleware（edge runtime）與 route handler（node runtime）共用同一套驗證。
+ * 好讓 proxy.ts 與 route handler 共用同一套驗證。
  * 秘鑰來自 AUTH_SECRET；缺失或過短一律拋錯 → 驗證端 catch 成「未登入」，fail-closed。
  */
 import { SignJWT, jwtVerify } from "jose";

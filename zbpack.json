@@ -1,3 +1,4 @@
 {
+  "node_version": "22",
   "start_command": "node node_modules/next/dist/bin/next start"
 }

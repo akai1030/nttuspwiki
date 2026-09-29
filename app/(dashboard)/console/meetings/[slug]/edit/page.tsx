@@ -16,13 +16,14 @@ export const metadata: Metadata = {
 
 const c = copy.meetings;
 
-export default async function EditMeetingPage({
-  params,
-  searchParams,
-}: {
-  params: { slug: string };
-  searchParams?: { error?: string };
-}) {
+export default async function EditMeetingPage(
+  props: {
+    params: Promise<{ slug: string }>;
+    searchParams?: Promise<{ error?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   await requireUser();
   const m = await getMeetingByKey(params.slug);
   if (!m) notFound();
@@ -67,7 +68,7 @@ export default async function EditMeetingPage({
             type="submit"
             className="border border-ink bg-ink px-5 py-2.5 font-ui text-caption font-medium leading-none tracking-snug text-white transition-colors hover:border-accent hover:bg-accent"
           >
-            {c.form.submit}
+            {c.form.save}
           </button>
         </div>
       </form>

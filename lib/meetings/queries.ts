@@ -1,5 +1,5 @@
 /**
- * 會議營運模組資料存取 — 幹部後台專用（呼叫端需已過 middleware / guard）。
+ * 會議營運模組資料存取 — 幹部後台專用（呼叫端需已過 proxy.ts / guard）。
  * 全走 Prisma 參數化查詢。
  */
 import { prisma } from "@/lib/db";

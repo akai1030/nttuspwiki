@@ -1,6 +1,6 @@
 /**
  * 幹部路由守衛 — server component 用。未登入 → 導去 /login（帶 next 回跳）；權限不足 → 導回中控台。
- * middleware.ts 已在邊界擋一層，這裡是「取得使用者身分 + 縱深防禦」：直接開頁網址也擋得住。
+ * proxy.ts 已在邊界擋一層，這裡是「取得使用者身分 + 縱深防禦」：直接開頁網址也擋得住。
  */
 import { redirect } from "next/navigation";
 import { readSession } from "./session";

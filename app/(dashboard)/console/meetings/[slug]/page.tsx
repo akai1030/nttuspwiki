@@ -74,7 +74,8 @@ function SecHead({
   );
 }
 
-export default async function MeetingDetailPage({ params }: { params: { slug: string } }) {
+export default async function MeetingDetailPage(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   await requireUser();
   const m = await getMeetingByKey(params.slug);
   if (!m) notFound();
