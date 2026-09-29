@@ -229,7 +229,9 @@ export default async function LiveConsolePage({ params }: { params: { slug: stri
               </p>
             )}
 
-            <form action={updateProposalResolution} className="mt-3 border-t border-line-soft pt-2.5">
+            {/* key：換案時表單重建。不重建的話 textarea 會留著上一案的決議（defaultValue 只在掛載時生效），
+                此時按儲存會把上一案的決議寫進這一案。 */}
+            <form key={current.id} action={updateProposalResolution} className="mt-3 border-t border-line-soft pt-2.5">
               <input type="hidden" name="id" value={current.id} />
               <label
                 htmlFor={`live-res-${current.id}`}
