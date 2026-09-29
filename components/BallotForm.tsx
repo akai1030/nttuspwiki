@@ -16,7 +16,8 @@ export function BallotForm({
   voteId,
   options,
 }: {
-  token: string;
+  /** 專屬連結的 token；從 /vote 登入的傳 null，伺服器改讀 cookie（不把憑證放進頁面）。 */
+  token: string | null;
   voteId: string;
   options: { id: string; label: string }[];
 }) {

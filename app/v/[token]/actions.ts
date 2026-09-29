@@ -4,6 +4,7 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { parseVoteToken, verifyVoteSig } from "@/lib/meetings/vote-link";
 import { idList } from "@/lib/meetings/voting";
+import { readVoterToken } from "@/lib/meetings/voter-login";
 
 export type CastResult = { ok: true } | { ok: false; error: "invalid" | "closed" | "notEligible" | "already" | "badOption" };
 
@@ -14,14 +15,16 @@ class Refuse extends Error {
 }
 
 /**
- * 議員投票。連結本身就是身分：驗過簽章才認人，不需要登入。
+ * 議員投票。身分來自專屬連結（token），或 /vote 登入後的 cookie（token 傳 null）；
+ * 兩者內容相同，都是驗過簽章才認人。
  *
  * 一次交易內完成三件事：記「這個人投過了」、該選項加一、（記名時）記下這張票。
  * 無記名不寫 VoteBallot，所以網站上任何人（含祕書處）都查不到誰投了什麼。
  * 保證範圍到網站為止：有資料庫管理權限的人理論上能從交易紀錄比對時間，這跟紙本投票要信任監票人是同一件事。
  */
-export async function castVote(token: string, voteId: string, optionId: string): Promise<CastResult> {
-  const parsed = parseVoteToken(token);
+export async function castVote(token: string | null, voteId: string, optionId: string): Promise<CastResult> {
+  const t = token ?? (await readVoterToken());
+  const parsed = t ? parseVoteToken(t) : null;
   if (!parsed) return { ok: false, error: "invalid" };
   const r = await prisma.recipient.findUnique({
     where: { id: parsed.recipientId },

@@ -36,7 +36,14 @@ export function LiveAgendaBoard({ m, votes = [] }: { m: LiveMeeting; votes?: Vot
       ) : null}
 
       {/* 線上表決：投票中只有進度，截止後才有票數 */}
-      {openVote ? <VoteOpenCard vote={openVote} /> : null}
+      {openVote ? (
+        <div>
+          <VoteOpenCard vote={openVote} />
+          <a href="/vote" target="_blank" rel="noreferrer" className="mt-1.5 inline-block font-sans text-body text-accent hover:underline">
+            {copy.meetings.vote.boardVoteLink}
+          </a>
+        </div>
+      ) : null}
 
       {/* 點名結果 */}
       <div className="border border-line bg-paper2 px-3.5 py-2.5">

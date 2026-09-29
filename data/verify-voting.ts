@@ -11,6 +11,8 @@
 import { VOTE_RULES } from "@/lib/meetings/vote-rules";
 import { parseCandidates, resolutionLine, secretFromLawMethod, summarize } from "@/lib/meetings/voting";
 import { gmailComposeUrl, parseVoteToken, verifyVoteSig, voteToken } from "@/lib/meetings/vote-link";
+import { buildBody, type MeetingForNotice } from "@/lib/meetings/notice";
+import { normStudentId, phoneLast4 } from "@/lib/meetings/voter-login";
 
 let failed = 0;
 function check(name: string, cond: boolean, detail = "") {
@@ -89,6 +91,20 @@ check(
   resolutionLine("election", false, e) === "選舉結果（記名投票）：出席 8 人，乙 5 票、甲 2 票，未投票（廢票）1 人。",
   resolutionLine("election", false, e)
 );
+
+// 4. /vote 登入的比對規則、開會通知的網址行
+check("學號去空白、轉大寫", normStudentId(" b110 11001 ") === "B11011001");
+check("手機末四碼：連字號、空白、+886 都只取數字", phoneLast4("0912-345-678") === "5678" && phoneLast4("0922 111 222") === "1222" && phoneLast4("+886933000333") === "0333");
+check("沒有手機或太短回 null", phoneLast4(null) === null && phoneLast4("12") === null);
+const meeting: MeetingForNotice = {
+  session: 21, kind: "SPECIAL", academicYear: "115學年度第1學期", name: "十月議會臨時會",
+  meetingAt: new Date("2026-10-20T19:00:00+08:00"), location: null, meetingUrl: "https://meet.google.com/abc",
+  docNumber: null, proposalDeadline: null, notes: null,
+};
+const withUrl = buildBody(meeting, "notice", { voteUrl: "https://nttuspcodex.zeabur.app/vote" });
+const without = buildBody(meeting, "notice");
+check("通知附網址：緊接在會議連結下一行", withUrl.includes("會議連結：https://meet.google.com/abc\n線上表決：https://nttuspcodex.zeabur.app/vote（以學號及手機末四碼登入）"));
+check("沒給網址時通知內文與原本完全相同", without === withUrl.replace("\n線上表決：https://nttuspcodex.zeabur.app/vote（以學號及手機末四碼登入）", ""));
 
 console.log(failed ? `\n${failed} 項未通過` : "\n全部通過");
 process.exit(failed ? 1 : 0);

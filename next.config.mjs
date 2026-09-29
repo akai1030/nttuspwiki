@@ -63,6 +63,7 @@ const nextConfig = {
       { source: "/console", headers: [noFrame] },
       { source: "/login", headers: [noFrame] },
       { source: "/v/:path*", headers: [noFrame] },
+      { source: "/vote", headers: [noFrame] },
     ];
   },
   experimental: {

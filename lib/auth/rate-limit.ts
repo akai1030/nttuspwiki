@@ -1,5 +1,5 @@
 /**
- * 登入失敗次數限制 — 擋線上猜密碼。
+ * 登入失敗次數限制 — 擋線上猜密碼（幹部登入）與猜手機末四碼（議員投票登入）。
  *
  * 存在行程記憶體裡：本站只跑一個容器，重新部署後歸零也無妨（最多多給攻擊者一輪額度）。
  * 以「信箱」與「來源 IP」兩把鑰匙各自計數，任一把超過就擋：
@@ -28,11 +28,11 @@ function prune(now: number) {
   }
 }
 
-/** 任一把鑰匙已達上限就回 true（這次請求不必再驗密碼）。 */
-export function isLimited(keys: string[], now = Date.now()): boolean {
+/** 任一把鑰匙已達上限就回 true（這次請求不必再驗密碼）。max 預設 8，各用途可自訂。 */
+export function isLimited(keys: string[], max = MAX_FAILURES, now = Date.now()): boolean {
   return keys.some((k) => {
     const e = failures.get(k);
-    return !!e && e.resetAt > now && e.count >= MAX_FAILURES;
+    return !!e && e.resetAt > now && e.count >= max;
   });
 }
 

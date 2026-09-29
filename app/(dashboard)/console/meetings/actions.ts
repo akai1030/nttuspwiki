@@ -9,6 +9,7 @@ import { generateNotice, type NoticeKind, type MeetingForNotice } from "@/lib/me
 import { computeFireAt } from "@/lib/meetings/reminders";
 import { buildMeetingSlug, normalizeSlug, pickAvailableSlug, validateSlug } from "@/lib/meetings/slug";
 import { sessionMembers } from "@/lib/meetings/vote-queries";
+import { siteOrigin } from "@/lib/site-origin";
 
 // —— FormData 小工具 ——
 function str(fd: FormData, k: string): string {
@@ -245,6 +246,7 @@ export async function generateNoticeAction(fd: FormData) {
   const contactPhone = str(fd, "contactPhone") || undefined;
   const contactEmail = str(fd, "contactEmail") || undefined;
   const subjectPrefix = str(fd, "subjectPrefix") || undefined;
+  const voteUrl = str(fd, "includeVoteUrl") === "1" ? `${await siteOrigin()}/vote` : undefined;
   const forNotice: MeetingForNotice = {
     session: meeting.session,
     kind: meeting.kind,
@@ -264,6 +266,7 @@ export async function generateNoticeAction(fd: FormData) {
     contactPhone,
     contactEmail,
     subjectPrefix,
+    voteUrl,
   });
 
   await prisma.meetingNotice.create({

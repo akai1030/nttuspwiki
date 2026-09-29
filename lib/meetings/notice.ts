@@ -83,6 +83,8 @@ export type NoticeOpts = {
   contactPhone?: string;
   contactEmail?: string;
   subjectPrefix?: string; // 主旨前綴，如「檔案更正」
+  /** 線上表決網址（/vote）。真本沒有這一行，是 2026-09-29 加線上表決後新增；未給就不出現。 */
+  voteUrl?: string;
 };
 
 /** 通知內文的結構化表示。純文字與 HTML 皆由此 render。 */
@@ -146,6 +148,9 @@ export function buildNoticeLines(
   if (m.meetingUrl?.trim()) {
     const url = m.meetingUrl.trim();
     lines.push([isAgenda ? `（會議連結：${url}）。` : `會議連結：${url}`]);
+  }
+  if (opts.voteUrl?.trim()) {
+    lines.push([`線上表決：${opts.voteUrl.trim()}（以學號及手機末四碼登入）`]);
   }
 
   const notesBlock: string[] = [];
