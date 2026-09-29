@@ -91,6 +91,38 @@ export default async function LiveConsolePage(props: {
 
       <p className="mt-3 font-sans text-caption text-meta">{c.lead}</p>
 
+      {/* 開會流程：四步做到哪，一眼看得出來（祕書處忘了開現場議事或點名時，議員那端就投不了） */}
+      <section className="mt-4 border border-line bg-paper2 px-4 py-3">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <p className="font-sans text-caption font-medium text-ink">{vt.flow.title}</p>
+          <a href="/console/meetings/guide" target="_blank" rel="noreferrer" className="font-sans text-caption text-accent hover:underline">
+            {vt.guideLink}
+          </a>
+        </div>
+        <ol className="mt-1.5 flex flex-col gap-1">
+          {[
+            { done: m.liveOpen, text: m.liveOpen ? vt.flow.live[0] : vt.flow.live[1] },
+            members.length > 0
+              ? { done: attendees.size > 0, text: attendees.size > 0 ? vt.flow.rollCall(attendees.size) : vt.flow.rollCallNone }
+              : { done: false, text: vt.flow.rollCallCount(m.livePresent ?? 0) },
+            { done: !!current, text: current ? vt.flow.current(current.title) : vt.flow.currentNone },
+            {
+              done: !!openVoteView,
+              text: openVoteView
+                ? vt.flow.voteOpen(openVoteView.castCount, openVoteView.eligibleCount)
+                : vt.flow.voteIdle,
+            },
+          ].map((s, i) => (
+            <li key={i} className="flex gap-2 font-sans text-caption">
+              <span aria-hidden className={s.done ? "text-accent" : "text-meta"}>
+                {s.done ? "●" : "○"}
+              </span>
+              <span className={s.done ? "text-ink" : "text-meta"}>{s.text}</span>
+            </li>
+          ))}
+        </ol>
+      </section>
+
       {/* 開關與分享連結 */}
       <section className="mt-6 border border-line border-l-[3px] border-l-accent bg-paper p-card">
         <div className="flex flex-wrap items-center justify-between gap-3">

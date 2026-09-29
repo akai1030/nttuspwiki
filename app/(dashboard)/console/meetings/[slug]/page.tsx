@@ -18,6 +18,7 @@ import { Input } from "@/components/SearchBox";
 import { CopyBlock, CopyButton } from "@/components/CopyBlock";
 import { PrintButton } from "@/components/PrintButton";
 import { copy } from "@/lib/copy";
+import { phoneLast4 } from "@/lib/meetings/voter-login";
 import {
   addProposal,
   deleteProposal,
@@ -86,6 +87,12 @@ export default async function MeetingDetailPage(props: { params: Promise<{ slug:
   const allRecipients = await listRecipients();
   const activeRecipients = allRecipients.filter((r) => r.active);
   const recipientMap = new Map(allRecipients.map((r) => [r.id, r]));
+
+  // 線上表決會前檢查：本屆議員誰不能用學號登入、最近一份通知有沒有附投票網址。
+  const sessionVoters = activeRecipients.filter((r) => r.roleTag === "議員" && r.session === m.session);
+  const cannotLogin = sessionVoters.filter((r) => !r.studentId?.trim() || !phoneLast4(r.phone));
+  const latestNotice = m.notices[0] ?? null;
+  const noticeHasVoteUrl = !!latestNotice?.bodyText.includes("線上表決：");
 
   const agendaText = buildAgendaText(
     { session: m.session, name: m.name, meetingAt: m.meetingAt, location: m.location, meetingUrl: m.meetingUrl },
@@ -662,6 +669,27 @@ export default async function MeetingDetailPage(props: { params: Promise<{ slug:
             {c.notice.manageRecipients}
           </a>
         </p>
+
+        <div className="mt-4 border border-line bg-paper px-4 py-3">
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <p className="font-sans text-caption font-medium text-ink">{c.vote.prep.title}</p>
+            <a href="/console/meetings/guide" target="_blank" rel="noreferrer" className="font-sans text-caption text-accent hover:underline">
+              {c.vote.guideLink}
+            </a>
+          </div>
+          <ul className="mt-1.5 flex flex-col gap-1 font-sans text-caption">
+            <li className={latestNotice && !noticeHasVoteUrl ? "text-warn-ink" : noticeHasVoteUrl ? "text-ink" : "text-meta"}>
+              {!latestNotice ? c.vote.prep.noticeNone : noticeHasVoteUrl ? c.vote.prep.noticeOk : c.vote.prep.noticeMissing}
+            </li>
+            <li className={sessionVoters.length === 0 || cannotLogin.length > 0 ? "text-warn-ink" : "text-ink"}>
+              {sessionVoters.length === 0
+                ? c.vote.prep.noMembers
+                : cannotLogin.length > 0
+                  ? c.vote.prep.noPhone(cannotLogin.map((r) => r.name).join("、"))
+                  : c.vote.prep.allPhone(sessionVoters.length)}
+            </li>
+          </ul>
+        </div>
 
         <form action={generateNoticeAction} className="mt-4">
           <input type="hidden" name="meetingId" value={m.id} />

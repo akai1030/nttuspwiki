@@ -28,7 +28,13 @@ export default async function MeetingsPage() {
           <h1 className="font-serif text-h2">{c.title}</h1>
           <p className="mt-2 max-w-reader font-sans text-body text-lede-ink">{c.lede}</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
+          <a
+            href="/console/meetings/guide"
+            className="border border-line px-4 py-2 font-ui text-caption font-medium leading-none tracking-snug text-accent transition-colors hover:border-accent"
+          >
+            {copy.meetings.vote.guide.title}
+          </a>
           <a
             href="/console/meetings/recipients"
             className="border border-line px-4 py-2 font-ui text-caption font-medium leading-none tracking-snug text-ink transition-colors hover:border-accent hover:text-accent"
