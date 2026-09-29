@@ -4,7 +4,7 @@ import { listRecipients } from "@/lib/meetings/queries";
 import { Input } from "@/components/SearchBox";
 import { copy } from "@/lib/copy";
 import { addRecipient, toggleRecipient, updateRecipient, deleteRecipient } from "../actions";
-import { reissueVoteLink } from "../vote-actions";
+import { reissueVoteLink, updateRecipientLogin } from "../vote-actions";
 import { CopyButton } from "@/components/CopyBlock";
 import { gmailComposeUrl, voteLinkMail, votePath } from "@/lib/meetings/vote-link";
 import { siteOrigin } from "@/lib/site-origin";
@@ -29,7 +29,8 @@ const COLS =
 /** 列內輸入框：填滿自己的 grid 格子，高度壓到 caption 級距。 */
 const cell = "!py-1 text-caption";
 
-export default async function RecipientsPage() {
+export default async function RecipientsPage(props: { searchParams: Promise<{ loginError?: string }> }) {
+  const { loginError } = await props.searchParams;
   // 名冊含學號/手機/科系（個資），viewer 不得讀；officer（祕書處）需要維護名單故保留。
   await requireRole(["admin", "officer"]);
   const recipients = await listRecipients();
@@ -48,6 +49,11 @@ export default async function RecipientsPage() {
         <p className="mt-2 font-ui text-caption text-accent">{c.memberN(memberCount)}</p>
       )}
       <p className="mt-2 max-w-reader font-sans text-caption text-meta">{c.placeholderNote}</p>
+      {loginError === "taken" ? (
+        <p role="alert" className="mt-4 border border-warn-border bg-warn-surface px-3 py-2 font-sans text-caption text-warn-ink">
+          {vr.studentIdTaken}
+        </p>
+      ) : null}
       {hasVoters ? (
         <div className="mt-4 max-w-reader border-l-[3px] border-accent bg-paper2 px-3.5 py-2.5">
           <p className="font-sans text-caption font-medium text-ink">{vr.heading}</p>
@@ -125,11 +131,13 @@ export default async function RecipientsPage() {
 
             <ul className="divide-y divide-line-soft border-b border-line-soft">
               {recipients.map((r) => {
+                const isVoter = r.active && r.roleTag === "議員";
+                // 議員的學號、手機在下方「登入用」欄位編輯，這裡不重複列。
                 const roster = [
-                  r.studentId && `${c.studentId} ${r.studentId}`,
+                  !isVoter && r.studentId && `${c.studentId} ${r.studentId}`,
                   [r.department, r.grade].filter(Boolean).join(" "),
                   r.district && r.district !== r.department && `${c.district} ${r.district}`,
-                  r.phone && `${c.phone} ${r.phone}`,
+                  !isVoter && r.phone && `${c.phone} ${r.phone}`,
                 ].filter(Boolean);
                 return (
                   <li key={r.id} className={`items-center gap-x-2 gap-y-1.5 py-1.5 hero:grid ${COLS}`}>
@@ -203,7 +211,27 @@ export default async function RecipientsPage() {
                     )}
 
                     {/* 議員專屬投票連結：只給啟用中的議員 */}
-                    {r.active && r.roleTag === "議員" ? <VoteLinkRow r={r} origin={origin} /> : null}
+                    {isVoter ? (
+                      <form action={updateRecipientLogin} className="flex flex-wrap items-center gap-2 hero:col-span-6">
+                        <input type="hidden" name="id" value={r.id} />
+                        <span className="font-ui text-chip text-meta">{vr.loginFields}</span>
+                        <label className="flex items-center gap-1.5 font-sans text-caption text-meta">
+                          {c.studentId}
+                          <Input name="studentId" defaultValue={r.studentId ?? ""} className={`w-32 ${cell}`} />
+                        </label>
+                        <label className="flex items-center gap-1.5 font-sans text-caption text-meta">
+                          {c.phone}
+                          <Input name="phone" defaultValue={r.phone ?? ""} inputMode="tel" className={`w-36 ${cell}`} />
+                        </label>
+                        <button
+                          type="submit"
+                          className="border border-line px-2.5 py-1 font-ui text-chip leading-none text-ink transition-colors hover:border-accent hover:text-accent"
+                        >
+                          {vr.updateLogin}
+                        </button>
+                      </form>
+                    ) : null}
+                    {isVoter ? <VoteLinkRow r={r} origin={origin} /> : null}
                   </li>
                 );
               })}

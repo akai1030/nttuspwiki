@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-const TOOLS = [copy.console.tools.meetings, copy.console.tools.check];
+const TOOLS = [copy.console.tools.meetings, copy.console.tools.voteGuide, copy.console.tools.check];
 
 export default async function ConsolePage(
   props: {

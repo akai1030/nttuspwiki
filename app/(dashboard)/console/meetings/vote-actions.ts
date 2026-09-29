@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { requireRole } from "@/lib/auth/guard";
 import { meetingKey } from "@/lib/meetings/slug";
@@ -170,6 +171,28 @@ export async function applyVoteToResolution(fd: FormData) {
   });
   revalidateLive();
   back(vote.meeting);
+}
+
+/**
+ * 更新議員登入 /vote 用的學號與手機。學號同屆唯一（schema 的 @@unique），撞到就帶錯誤回名冊頁。
+ * 手機原文照存（名冊匯入的格式是 0912-345-678），比對時只取數字末四碼。
+ */
+export async function updateRecipientLogin(fd: FormData) {
+  await requireRole(["admin", "officer"]);
+  const id = str(fd, "id");
+  if (!id) return;
+  // 只去空白、不改大小寫：學號也是名冊匯入的冪等鍵，要跟原檔一致（登入比對本來就不分大小寫）。
+  const studentId = str(fd, "studentId").replace(/\s+/g, "") || null;
+  const phone = str(fd, "phone") || null;
+  try {
+    await prisma.recipient.update({ where: { id }, data: { studentId, phone } });
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
+      redirect("/console/meetings/recipients?loginError=taken");
+    }
+    throw e;
+  }
+  revalidatePath("/console/meetings/recipients");
 }
 
 /** 作廢某位議員的舊連結並產生新連結（連結外流時用）。 */
