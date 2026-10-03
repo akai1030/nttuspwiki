@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 const SITE = process.env.SITE_URL ?? "https://nttuspcodex.zeabur.app";
 
 /**
- * 公開頁：首頁、法規總覽與各部現行法規、會議總覽與 admin 開放的公開會議。
+ * 公開頁：首頁、法規總覽與各部現行法規、會議總覽與 admin 開放的公開會議、更新紀錄。
  * 只列 isCurrent 的法規（/law/[number] 也只查現行版）與 isPublic 的會議（同 getPublicMeetingByKey）。
  * DB 連不上時只回固定頁，不讓整份 sitemap 失敗。
  */
@@ -18,6 +18,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE}/meetings`, changeFrequency: "weekly", priority: 0.7 },
     { url: `${SITE}/meetings/about`, changeFrequency: "monthly", priority: 0.4 },
     { url: `${SITE}/meetings/schedule`, changeFrequency: "weekly", priority: 0.5 },
+    { url: `${SITE}/updates`, changeFrequency: "monthly", priority: 0.3 },
   ];
   try {
     const [laws, meetings] = await Promise.all([
