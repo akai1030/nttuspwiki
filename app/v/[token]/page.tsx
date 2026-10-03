@@ -30,7 +30,8 @@ export default async function VotePage(props: { params: Promise<{ token: string 
   return (
     <>
       <SiteHeader />
-      <main className="mx-auto max-w-reader px-wrap-sm py-section-sm hero:px-wrap">
+      {/* ph-no-capture：PostHog 不錄這一塊（lib/posthog.ts） */}
+      <main className="ph-no-capture mx-auto max-w-reader px-wrap-sm py-section-sm hero:px-wrap">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <p className="font-ui text-chip uppercase tracking-kicker text-accent">{c.title}</p>

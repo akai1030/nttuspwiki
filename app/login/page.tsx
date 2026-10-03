@@ -36,7 +36,8 @@ export default async function LoginPage(
     <>
       <SiteHeader />
 
-      <main className="mx-auto flex min-h-[60vh] max-w-reader flex-col justify-center px-wrap-sm py-section-sm hero:px-wrap">
+      {/* ph-no-capture：PostHog 不錄這一塊（lib/posthog.ts） */}
+      <main className="ph-no-capture mx-auto flex min-h-[60vh] max-w-reader flex-col justify-center px-wrap-sm py-section-sm hero:px-wrap">
         <div className="font-ui text-eyebrow font-medium uppercase tracking-kicker text-accent">
           Officer
         </div>

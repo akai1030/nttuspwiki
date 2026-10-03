@@ -46,6 +46,16 @@ styles/tokens.css    # 來自 DESIGN-SYSTEM.md
 - 微文案集中在 `lib/copy.ts`（不要散落字串）。
 - 顏色/字級/間距只從 `styles/tokens.css` 取（對應 DESIGN-SYSTEM）。
 - LLM 呼叫集中在 `lib/llm/`，可用環境變數切換 provider / 關閉；免費規則層不得依賴它。
+- 網站使用分析（PostHog，2026-10-04 起）：只在正式網域的公開頁啟用，規則寫在 `lib/posthog.ts` 檔頭。`/console`、`/login`、`/v/`、`/vote`、`/styleguide` 不記；新增帶憑證或個資的路徑要加進 `EXCLUDED`，頁面最外層加 `ph-no-capture`。`/ingest` 轉送前 `proxy.ts` 會拿掉 cookie，不要把 `/ingest` 從 matcher 拿掉。
+
+## 政策頁
+- 目前沒有隱私權政策頁：網站上沒有公開的聯絡窗口，建頁前要昀楷確認聯絡方式（2026-10-04）。網站使用分析的說明暫放頁尾（`copy.foot.analytics`），跟 `lib/posthog.ts` 的行為一致，改一邊就改另一邊。
+- 建政策頁（隱私權政策、使用說明、免責聲明）時：版本、生效日、修訂紀錄只放一處（`lib/legal.ts`，第一筆是現行版），頁首顯示版本與生效日，頁尾列修訂紀錄。內容有實質變動（蒐集的資料、保存期間、第三方服務、使用者權利）就在最前面加一筆、升版、生效日寫上線那天；只改錯字不升版。
+- 條文寫的是程式現在的行為，文字放 `lib/copy.ts`。新寫的條文先跑 `node "C:/01 昀楷的本地端資料夾/writing-style/tools/lint.js" <檔>`。
+- 現有的免責句（`copy.disclaimer`、議事公開說明頁的「資料來源與免責」）屬於同一類，改的時候比照。
+
+## 更新紀錄
+- 使用者看得到的改動上線時，同一個 PR 在 `lib/copy.ts` 的 `updates.entries` 最上面加一條白話說明，日期寫上線那天；只有幹部後台看得到的不寫。頁面在 `/updates`，頁尾與 sitemap 都連得到。
 
 ## 禁止行為清單（Red Flags — 出現就停手問人）
 - ❌ 讓 LLM 產生**未經 DB 驗證**的條號或引用。
@@ -68,3 +78,13 @@ styles/tokens.css    # 來自 DESIGN-SYSTEM.md
 - 檢核（免費層）：能撈出相關條文＋命中理由＋規則旗標，全部可點回原文；零 token 可獨立運作。
 - 時程：從一個「錨定日」（如 10 月常會）自動推出所有法定期限，每條標明法源，並可發提醒。
 - 無障礙達 WCAG AA；整體設計不 generic、符合 DESIGN-SYSTEM。
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

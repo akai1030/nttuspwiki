@@ -95,7 +95,8 @@ export default function Styleguide() {
   return (
     <>
       <SiteHeader />
-      <main className="mx-auto max-w-wrap px-wrap-sm py-section-sm hero:px-wrap hero:py-section">
+      {/* ph-no-capture：PostHog 不錄這一塊（lib/posthog.ts） */}
+      <main className="ph-no-capture mx-auto max-w-wrap px-wrap-sm py-section-sm hero:px-wrap hero:py-section">
       {/* 標頭 */}
       <header className="mb-16 border-b-2 border-ink pb-8">
         <div className="font-ui text-eyebrow font-medium uppercase tracking-kicker text-accent">
