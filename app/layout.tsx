@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { copy } from "@/lib/copy";
+import { PostHogTracker } from "@/components/PostHogTracker";
 // tokens 先於 globals 載入，確保 :root 變數在 Tailwind base 之前就緒。
 import "@/styles/tokens.css";
 import "@/styles/globals.css";
@@ -31,6 +32,8 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&family=Noto+Serif+TC:wght@400;500;600;700;900&family=Noto+Sans+TC:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
         />
         {children}
+        {/* PostHog：流量、熱點、操作錄影、前端錯誤。只在正式網域、公開頁啟用，見 lib/posthog.ts */}
+        <PostHogTracker />
       </body>
     </html>
   );

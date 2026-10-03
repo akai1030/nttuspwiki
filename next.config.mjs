@@ -44,6 +44,28 @@ const nextConfig = {
   // 原生 addon（@node-rs/jieba）必須外部化，不讓 bundler 打包，改由 Node 於執行期 require。
   // 註：@xenova/transformers（onnxruntime，~1GB）已自部署切離（見 lib/search/query.ts）。
   serverExternalPackages: ["@node-rs/jieba"],
+  /*
+   * PostHog 轉送（2026-10-04）：瀏覽器把事件送到自己網域的 /ingest，這裡轉給 PostHog 的 EU 機房。
+   * 不會被廣告阻擋器當成第三方擋掉；轉送前 proxy.ts 會拿掉 cookie 與 referer（登入與投票憑證不出站）。
+   */
+  async rewrites() {
+    return [
+      { source: "/ingest/static/:path*", destination: "https://eu-assets.i.posthog.com/static/:path*" },
+      { source: "/ingest/:path*", destination: "https://eu.i.posthog.com/:path*" },
+    ];
+  },
+  /*
+   * PostHog 的 API 網址以斜線結尾（/ingest/e/），Next 內建會 308 轉成沒有斜線的網址，所以照 PostHog 的做法關掉；
+   * 其他網址的行為不變：redirects() 自己做同一件事，只排除 /ingest/。
+   */
+  skipTrailingSlashRedirect: true,
+  async redirects() {
+    return [
+      // 等同 Next 內建的去尾斜線轉址（node_modules/next/dist/lib/load-custom-routes.js，trailingSlash: false 那段），
+      // 參數寫法照抄 Next 自己 trailingSlash: true 那段的 `(?:[^/]+/)*[^/]+`，目的地才保得住中間的斜線。
+      { source: "/:path((?!ingest/)(?:[^/]+/)*[^/]+)/", destination: "/:path", permanent: true },
+    ];
+  },
   // 基本安全標頭。不上 CSP：Next 的內嵌腳本要逐頁配 nonce，會把全站改成動態渲染，代價不成比例。
   async headers() {
     const base = [

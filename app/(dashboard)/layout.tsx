@@ -49,7 +49,8 @@ export default async function DashboardLayout({
         </div>
       </header>
 
-      <div className="min-h-[60vh]">{children}</div>
+      {/* ph-no-capture：PostHog 不錄這一塊（lib/posthog.ts） */}
+      <div className="ph-no-capture min-h-[60vh]">{children}</div>
 
       <SiteFooter />
     </>
