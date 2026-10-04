@@ -139,6 +139,9 @@ export function syncPostHog(pathname: string): void {
           capture_pageleave: true, // 停留時間
           capture_exceptions: true, // 前端錯誤
           respect_dnt: true, // 上面已經擋過，留著當第二道
+          // 訪客編號只存在本站網域，轉駅各站一致（2026-10）。zeabur.app 在公共後綴清單（Public Suffix List）上，
+          // 瀏覽器本來就不准把 cookie 設在 .zeabur.app，這站從沒跟別站共用；寫明是為了之後換成自己的網域也不會共用
+          cross_subdomain_cookie: false,
           session_recording: {
             maskAllInputs: true,
             // 錄影裡記下的網址（換頁、網路請求）一樣遮掉投票權杖
