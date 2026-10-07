@@ -1,0 +1,70 @@
+name: ci
+
+# 每個 PR、推到 main 時跑：設計規範關卡（DESIGN.md）、typecheck、lint、next build。
+# 都不連資料庫、不用任何 secret。
+#
+# 不跑 npm run build：它會先 prisma migrate deploy，要連正式資料庫。
+# 這裡只跑 next build：會查資料庫的頁面都是動態算繪，build 期不查，DATABASE_URL 給佔位值就夠
+# （2026-10-07 本機用佔位值實測 build 成功）。
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: design · typecheck · lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      # @prisma/client 的型別要 prisma generate 產生（不連資料庫）
+      - name: 安裝套件
+        run: npm ci && npx prisma generate
+
+      # 設計規範棘輪（2026-10-07）：字級、顏色、寬度、間距只准用 design/tokens.json 的值，
+      # 現有違規記在 design/baseline.json、逐檔只准變少。只讀原始碼，一秒內跑完
+      - name: 設計規範（檢查程式的測試＋棘輪）
+        run: npm run test:design && npm run design:check
+
+      - name: Typecheck（next typegen && tsc --noEmit）
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+  build:
+    name: next build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      DATABASE_URL: postgresql://ci:ci@127.0.0.1:5432/ci_placeholder
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: 安裝套件
+        run: npm ci && npx prisma generate
+
+      - name: next build（佔位 DATABASE_URL、不跑 migrate）
+        run: npx next build

@@ -11,6 +11,8 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "next typegen && tsc --noEmit",
+    "design:check": "node scripts/design-check.mjs",
+    "test:design": "node --import tsx scripts/test-design-check.ts",
     "db:migrate": "prisma migrate dev",
     "db:seed": "prisma db seed",
     "db:update-law": "tsx data/update-law.ts",
