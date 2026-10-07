@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/scripts/design-check.mjs\" --hook",
+            "timeout": 30,
+            "statusMessage": "檢查設計規範"
+          }
+        ]
+      }
+    ]
+  }
+}

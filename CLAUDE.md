@@ -1,7 +1,7 @@
 # CLAUDE.md · 國立臺東大學學生會法規整合網站
 
 > Claude Code 每次啟動自動讀這份。它必須能**獨立閱讀**——不要假設你記得任何 Cowork 對話。
-> 完整架構在 `ARCHITECTURE.md`；設計語言鎖定在 `DESIGN-SYSTEM.md`（設計方向確認後才有）；種子資料在 `法規MD轉檔/法規結構化-第20屆.json`。
+> 完整架構在 `ARCHITECTURE.md`；設計語言鎖定在 `DESIGN-SYSTEM.md`，有程式在擋的設計規範在 `DESIGN.md`；種子資料在 `法規MD轉檔/法規結構化-第20屆.json`。
 
 ## 你是誰、這是什麼專案
 你是這個專案的實作工程師。這是一個把**國立臺東大學學生會 38 部自治法規（772 條）**整合成網站的專案，三個核心功能：
@@ -14,7 +14,7 @@
 2. **人在迴路**：合法性檢核是**輔助審查、不是法律判定**。輸出永遠附「僅供參考，正式效力以議會/評議會認定為準」。保留人工覆核欄位與流程。
 3. **免費優先**：查詢與時程**零 token**。檢核預設走**免費規則層**；LLM 是可選、可關的加強層（免費額度 Gemini Flash 或付費 Claude）。不要把付費 LLM 寫成必要相依。
 4. **無障礙地基**：採 USWDS 2.0 的「規則」（WCAG 2.1 AA、鍵盤可達、對比 ≥ 4.5:1、語意標籤、plain language）——但**視覺樣式不套 USWDS**，照 `DESIGN-SYSTEM.md`。
-5. **設計不漂移**：一律用 `DESIGN-SYSTEM.md` 的 tokens（色彩/字級/間距/元件）。不硬編色碼字級。不要長成 generic AI 樣板。
+5. **設計不漂移**：一律用 `design/tokens.json` 的 tokens（色彩/字級/間距/寬度），規則見 `DESIGN.md`。不硬編色碼字級。不要長成 generic AI 樣板。
 6. **公開/私密邊界**：法規查詢全站公開唯讀；檢核與時程後台需幹部登入。別把後台資料洩到公開路由。
 
 ## 技術棧（沿用「網站建立流」，勿自行更換）
@@ -36,7 +36,8 @@ components/          # UI 元件（依 DESIGN-SYSTEM）
 lib/                 # db.ts, search（斷詞/檢索）, rules（規則引擎）, schedule（時程推算）, copy.ts（微文案集中）
 prisma/schema.prisma # 見 ARCHITECTURE.md 的資料模型
 data/                # 種子：從 法規MD轉檔/法規結構化-第20屆.json 匯入的腳本與檔
-styles/tokens.css    # 來自 DESIGN-SYSTEM.md
+styles/tokens.css    # 來自 DESIGN-SYSTEM.md；值跟 design/tokens.json 一致
+design/              # tokens.json（設計規範）、baseline.json（棘輪基準），見 DESIGN.md
 ```
 
 ## 編碼規則
@@ -44,9 +45,15 @@ styles/tokens.css    # 來自 DESIGN-SYSTEM.md
 - 預設 Server Components；只有需要互動才 `"use client"`。
 - 檢核輸入與 LLM 輸出一律當**不可信**：渲染前轉義，擋 XSS。PDF 抽出的文字同理。
 - 微文案集中在 `lib/copy.ts`（不要散落字串）。
-- 顏色/字級/間距只從 `styles/tokens.css` 取（對應 DESIGN-SYSTEM）。
+- 顏色/字級/間距只用 `design/tokens.json` 的 class 名稱（值在 `styles/tokens.css`，兩份一起改）。
 - LLM 呼叫集中在 `lib/llm/`，可用環境變數切換 provider / 關閉；免費規則層不得依賴它。
 - 網站使用分析（PostHog，2026-10-04 起）：只在正式網域的公開頁啟用，規則寫在 `lib/posthog.ts` 檔頭。`/console`、`/login`、`/v/`、`/vote`、`/styleguide` 不記；新增帶憑證或個資的路徑要加進 `EXCLUDED`，頁面最外層加 `ph-no-capture`。`/ingest` 轉送前 `proxy.ts` 會拿掉 cookie，不要把 `/ingest` 從 matcher 拿掉。
+
+## 改畫面之前
+- 先讀 `DESIGN.md`（一頁）。字級 7 級、顏色只用色名、頁面寬度 3 種、不用陰影漸層。
+- 改完跑 `npm run design:check`。它逐檔數寫死的字級、顏色、任意值，跟 `design/baseline.json` 比，只准變少；變少了跑 `npm run design:check -- --update` 把基準一起提交。
+- 用 Claude Code 改 `app`／`components`／`lib`／`styles` 的檔時，`.claude/settings.json` 的 hook 會當場跑同一支檢查，擋下來就照訊息改成 token。不要調高 `design/baseline.json` 讓它過關；真的需要新值照 `DESIGN.md`「要加新值時」。
+- CI（`.github/workflows/ci.yml`）跑設計檢查與它的測試、typecheck、lint、next build，都不連資料庫。
 
 ## 政策頁
 - 目前沒有隱私權政策頁：網站上沒有公開的聯絡窗口，建頁前要昀楷確認聯絡方式（2026-10-04）。網站使用分析的說明暫放頁尾（`copy.foot.analytics`），跟 `lib/posthog.ts` 的行為一致，改一邊就改另一邊。
@@ -68,7 +75,7 @@ styles/tokens.css    # 來自 DESIGN-SYSTEM.md
 
 ## 參考文件優先順序
 1. `ARCHITECTURE.md` — 資料模型、三功能架構、實作順序（Phase 0→3）。
-2. `DESIGN-SYSTEM.md` — 設計 tokens 與元件（設計方向鎖定後）。
+2. `DESIGN.md`（有程式在擋的規範）＋ `DESIGN-SYSTEM.md`（設計語言與元件）。
 3. `法規MD轉檔/法規結構化-第20屆.json` — 種子資料（38 部/772 條，已解析）。
 4. `prototype/DESIGN-NOTES.md`、`prototype/law-codex-v*.html` — 設計方向與原型。
 5. `PROMPTS.md` — 分階段實作腳本（作者會逐段貼給你）。

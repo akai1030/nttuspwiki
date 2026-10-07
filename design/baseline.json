@@ -1,0 +1,141 @@
+{
+  "$說明": "設計規範棘輪的基準（scripts/design-check.mjs）。每個檔案×每條規則的現有違規數，只准變少：修掉之後跑 npm run design:check -- --update。不要手動調高來讓檢查過關，見 DESIGN.md「要加新值時」。",
+  "updated": "2026-10-07",
+  "totals": {
+    "font-size": 24,
+    "deprecated-token": 46,
+    "font-weight": 0,
+    "leading": 2,
+    "tracking": 0,
+    "color-arbitrary": 0,
+    "color-default": 0,
+    "off-palette": 4,
+    "inline-style": 0,
+    "width": 12,
+    "container-width": 0,
+    "spacing": 27,
+    "radius": 0,
+    "effect": 0,
+    "arbitrary": 33
+  },
+  "files": {
+    "app/(dashboard)/console/meetings/[slug]/live/page.tsx": {
+      "width": 1,
+      "arbitrary": 3
+    },
+    "app/(dashboard)/console/meetings/[slug]/page.tsx": {
+      "off-palette": 1,
+      "width": 3,
+      "spacing": 1,
+      "arbitrary": 12
+    },
+    "app/(dashboard)/console/meetings/guide/page.tsx": {
+      "leading": 1
+    },
+    "app/(dashboard)/console/meetings/recipients/page.tsx": {
+      "arbitrary": 2
+    },
+    "app/(dashboard)/console/members/page.tsx": {
+      "arbitrary": 1
+    },
+    "app/(dashboard)/console/page.tsx": {
+      "deprecated-token": 1
+    },
+    "app/(dashboard)/layout.tsx": {
+      "deprecated-token": 2,
+      "arbitrary": 3
+    },
+    "app/(public)/law/[number]/page.tsx": {
+      "font-size": 3,
+      "deprecated-token": 2,
+      "width": 2,
+      "spacing": 2,
+      "arbitrary": 1
+    },
+    "app/(public)/law/page.tsx": {
+      "deprecated-token": 1,
+      "spacing": 1
+    },
+    "app/(public)/meetings/[slug]/page.tsx": {
+      "width": 1,
+      "spacing": 1,
+      "arbitrary": 1
+    },
+    "app/(public)/meetings/about/page.tsx": {
+      "deprecated-token": 1
+    },
+    "app/(public)/meetings/page.tsx": {
+      "deprecated-token": 4,
+      "arbitrary": 1
+    },
+    "app/(public)/meetings/schedule/page.tsx": {
+      "deprecated-token": 2
+    },
+    "app/(public)/page.tsx": {
+      "font-size": 3,
+      "deprecated-token": 6,
+      "leading": 1,
+      "width": 1,
+      "spacing": 1,
+      "arbitrary": 3
+    },
+    "app/(public)/search/page.tsx": {
+      "deprecated-token": 2
+    },
+    "app/login/page.tsx": {
+      "deprecated-token": 1,
+      "width": 1,
+      "arbitrary": 1
+    },
+    "app/styleguide/page.tsx": {
+      "font-size": 16,
+      "deprecated-token": 13,
+      "width": 1,
+      "spacing": 2
+    },
+    "components/AmendmentTimeline.tsx": {
+      "deprecated-token": 1,
+      "width": 1
+    },
+    "components/ArticleBlock.tsx": {
+      "deprecated-token": 1,
+      "width": 1,
+      "spacing": 7
+    },
+    "components/Button.tsx": {
+      "spacing": 1
+    },
+    "components/Card.tsx": {
+      "spacing": 1
+    },
+    "components/CopyBlock.tsx": {
+      "arbitrary": 1
+    },
+    "components/LawRow.tsx": {
+      "deprecated-token": 2,
+      "spacing": 3
+    },
+    "components/LiveAgendaBoard.tsx": {
+      "arbitrary": 1
+    },
+    "components/PrintButton.tsx": {
+      "off-palette": 3
+    },
+    "components/SectionHead.tsx": {
+      "deprecated-token": 2,
+      "spacing": 2
+    },
+    "components/SiteFooter.tsx": {
+      "font-size": 2,
+      "deprecated-token": 1
+    },
+    "components/SiteHeader.tsx": {
+      "deprecated-token": 3,
+      "arbitrary": 3
+    },
+    "components/Tag.tsx": {
+      "deprecated-token": 1,
+      "spacing": 5
+    }
+  }
+}

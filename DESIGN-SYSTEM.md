@@ -2,6 +2,7 @@
 
 > 設計語言（v1.0，2026-07-03 鎖定）。tokens 全數取自已核可原型：`prototype/law-codex-v4.html`（首頁）與 `prototype/law-codex-v4-reader.html`（條文閱讀器）。
 > 實作時落地為 `styles/tokens.css` + Tailwind 設定；顏色/字級/間距**只從 tokens 取**，不硬編。代號「書院光」。
+> 2026-10-07 起，有程式在擋的規範在 `DESIGN.md`、值在 `design/tokens.json`（Tailwind 與檢查程式都讀它）。下面 §2 的字級表是 v1.0 原貌，其中 12 個已停用，現行的 7 級見 `DESIGN.md`。
 
 ## 0. 設計原則（口號）
 1. **書院光**：暖白紙底、靛藍一色、明體撐骨——莊重但不官僚、不無聊。
