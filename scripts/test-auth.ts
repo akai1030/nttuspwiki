@@ -6,11 +6,13 @@
  *   2. 後台 server action 的權限：讀原始碼，確認每支匯出的 action 第一行就是守衛，
  *      動到名冊（個資）與點名（決定誰能投票）的只給 admin/officer。
  *      server action 可以被任何登入者直接 POST，畫面藏按鈕擋不住，所以守衛一定要寫在 action 裡。
+ *   3. firstParam：?next=a&next=b、?q=a&q=b 這種重複參數不能讓頁面 500
  */
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { safeNext } from '../lib/auth/safe-next';
+import { firstParam } from '../lib/search-param';
 
 let passed = 0;
 function test(name: string, fn: () => void) {
@@ -72,6 +74,15 @@ test('後台 action：名冊與點名只給 admin/officer（viewer 不能改）'
   for (const [fn, line] of Object.entries(guards('meetings/vote-actions.ts'))) {
     assert.match(line, OFFICER, `vote-actions ${fn} 的守衛是「${line}」`);
   }
+});
+
+test('firstParam：重複參數取第一個，缺值給空字串', () => {
+  assert.equal(firstParam('預算'), '預算');
+  assert.equal(firstParam(['/a', '/b']), '/a');
+  assert.equal(firstParam([]), '');
+  assert.equal(firstParam(undefined), '');
+  // 登入頁實際的組合：重複的 next 不會丟例外，也照樣過 safeNext
+  assert.equal(safeNext(firstParam(['/\\evil.example', '/console/members'])), '/console');
 });
 
 console.log(`\n全部通過 · ${passed} 項`);

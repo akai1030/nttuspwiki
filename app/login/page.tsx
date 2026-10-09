@@ -6,6 +6,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { LoginForm } from "@/components/LoginForm";
 import { readSession } from "@/lib/auth/session";
 import { safeNext } from "@/lib/auth/safe-next";
+import { firstParam } from "@/lib/search-param";
 
 // 讀 session cookie → force-dynamic（build 期無需連 DB）。
 export const dynamic = "force-dynamic";
@@ -18,11 +19,11 @@ export const metadata: Metadata = {
 
 export default async function LoginPage(
   props: {
-    searchParams?: Promise<{ next?: string }>;
+    searchParams?: Promise<{ next?: string | string[] }>;
   }
 ) {
   const searchParams = await props.searchParams;
-  const next = safeNext(searchParams?.next);
+  const next = safeNext(firstParam(searchParams?.next));
 
   // 已登入就直接進目的地，不用再看登入頁。
   const session = await readSession();
