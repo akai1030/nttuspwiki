@@ -9,6 +9,7 @@
  */
 import { prisma } from "../db";
 import { segmentForQuery } from "./segment";
+import { clampQuery } from "../search-param";
 
 export type SearchMode = "keyword" | "semantic" | "hybrid";
 
@@ -83,10 +84,11 @@ async function keywordCandidates(tokens: string[], limit: number): Promise<Score
  * 一併以關鍵字結果回應（日後接雲端 embedding 再恢復語意路徑）。
  */
 export async function searchArticles(
-  q: string,
+  rawQ: string,
   limit = 30,
   mode: SearchMode = "keyword"
 ): Promise<SearchResult> {
+  const q = clampQuery(rawQ);
   const tokens = segmentForQuery(q);
   if (!q.trim()) return { query: q, tokens, mode, hits: [] };
 
