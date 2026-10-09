@@ -5,6 +5,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { LoginForm } from "@/components/LoginForm";
 import { readSession } from "@/lib/auth/session";
+import { safeNext } from "@/lib/auth/safe-next";
 
 // 讀 session cookie → force-dynamic（build 期無需連 DB）。
 export const dynamic = "force-dynamic";
@@ -14,11 +15,6 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-// next 只接受站內相對路徑，擋開放重導（//evil、https://…）。
-function safeNext(next?: string): string {
-  if (!next || !next.startsWith("/") || next.startsWith("//")) return "/console";
-  return next;
-}
 
 export default async function LoginPage(
   props: {
