@@ -42,6 +42,10 @@ jobs:
       - name: 設計規範（檢查程式的測試＋棘輪）
         run: npm run test:design && npm run design:check
 
+      # 登入回跳、後台權限的測試（純函式與原始碼檢查，不連資料庫）
+      - name: 登入與權限測試
+        run: npm run test:auth
+
       - name: Typecheck（next typegen && tsc --noEmit）
         run: npm run typecheck
 

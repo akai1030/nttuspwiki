@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
-import { requireUser, requireAdmin } from "@/lib/auth/guard";
+import { requireUser, requireAdmin, requireRole } from "@/lib/auth/guard";
 import { parseTaipeiLocal } from "@/lib/meetings/roc";
 import { generateNotice, type NoticeKind, type MeetingForNotice } from "@/lib/meetings/notice";
 import { computeFireAt } from "@/lib/meetings/reminders";
@@ -366,8 +366,9 @@ export async function deleteMilestone(fd: FormData) {
 }
 
 // —— 收件人 ——
+// 名冊是個資，名冊頁只給 admin/officer 看（recipients/page.tsx），寫入也比照，viewer 不能改。
 export async function addRecipient(fd: FormData) {
-  await requireUser();
+  await requireRole(["admin", "officer"]);
   const name = str(fd, "name");
   const email = str(fd, "email");
   if (!name || !email) return;
@@ -383,7 +384,7 @@ export async function addRecipient(fd: FormData) {
 }
 
 export async function toggleRecipient(fd: FormData) {
-  await requireUser();
+  await requireRole(["admin", "officer"]);
   const id = str(fd, "id");
   if (!id) return;
   const r = await prisma.recipient.findUnique({ where: { id } });
@@ -394,7 +395,7 @@ export async function toggleRecipient(fd: FormData) {
 }
 
 export async function updateRecipient(fd: FormData) {
-  await requireUser();
+  await requireRole(["admin", "officer"]);
   const id = str(fd, "id");
   const name = str(fd, "name");
   const email = str(fd, "email");
@@ -412,7 +413,7 @@ export async function updateRecipient(fd: FormData) {
 }
 
 export async function deleteRecipient(fd: FormData) {
-  await requireUser();
+  await requireRole(["admin", "officer"]);
   const id = str(fd, "id");
   if (id) {
     await prisma.recipient.delete({ where: { id } });
@@ -468,7 +469,8 @@ export async function setLiveProposal(fd: FormData) {
  * 兩條衝突且會算出不同分母，系統不代為擇一，只忠實記錄承辦與主席的認定。
  */
 export async function setLiveAttendance(fd: FormData) {
-  await requireUser();
+  // 勾選名單就是線上表決的可投票者（openVote 照抄），權限跟開表決一樣是 admin/officer。
+  await requireRole(["admin", "officer"]);
   const id = str(fd, "id");
   if (!id) return;
   const presentRaw = str(fd, "present");

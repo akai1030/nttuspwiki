@@ -5,6 +5,7 @@ import { searchArticles } from "@/lib/search/query";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SearchBox } from "@/components/SearchBox";
+import { firstParam } from "@/lib/search-param";
 
 // 檢索用 jieba（native）斷詞 + Postgres 全文檢索，需 Node runtime、逐次動態執行。零 API 費、離線。
 // 註：語意層（pgvector + 本地模型）暫自部署切離以縮小 image；向量仍存於 DB，日後可接雲端 embedding 復用。
@@ -34,11 +35,11 @@ function highlight(snippet: string, matched: string[]): ReactNode {
 
 export default async function SearchPage(
   props: {
-    searchParams: Promise<{ q?: string }>;
+    searchParams: Promise<{ q?: string | string[] }>;
   }
 ) {
   const searchParams = await props.searchParams;
-  const q = (searchParams.q ?? "").trim();
+  const q = firstParam(searchParams.q).trim();
 
   // 關鍵字全文檢索（免費、離線、預設）。DB 失敗時顯示錯誤而非 500。
   let result: Awaited<ReturnType<typeof searchArticles>> | null = null;
