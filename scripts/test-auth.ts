@@ -8,12 +8,13 @@
  *      server action 可以被任何登入者直接 POST，畫面藏按鈕擋不住，所以守衛一定要寫在 action 裡。
  *   3. firstParam：?next=a&next=b、?q=a&q=b 這種重複參數不能讓頁面 500
  *   4. clampQuery：公開搜尋的字數上限
+ *   5. parseLimit：/api/search 的 limit 取整數、1～100
  */
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { safeNext } from '../lib/auth/safe-next';
-import { clampQuery, firstParam, MAX_QUERY_CHARS } from '../lib/search-param';
+import { clampQuery, firstParam, MAX_QUERY_CHARS, parseLimit } from '../lib/search-param';
 
 let passed = 0;
 function test(name: string, fn: () => void) {
@@ -89,6 +90,18 @@ test('firstParam：重複參數取第一個，缺值給空字串', () => {
 test('clampQuery：超過上限的查詢截短，短的不動', () => {
   assert.equal(clampQuery('預算'), '預算');
   assert.equal(clampQuery('預'.repeat(5000)).length, MAX_QUERY_CHARS);
+});
+
+test('parseLimit：取整數、1～100，其他用預設值', () => {
+  assert.equal(parseLimit(null), 30);
+  assert.equal(parseLimit(''), 30);
+  assert.equal(parseLimit('abc'), 30);
+  assert.equal(parseLimit('0.5'), 30); // 以前會變成 LIMIT 0.5 → 0 筆
+  assert.equal(parseLimit('-3'), 30);
+  assert.equal(parseLimit('2.7'), 2);
+  assert.equal(parseLimit('1e9'), 100);
+  assert.equal(parseLimit('Infinity'), 30);
+  assert.equal(parseLimit('15'), 15);
 });
 
 console.log(`\n全部通過 · ${passed} 項`);
