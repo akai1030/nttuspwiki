@@ -11,12 +11,14 @@
  *   5. parseLimit：/api/search 的 limit 取整數、1～100
  *   6. 公開議事頁的查詢：程委退回的提案不出現在公開議程（讀原始碼）
  *   7. 登入次數限制：同時送來的請求不能繞過上限（tryAttempt 先記再驗）
+ *   8. 籌備時程的「N 天後／今天／N 天前」照臺北日曆日算
  */
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { safeNext } from '../lib/auth/safe-next';
 import { isLimited, MAX_FAILURES, recordFailure, releaseAttempt, tryAttempt } from '../lib/auth/rate-limit';
+import { daysBetween } from '../lib/meetings/timeline';
 import { clampQuery, firstParam, MAX_QUERY_CHARS, parseLimit } from '../lib/search-param';
 
 let passed = 0;
@@ -143,6 +145,20 @@ test('登入次數限制：成功退回的那次不影響之前的失敗紀錄',
   // 兩把鑰匙任一把滿了就整個不放，也不替另一把記數
   assert.ok(!tryAttempt([['test:other', 8], ['test:ip', 3]]));
   assert.ok(!isLimited(['test:other'], 1));
+});
+
+test('籌備時程：天數差照臺北的日曆日算，不照時數四捨五入', () => {
+  const tw = (s: string) => new Date(`${s}+08:00`);
+  // 早上 6 點看當天晚上 7 點的會議：今天（舊算法差 13 小時會四捨五入成 1 天後）
+  assert.equal(daysBetween(tw('2026-10-16T06:00'), tw('2026-10-16T19:00')), 0);
+  // 前一晚 23 點的期限，隔天早上 10 點看：1 天前（舊算法 11 小時四捨五入成今天）
+  assert.equal(daysBetween(tw('2026-10-16T10:00'), tw('2026-10-15T23:00')), -1);
+  // 跨日：23:59 看隔天 00:01 是 1 天後
+  assert.equal(daysBetween(tw('2026-10-16T23:59'), tw('2026-10-17T00:01')), 1);
+  // 跨月、跨年
+  assert.equal(daysBetween(tw('2026-12-31T12:00'), tw('2027-01-07T09:00')), 7);
+  // 臺北日期跟 UTC 日期不同的時段（臺北 07:00＝UTC 前一天 23:00）
+  assert.equal(daysBetween(tw('2026-10-16T07:00'), tw('2026-10-16T08:30')), 0);
 });
 
 console.log(`\n全部通過 · ${passed} 項`);
