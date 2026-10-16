@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { searchArticles, type SearchMode } from "@/lib/search/query";
+import { parseLimit } from "@/lib/search-param";
 
 const MODES: SearchMode[] = ["keyword", "semantic", "hybrid"];
 
@@ -17,8 +18,7 @@ export async function GET(req: NextRequest) {
   if (!q) {
     return NextResponse.json({ query: "", tokens: [], mode: "hybrid", hits: [] });
   }
-  const limitRaw = Number(req.nextUrl.searchParams.get("limit"));
-  const limit = Number.isFinite(limitRaw) && limitRaw > 0 ? Math.min(limitRaw, 100) : 30;
+  const limit = parseLimit(req.nextUrl.searchParams.get("limit"));
   const modeRaw = req.nextUrl.searchParams.get("mode") as SearchMode | null;
   const mode: SearchMode = modeRaw && MODES.includes(modeRaw) ? modeRaw : "hybrid";
 

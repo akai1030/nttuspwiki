@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import { verifyPassword, hashPassword } from "@/lib/auth/password";
 import { createSession } from "@/lib/auth/session";
 import { copy } from "@/lib/copy";
-import { clearKey, clientIp, isLimited, recordFailure } from "@/lib/auth/rate-limit";
+import { clearKey, clientIp, MAX_FAILURES, releaseAttempt, tryAttempt } from "@/lib/auth/rate-limit";
 
 // Prisma + scrypt 需 Node runtime；讀 cookie/DB 一律 runtime。
 export const runtime = "nodejs";
@@ -61,14 +61,22 @@ export async function POST(req: NextRequest) {
   const emailKey = `email:${email}`;
   const ip = clientIp(req.headers);
   const keys = ip ? [emailKey, `ip:${ip}`] : [emailKey];
-  if (isLimited(keys)) {
+  // 先記一次再驗（見 tryAttempt）：先查後記的話，並發請求能繞過 8 次上限。
+  if (!tryAttempt(keys.map((k) => [k, MAX_FAILURES]))) {
     return NextResponse.json({ error: copy.login.form.errorTooMany }, { status: 429 });
   }
+  // 成功後的 createSession／更新登入時間若丟例外會進 catch，旗標避免同一次退回兩次、吃掉之前的失敗紀錄。
+  let released = false;
+  const release = () => {
+    if (!released) releaseAttempt(keys);
+    released = true;
+  };
 
   try {
     // 先試 env 引導管理員（密碼設在環境變數，Zeabur 好找好改）。
     const envAdmin = await tryEnvAdmin(email, password);
     if (envAdmin) {
+      release();
       clearKey(emailKey);
       await createSession(envAdmin);
       await prisma.user.update({ where: { id: envAdmin.id }, data: { lastLoginAt: new Date() } });
@@ -79,10 +87,10 @@ export async function POST(req: NextRequest) {
     const ok = await verifyPassword(password, user?.passwordHash ?? (await dummyHash()));
 
     if (!user || !user.passwordHash || !ok) {
-      recordFailure(keys);
       return NextResponse.json({ error: copy.login.form.errorInvalid }, { status: 401 });
     }
 
+    release();
     clearKey(emailKey);
     await createSession(user);
     await prisma.user.update({
@@ -92,6 +100,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ ok: true, role: user.role });
   } catch (e) {
+    release(); // 伺服器錯誤不算猜錯（維持原本行為）
     console.error("[/api/auth/login]", e);
     return NextResponse.json({ error: copy.login.form.errorServer }, { status: 500 });
   }

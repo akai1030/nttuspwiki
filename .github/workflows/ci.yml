@@ -46,6 +46,11 @@ jobs:
       - name: 登入與權限測試
         run: npm run test:auth
 
+      # 線上表決的純邏輯（記名／無記名判定、投票連結簽章、計票）與 vote-rules.json 引文逐字比對。
+      # 兩支都只讀原始碼與種子 JSON、不連資料庫；之前只有手動跑，法規或表決邏輯改了沒人會發現
+      - name: 表決邏輯與表決法源
+        run: npm run verify:voting && npm run verify:vote-rules
+
       - name: Typecheck（next typegen && tsc --noEmit）
         run: npm run typecheck
 

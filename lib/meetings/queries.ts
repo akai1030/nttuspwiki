@@ -94,6 +94,8 @@ export function getPublicMeetingByKey(key: string) {
       // resolution 刻意公開：0.0《組織章程》§27③ 以公告為決議案生效要件，
       // 且明定祕書處為備位公告機關 —— 決議本就應對外公開。仍受 isPublic 逐場控管。
       proposals: {
+        // 程委退回（rejected）的不列入議程，跟現場頁、開會通知的議程一致（schema.prisma reviewStatus 註解）。
+        where: { reviewStatus: { not: "rejected" } },
         orderBy: [{ order: "asc" }, { serialNo: "asc" }],
         select: {
           id: true,
