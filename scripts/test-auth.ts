@@ -9,6 +9,7 @@
  *   3. firstParam：?next=a&next=b、?q=a&q=b 這種重複參數不能讓頁面 500
  *   4. clampQuery：公開搜尋的字數上限
  *   5. parseLimit：/api/search 的 limit 取整數、1～100
+ *   6. 公開議事頁的查詢：程委退回的提案不出現在公開議程（讀原始碼）
  */
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -102,6 +103,17 @@ test('parseLimit：取整數、1～100，其他用預設值', () => {
   assert.equal(parseLimit('1e9'), 100);
   assert.equal(parseLimit('Infinity'), 30);
   assert.equal(parseLimit('15'), 15);
+});
+
+test('公開議事頁：程委退回（rejected）的提案不列入公開議程', () => {
+  const src = fs.readFileSync(path.join(__dirname, '..', 'lib', 'meetings', 'queries.ts'), 'utf8');
+  for (const fn of ['getPublicMeetingByKey', 'getLiveMeetingByKey']) {
+    const body = src.match(new RegExp(`export function ${fn}\\([\\s\\S]*?\\n\\}`));
+    assert.ok(body, `找不到 ${fn}`);
+    const proposals = body[0].match(/proposals: \{[\s\S]*?select:/);
+    assert.ok(proposals, `${fn} 沒有選 proposals`);
+    assert.match(proposals[0], /where: \{ reviewStatus: \{ not: "rejected" \} \}/, `${fn} 的 proposals 沒排除 rejected`);
+  }
 });
 
 console.log(`\n全部通過 · ${passed} 項`);
