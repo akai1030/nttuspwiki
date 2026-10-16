@@ -3,7 +3,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { copy } from "@/lib/copy";
-import { clearKey, clientIp, isLimited, recordFailure } from "@/lib/auth/rate-limit";
+import { clearKey, clientIp, MAX_FAILURES, releaseAttempt, tryAttempt } from "@/lib/auth/rate-limit";
 import { clearVoterCookie, findVoter, normStudentId, setVoterCookie } from "@/lib/meetings/voter-login";
 import { voteToken } from "@/lib/meetings/vote-link";
 
@@ -30,14 +30,17 @@ export async function voterLogin(_prev: VoterLoginState, fd: FormData): Promise<
   const ip = clientIp(await headers());
   const sidKey = `voter-sid:${sid}`;
   const ipKey = ip ? `voter-ip:${ip}` : null;
-  if (isLimited([sidKey]) || (ipKey && isLimited([ipKey], IP_MAX))) return fail(c.errors.tooMany);
+  const keys = ipKey ? [sidKey, ipKey] : [sidKey];
+  // 先記一次再查（見 tryAttempt）：先查後記的話，同時送上千個不同末四碼就能繞過學號 8 次的上限。
+  if (!tryAttempt(ipKey ? [[sidKey, MAX_FAILURES], [ipKey, IP_MAX]] : [[sidKey, MAX_FAILURES]])) return fail(c.errors.tooMany);
 
   const found = await findVoter(sid, last4);
-  if (found === "noPhone") return fail(c.errors.noPhone);
-  if (!found) {
-    recordFailure(ipKey ? [sidKey, ipKey] : [sidKey]);
-    return fail(c.errors.invalid);
+  if (found === "noPhone") {
+    releaseAttempt(keys); // 沒填手機不算猜錯（維持原本行為）
+    return fail(c.errors.noPhone);
   }
+  if (!found) return fail(c.errors.invalid);
+  releaseAttempt(keys);
   clearKey(sidKey);
   await setVoterCookie(voteToken(found.id, found.voteLinkVersion));
   redirect("/vote");

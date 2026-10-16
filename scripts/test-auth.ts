@@ -10,11 +10,13 @@
  *   4. clampQuery：公開搜尋的字數上限
  *   5. parseLimit：/api/search 的 limit 取整數、1～100
  *   6. 公開議事頁的查詢：程委退回的提案不出現在公開議程（讀原始碼）
+ *   7. 登入次數限制：同時送來的請求不能繞過上限（tryAttempt 先記再驗）
  */
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { safeNext } from '../lib/auth/safe-next';
+import { isLimited, MAX_FAILURES, recordFailure, releaseAttempt, tryAttempt } from '../lib/auth/rate-limit';
 import { clampQuery, firstParam, MAX_QUERY_CHARS, parseLimit } from '../lib/search-param';
 
 let passed = 0;
@@ -114,6 +116,33 @@ test('公開議事頁：程委退回（rejected）的提案不列入公開議程
     assert.ok(proposals, `${fn} 沒有選 proposals`);
     assert.match(proposals[0], /where: \{ reviewStatus: \{ not: "rejected" \} \}/, `${fn} 的 proposals 沒排除 rejected`);
   }
+});
+
+test('登入次數限制：30 個同時送來的請求只放 8 個去驗證', () => {
+  // 模擬 30 個請求都在第一個 await（查資料庫、算 scrypt）結束前進來。
+  // 舊寫法（isLimited 檢查、驗完失敗才 recordFailure）在這個時間點 30 個都會通過檢查。
+  assert.equal(Array.from({ length: 30 }, () => isLimited(['test:old'])).filter((x) => !x).length, 30);
+  const admitted = Array.from({ length: 30 }, () => tryAttempt([['test:new', MAX_FAILURES]])).filter(Boolean).length;
+  assert.equal(admitted, MAX_FAILURES);
+  // 兩個登入入口都要用 tryAttempt，不能退回先查後記
+  for (const f of ['app/api/auth/login/route.ts', 'app/vote/actions.ts']) {
+    const src = fs.readFileSync(path.join(__dirname, '..', f), 'utf8');
+    assert.match(src, /tryAttempt\(/, `${f} 沒用 tryAttempt`);
+    assert.doesNotMatch(src, /isLimited\(|recordFailure\(/, `${f} 又用了先查後記`);
+  }
+});
+
+test('登入次數限制：成功退回的那次不影響之前的失敗紀錄', () => {
+  recordFailure(['test:ip']);
+  recordFailure(['test:ip']);
+  assert.ok(tryAttempt([['test:ip', 3]])); // 第 3 次，放行並先記
+  assert.ok(!tryAttempt([['test:ip', 3]])); // 已滿 3
+  releaseAttempt(['test:ip']); // 那次驗證成功，退回
+  assert.ok(tryAttempt([['test:ip', 3]])); // 之前的 2 次還在，只剩 1 次額度
+  assert.ok(!tryAttempt([['test:ip', 3]]));
+  // 兩把鑰匙任一把滿了就整個不放，也不替另一把記數
+  assert.ok(!tryAttempt([['test:other', 8], ['test:ip', 3]]));
+  assert.ok(!isLimited(['test:other'], 1));
 });
 
 console.log(`\n全部通過 · ${passed} 項`);
