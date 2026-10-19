@@ -55,6 +55,11 @@ design/              # tokens.json（設計規範）、baseline.json（棘輪基
 - 用 Claude Code 改 `app`／`components`／`lib`／`styles` 的檔時，`.claude/settings.json` 的 hook 會當場跑同一支檢查，擋下來就照訊息改成 token。不要調高 `design/baseline.json` 讓它過關；真的需要新值照 `DESIGN.md`「要加新值時」。
 - CI（`.github/workflows/ci.yml`）跑設計檢查與它的測試、typecheck、lint、next build，都不連資料庫。
 
+## 資料庫遷移（2026-10-19 起不在建置時跑）
+- `npm run build` 不再跑 `prisma migrate deploy`。2026-10-16 起資料庫只開內部連線（Zeabur 第二次資安事件後關掉對外埠），`DATABASE_URL` 的主機段改成引用 `${POSTGRESQL_PGVECTOR_HOST}`；同一天改成引用連線字串的參詳，之後 Zeabur 每次建置都失敗（推測是建置階段拿不到這個引用）。法典的建置裡有遷移、要連資料庫，下次推送很可能撞到同一個問題。`next build` 本身不查資料庫（本機用沒設定、沒展開、連不到三種 DATABASE_URL 都建置成功）。
+- 加了新的 migration：合併部署之後，在正式環境的容器裡跑一次 `npx prisma migrate deploy`（Zeabur：服務的指令列，或 `zeabur service exec`），確認輸出寫 applied 再用新功能。沒有新 migration 的部署不必跑。
+- 搬到新主機時，遷移改成部署流程裡的獨立步驟，不要放回 `next build`。
+
 ## 政策頁
 - 目前沒有隱私權政策頁：網站上沒有公開的聯絡窗口，建頁前要昀楷確認聯絡方式（2026-10-04）。網站使用分析的說明暫放頁尾（`copy.foot.analytics`），跟 `lib/posthog.ts` 的行為一致，改一邊就改另一邊。
 - 建政策頁（隱私權政策、使用說明、免責聲明）時：版本、生效日、修訂紀錄只放一處（`lib/legal.ts`，第一筆是現行版），頁首顯示版本與生效日，頁尾列修訂紀錄。內容有實質變動（蒐集的資料、保存期間、第三方服務、使用者權利）就在最前面加一筆、升版、生效日寫上線那天；只改錯字不升版。
