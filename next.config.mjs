@@ -9,7 +9,11 @@ import { readFileSync } from "node:fs";
  * 建置時間一定拿得到，所以就算 SHA 抓不到，仍足以判斷「這次部署有沒有生效」。
  */
 function buildSha() {
+  // SOURCE_COMMIT（Coolify）排第一：2026-10-24 起搬到 Coolify。Coolify 拿不到 commit 時給 "unknown"
+  // （手動部署可能是 "HEAD"），這種佔位字不算、往下找。Zeabur 沒有這個變數，結果跟原本一樣。
+  const coolify = process.env.SOURCE_COMMIT;
   const fromEnv =
+    (coolify && !/^(unknown|head)$/i.test(coolify) ? coolify : undefined) ??
     process.env.ZEABUR_GIT_COMMIT_SHA ??
     process.env.VERCEL_GIT_COMMIT_SHA ??
     process.env.RAILWAY_GIT_COMMIT_SHA ??

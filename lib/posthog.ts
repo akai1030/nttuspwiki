@@ -21,7 +21,9 @@
 import type { CaptureResult, PostHog } from "posthog-js";
 
 const TOKEN = "phc_yZUKsvCpCgWyzLLzGQbsvsxp2YegZEw4bU8CTbdyLwXz";
-const PROD_HOSTS = ["nttuspcodex.zeabur.app"];
+// codex.transtation.org：2026-10-24 搬到 Coolify 後的網址（轉駅的網域）。舊網址在 Zeabur 關站前並存，兩個都算正式站；
+// 不加的話換網址那天起分析就停了。訪客編號不跨子網域（下面的 cross_subdomain_cookie: false），不會跟轉駅其他站共用。
+const PROD_HOSTS = ["nttuspcodex.zeabur.app", "codex.transtation.org"];
 
 /** 不記的路徑。/v/<權杖> 是發給議員個人的投票連結，網址本身就是憑證，絕對不能送出去 */
 const EXCLUDED = ["/console", "/login", "/v/", "/vote", "/styleguide"];
