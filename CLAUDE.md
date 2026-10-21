@@ -59,6 +59,7 @@ design/              # tokens.json（設計規範）、baseline.json（棘輪基
 - `npm run build` 不再跑 `prisma migrate deploy`。2026-10-16 起資料庫只開內部連線（Zeabur 第二次資安事件後關掉對外埠），`DATABASE_URL` 的主機段改成引用 `${POSTGRESQL_PGVECTOR_HOST}`；同一天改成引用連線字串的參詳，之後 Zeabur 每次建置都失敗（推測是建置階段拿不到這個引用）。法典的建置裡有遷移、要連資料庫，下次推送很可能撞到同一個問題。`next build` 本身不查資料庫（本機用沒設定、沒展開、連不到三種 DATABASE_URL 都建置成功）。
 - 加了新的 migration：合併部署之後，在正式環境的容器裡跑一次 `npx prisma migrate deploy`（Zeabur：服務的指令列，或 `zeabur service exec`），確認輸出寫 applied 再用新功能。沒有新 migration 的部署不必跑。
 - 搬到新主機時，遷移改成部署流程裡的獨立步驟，不要放回 `next build`。
+- 2026-10-24 搬到 Coolify（網址換成 codex.transtation.org）：建置設定、環境變數名稱、遷移在 Coolify 上怎麼跑（用 `./node_modules/.bin/prisma`，不用 npx）見 `docs/coolify.md`。
 
 ## 政策頁
 - 目前沒有隱私權政策頁：網站上沒有公開的聯絡窗口，建頁前要昀楷確認聯絡方式（2026-10-04）。網站使用分析的說明暫放頁尾（`copy.foot.analytics`），跟 `lib/posthog.ts` 的行為一致，改一邊就改另一邊。
