@@ -20,7 +20,7 @@ export type SessionPayload = {
 function secretKey(): Uint8Array {
   const s = process.env.AUTH_SECRET;
   if (!s || s.length < 16) {
-    throw new Error("AUTH_SECRET 未設定或過短（需 ≥16 字元）——請在 .env / Zeabur 環境變數設定。");
+    throw new Error("AUTH_SECRET 未設定或過短（需 ≥16 字元）——請在 .env / 主機（Coolify）環境變數設定。");
   }
   return new TextEncoder().encode(s);
 }
