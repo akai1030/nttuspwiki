@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 // request 時產生：建置期不連 DB（同 law／meetings 頁的做法），法規或會議增減也會即時反映
 export const dynamic = "force-dynamic";
 
-const SITE = process.env.SITE_URL ?? "https://nttuspcodex.zeabur.app";
+const SITE = process.env.SITE_URL ?? "https://codex.transtation.org";
 
 /**
  * 公開頁：首頁、法規總覽與各部現行法規、會議總覽與 admin 開放的公開會議、更新紀錄。

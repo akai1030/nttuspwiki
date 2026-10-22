@@ -21,9 +21,8 @@
 import type { CaptureResult, PostHog } from "posthog-js";
 
 const TOKEN = "phc_yZUKsvCpCgWyzLLzGQbsvsxp2YegZEw4bU8CTbdyLwXz";
-// codex.transtation.org：2026-10-24 搬到 Coolify 後的網址（轉駅的網域）。舊網址在 Zeabur 關站前並存，兩個都算正式站；
-// 不加的話換網址那天起分析就停了。訪客編號不跨子網域（下面的 cross_subdomain_cookie: false），不會跟轉駅其他站共用。
-const PROD_HOSTS = ["nttuspcodex.zeabur.app", "codex.transtation.org"];
+// 正式站只有 codex.transtation.org（轉駅的網域）。訪客編號不跨子網域（下面的 cross_subdomain_cookie: false），不會跟轉駅其他站共用。
+const PROD_HOSTS = ["codex.transtation.org"];
 
 /** 不記的路徑。/v/<權杖> 是發給議員個人的投票連結，網址本身就是憑證，絕對不能送出去 */
 const EXCLUDED = ["/console", "/login", "/v/", "/vote", "/styleguide"];
@@ -141,8 +140,8 @@ export function syncPostHog(pathname: string): void {
           capture_pageleave: true, // 停留時間
           capture_exceptions: true, // 前端錯誤
           respect_dnt: true, // 上面已經擋過，留著當第二道
-          // 訪客編號只存在本站網域，轉駅各站一致（2026-10）。zeabur.app 在公共後綴清單（Public Suffix List）上，
-          // 瀏覽器本來就不准把 cookie 設在 .zeabur.app，這站從沒跟別站共用；寫明是為了之後換成自己的網域也不會共用
+          // 訪客編號只存在本站網域，轉駅各站一致（2026-10）：codex.transtation.org 跟轉駅其他站同在 transtation.org 底下，
+          // 不跨子網域才不會共用訪客編號
           cross_subdomain_cookie: false,
           session_recording: {
             maskAllInputs: true,

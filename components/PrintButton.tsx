@@ -2,7 +2,7 @@
 
 /**
  * PrintButton — 把一段純文字文件（議程/開會通知）開成乾淨的可列印頁面 → 使用者列印或「另存為 PDF」。
- * 用瀏覽器列印（零相依、CJK 字型由系統處理，Zeabur 免裝 headless Chrome/字型檔）。
+ * 用瀏覽器列印（零相依、CJK 字型由系統處理，主機免裝 headless Chrome/字型檔）。
  */
 function esc(s: string): string {
   return s.replace(/[&<>"]/g, (ch) => {

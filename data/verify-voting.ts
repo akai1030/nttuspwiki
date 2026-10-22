@@ -101,10 +101,10 @@ const meeting: MeetingForNotice = {
   meetingAt: new Date("2026-10-20T19:00:00+08:00"), location: null, meetingUrl: "https://meet.google.com/abc",
   docNumber: null, proposalDeadline: null, notes: null,
 };
-const withUrl = buildBody(meeting, "notice", { voteUrl: "https://nttuspcodex.zeabur.app/vote" });
+const withUrl = buildBody(meeting, "notice", { voteUrl: "https://codex.transtation.org/vote" });
 const without = buildBody(meeting, "notice");
-check("通知附網址：緊接在會議連結下一行", withUrl.includes("會議連結：https://meet.google.com/abc\n線上表決：https://nttuspcodex.zeabur.app/vote（以學號及手機末四碼登入）"));
-check("沒給網址時通知內文與原本完全相同", without === withUrl.replace("\n線上表決：https://nttuspcodex.zeabur.app/vote（以學號及手機末四碼登入）", ""));
+check("通知附網址：緊接在會議連結下一行", withUrl.includes("會議連結：https://meet.google.com/abc\n線上表決：https://codex.transtation.org/vote（以學號及手機末四碼登入）"));
+check("沒給網址時通知內文與原本完全相同", without === withUrl.replace("\n線上表決：https://codex.transtation.org/vote（以學號及手機末四碼登入）", ""));
 
 console.log(failed ? `\n${failed} 項未通過` : "\n全部通過");
 process.exit(failed ? 1 : 0);
