@@ -6,10 +6,11 @@ import { prisma } from "@/lib/db";
 import { requireUser, requireAdmin, requireRole } from "@/lib/auth/guard";
 import { parseTaipeiLocal } from "@/lib/meetings/roc";
 import { generateNotice, type NoticeKind, type MeetingForNotice } from "@/lib/meetings/notice";
-import { computeFireAt } from "@/lib/meetings/reminders";
+import { computeFireAt, MAX_REMINDER_OFFSET_DAYS } from "@/lib/meetings/reminders";
 import { buildMeetingSlug, normalizeSlug, pickAvailableSlug, validateSlug } from "@/lib/meetings/slug";
 import { sessionMembers } from "@/lib/meetings/vote-queries";
 import { siteOrigin } from "@/lib/site-origin";
+import { parseIntField } from "@/lib/form-int";
 
 // —— FormData 小工具 ——
 function str(fd: FormData, k: string): string {
@@ -21,8 +22,7 @@ function optStr(fd: FormData, k: string): string | null {
   return v === "" ? null : v;
 }
 function int(fd: FormData, k: string, fallback = 0): number {
-  const n = Number(str(fd, k));
-  return Number.isFinite(n) ? Math.trunc(n) : fallback;
+  return parseIntField(str(fd, k), fallback);
 }
 
 /** 目前已被占用的 slug（可排除自己，供編輯時檢查）。 */
@@ -52,7 +52,7 @@ export async function createMeeting(fd: FormData) {
   const academicYear = str(fd, "academicYear");
   const name = str(fd, "name");
   const meetingAt = parseTaipeiLocal(str(fd, "meetingAt"));
-  if (!session || !academicYear || !name || !meetingAt) {
+  if (session <= 0 || !academicYear || !name || !meetingAt) {
     redirect("/console/meetings/new?error=1");
   }
   const kindRaw = str(fd, "kind");
@@ -88,7 +88,11 @@ export async function updateMeeting(fd: FormData) {
   await requireUser();
   const id = str(fd, "id");
   const meetingAt = parseTaipeiLocal(str(fd, "meetingAt"));
-  if (!id || !meetingAt) redirect(`/console/meetings/${id}/edit?error=1`);
+  const session = int(fd, "session");
+  const academicYear = str(fd, "academicYear");
+  const name = str(fd, "name");
+  // 跟 createMeeting 同一組必填；之前編輯時清空名稱、屆別填 0 都會直接存進去。
+  if (!id || !meetingAt || session <= 0 || !academicYear || !name) redirect(`/console/meetings/${id}/edit?error=1`);
   const kindRaw = str(fd, "kind");
   const kind = (["REGULAR", "SPECIAL", "COMMITTEE"] as const).includes(kindRaw as never)
     ? (kindRaw as "REGULAR" | "SPECIAL" | "COMMITTEE")
@@ -106,9 +110,9 @@ export async function updateMeeting(fd: FormData) {
     where: { id },
     data: {
       ...(slug ? { slug } : {}),
-      session: int(fd, "session"),
-      academicYear: str(fd, "academicYear"),
-      name: str(fd, "name"),
+      session,
+      academicYear,
+      name,
       kind,
       meetingAt: meetingAt!,
       location: optStr(fd, "location"),
@@ -297,8 +301,10 @@ export async function deleteNotice(fd: FormData) {
 export async function addReminder(fd: FormData) {
   await requireUser();
   const meetingId = str(fd, "meetingId");
-  const offsetDays = int(fd, "offsetDays", 0);
-  if (!meetingId) return;
+  // fallback 給 -1：不是數字或超出範圍就整個不收，不要變成「會前 0 天」存進去。
+  const offsetDays = int(fd, "offsetDays", -1);
+  // 太大的天數算出來的提醒時間是 Invalid Date，寫入會 500；畫面上的選項都在一年內。
+  if (!meetingId || offsetDays < 0 || offsetDays > MAX_REMINDER_OFFSET_DAYS) return;
   const meeting = await prisma.meeting.findUnique({ where: { id: meetingId } });
   if (!meeting) return;
   await prisma.meetingReminder.create({

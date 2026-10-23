@@ -23,6 +23,10 @@ class Refuse extends Error {
  * 保證範圍到網站為止：有資料庫管理權限的人理論上能從交易紀錄比對時間，這跟紙本投票要信任監票人是同一件事。
  */
 export async function castVote(token: string | null, voteId: string, optionId: string): Promise<CastResult> {
+  // Server Action 的參數是用戶端送來的，TypeScript 型別擋不住；送數字或物件進 Prisma 會變 500。
+  if ((token !== null && typeof token !== "string") || typeof voteId !== "string" || typeof optionId !== "string") {
+    return { ok: false, error: "invalid" };
+  }
   const t = token ?? (await readVoterToken());
   const parsed = t ? parseVoteToken(t) : null;
   if (!parsed) return { ok: false, error: "invalid" };
