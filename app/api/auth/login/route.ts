@@ -24,7 +24,7 @@ function safeEqual(a: string, b: string): boolean {
   return timingSafeEqual(ab, bb);
 }
 
-// env 引導管理員：在 Zeabur 設 ADMIN_EMAIL / ADMIN_PASSWORD 即可登入（密碼好找、好改）。
+// env 引導管理員：在主機（Coolify）環境變數設 ADMIN_EMAIL / ADMIN_PASSWORD 即可登入（密碼好找、好改）。
 // 命中則確保 DB 有這位 admin（upsert），再種 session。未設兩者則停用本機制。
 async function tryEnvAdmin(email: string, password: string) {
   const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
   };
 
   try {
-    // 先試 env 引導管理員（密碼設在環境變數，Zeabur 好找好改）。
+    // 先試 env 引導管理員（密碼設在環境變數，好找好改）。
     const envAdmin = await tryEnvAdmin(email, password);
     if (envAdmin) {
       release();

@@ -7,8 +7,8 @@ import { useRouter } from "next/navigation";
  * 定時重新抓伺服器狀態。
  *
  * 刻意用 polling 而不是 SSE／WebSocket：
- * 這是一個月開一兩次、幾十人看的會議頁，長連線的維運成本與 Zeabur 上的
- * 連線數限制都不值得，而 router.refresh() 走的是既有的 force-dynamic 路徑，
+ * 這是一個月開一兩次、幾十人看的會議頁，長連線的維運成本與主機上的
+ * 連線數負擔都不值得，而 router.refresh() 走的是既有的 force-dynamic 路徑，
  * 零新端點、零新相依（CLAUDE.md「免費優先」）。
  *
  * 重要：這個元件**只負責重新讀取**，不推進任何狀態。

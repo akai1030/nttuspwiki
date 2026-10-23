@@ -19,11 +19,11 @@
 
 ## 技術棧（沿用「網站建立流」，勿自行更換）
 - Next.js 16 App Router + React 19 + TypeScript（strict）+ Tailwind 3
-- Zeabur PostgreSQL + Prisma 6（**刻意不升 7**：7 的 WebAssembly 查詢編譯器本機量測多吃約 100MB 記憶體，共用主機吃不消；2026-09-29 量測見該次升級 commit）
-- Node 22（`zbpack.json` 的 `node_version`）；`proxy.ts`＝Next 16 前的 middleware
+- PostgreSQL（含 pgvector；跟網站在同一台主機、不對外開放連線）+ Prisma 6（**刻意不升 7**：7 的 WebAssembly 查詢編譯器本機量測多吃約 100MB 記憶體，共用主機吃不消；2026-09-29 量測見該次升級 commit）
+- Node 22（Coolify 的 `NIXPACKS_NODE_VERSION=22`；`package.json` 的 `engines` 是 `>=22.12.0`）；`proxy.ts`＝Next 16 前的 middleware
 - Cloudflare R2（上傳待檢核文件）
-- 全文檢索：`nodejieba` 應用端斷詞 → Postgres `tsvector`/GIN（**免資料庫擴充、可攜**為主力）；`pgvector` 語意檢索為可選輔助（待確認 Zeabur PG image 支援）
-- 排程：Zeabur cron worker（提醒發送）
+- 全文檢索：`nodejieba` 應用端斷詞 → Postgres `tsvector`/GIN（**免資料庫擴充、可攜**為主力）；`pgvector` 語意檢索為輔助（資料庫用有 pgvector 的映像，見 `docs/coolify.md`）
+- 排程：沒有。會前提醒在後台產生草稿、人工送出（`lib/meetings/reminders.ts`）
 - LLM（可選）：Gemini Flash 免費層 / Claude Sonnet 5 + Prompt Caching（付費）
 
 ## 檔案結構約定
@@ -54,6 +54,12 @@ design/              # tokens.json（設計規範）、baseline.json（棘輪基
 - 改完跑 `npm run design:check`。它逐檔數寫死的字級、顏色、任意值，跟 `design/baseline.json` 比，只准變少；變少了跑 `npm run design:check -- --update` 把基準一起提交。
 - 用 Claude Code 改 `app`／`components`／`lib`／`styles` 的檔時，`.claude/settings.json` 的 hook 會當場跑同一支檢查，擋下來就照訊息改成 token。不要調高 `design/baseline.json` 讓它過關；真的需要新值照 `DESIGN.md`「要加新值時」。
 - CI（`.github/workflows/ci.yml`）跑設計檢查與它的測試、typecheck、lint、next build，都不連資料庫。
+
+## 資料庫遷移（2026-10-19 起不在建置時跑）
+- `npm run build` 不再跑 `prisma migrate deploy`。2026-10-16 起資料庫只開內部連線（舊主機商第二次資安事件後關掉對外埠），建置階段不一定連得到資料庫，建置裡有遷移就會整個失敗。現在資料庫在 Coolify 主機上，同樣不對外開放連線。`next build` 本身不查資料庫（本機用沒設定、沒展開、連不到三種 DATABASE_URL 都建置成功）。
+- 加了新的 migration：合併部署之後，在 Coolify 這個服務的 Terminal 跑一次 `./node_modules/.bin/prisma migrate deploy`（不用 npx，理由見 `docs/coolify.md`），確認輸出寫 applied 再用新功能。沒有新 migration 的部署不必跑。
+- 遷移是部署之後的獨立步驟，不要放回 `next build`。
+- 2026-10-22 起部署在 Coolify（轉駅自己的主機，Contabo 日本東京機房；合併進 `main` 由 GitHub 的 push webhook 觸發部署），網址是 `codex.transtation.org`：建置設定、環境變數名稱、遷移怎麼跑見 `docs/coolify.md`。
 
 ## 政策頁
 - 目前沒有隱私權政策頁：網站上沒有公開的聯絡窗口，建頁前要昀楷確認聯絡方式（2026-10-04）。網站使用分析的說明暫放頁尾（`copy.foot.analytics`），跟 `lib/posthog.ts` 的行為一致，改一邊就改另一邊。
