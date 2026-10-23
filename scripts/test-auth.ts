@@ -13,6 +13,7 @@
  *   7. 登入次數限制：同時送來的請求不能繞過上限（tryAttempt 先記再驗）
  *   8. 籌備時程的「N 天後／今天／N 天前」照臺北日曆日算
  *   9. 後台表單：整數超出 Postgres Int、提醒天數太大不寫進資料庫；編輯會議的必填跟建立一樣
+ *  10. 投票 action：參數型別不對就退回 invalid，不丟進 Prisma（讀原始碼）
  */
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -195,6 +196,14 @@ test('編輯會議：屆別、學年度、名稱、時間跟建立時一樣必�
   assert.match(guard, /!id \|\| !meetingAt \|\| session <= 0 \|\| !academicYear \|\| !name/);
   // 編輯頁從 id 轉到 slug 時保留 error，退回的訊息才看得到
   assert.match(read('app/(dashboard)/console/meetings/[slug]/edit/page.tsx'), /edit\$\{err \? `\?error=/);
+});
+
+test('投票 action：參數型別不對直接退回 invalid', () => {
+  const src = read('app/v/[token]/actions.ts');
+  const body = src.slice(src.indexOf('export async function castVote'));
+  const first = body.slice(0, body.indexOf('await '));
+  for (const k of ['voteId', 'optionId']) assert.match(first, new RegExp(`typeof ${k} !== "string"`), k);
+  assert.match(first, /token !== null && typeof token !== "string"/);
 });
 
 console.log(`\n全部通過 · ${passed} 項`);
