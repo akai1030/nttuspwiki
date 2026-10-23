@@ -5,6 +5,9 @@
  * ⚠️ 這裡的天數是「常用預設」，非法定精確值。實際期限應以《組織章程》《議事規則》為準；
  *    待確認後再把 OFFSETS 對齊法源（見 MEETINGS-MODULE.md）。提案截止優先用會議設定的實際值。
  */
+
+import { rocParts } from "./roc";
+
 export type MilestoneAction = "notice" | "agenda" | "remind" | "deadline" | "meeting" | "custom" | "law";
 
 export type Milestone = {
@@ -123,7 +126,17 @@ export function buildTimeline(
   return items.sort((a, b) => a.date.getTime() - b.date.getTime());
 }
 
-/** 相對今天的天數差（正＝未來、0＝今天、負＝已過），以整日計。 */
+/**
+ * 相對今天的天數差（正＝未來、0＝今天、負＝已過），以臺北的日曆日計。
+ * 不能用兩個時刻相減再四捨五入：早上 6 點看晚上 7 點的會議差 13 小時會變成「1 天後」，
+ * 跟旁邊顯示的日期（今天）對不上；前一晚 23 點的期限到隔天早上也還會顯示「今天」。
+ */
 export function daysBetween(from: Date, to: Date): number {
-  return Math.round((to.getTime() - from.getTime()) / DAY);
+  return Math.round((taipeiDayNumber(to) - taipeiDayNumber(from)) / DAY);
+}
+
+/** 臺北當地日期的 UTC 午夜毫秒數（只拿來比日期）。 */
+function taipeiDayNumber(d: Date): number {
+  const { rocYear, month, day } = rocParts(d);
+  return Date.UTC(rocYear + 1911, month - 1, day);
 }

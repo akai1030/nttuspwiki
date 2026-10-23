@@ -9,7 +9,7 @@
  */
 
 const WINDOW_MS = 15 * 60 * 1000;
-const MAX_FAILURES = 8;
+export const MAX_FAILURES = 8;
 const MAX_KEYS = 5000;
 
 type Entry = { count: number; resetAt: number };
@@ -42,6 +42,30 @@ export function recordFailure(keys: string[], now = Date.now()): void {
     const e = failures.get(k);
     if (!e || e.resetAt <= now) failures.set(k, { count: 1, resetAt: now + WINDOW_MS });
     else e.count += 1;
+  }
+}
+
+/**
+ * 檢查上限並先記一次失敗，給「接著要 await 驗證」的登入流程用。
+ *
+ * 不能拆成 isLimited → await 驗密碼 → recordFailure：同一瞬間送來的請求都會在任何一筆失敗被記下之前
+ * 通過檢查，30 個並發請求就有 30 次機會（2026-10-17 本機實測），8 次上限形同虛設。
+ * 這裡檢查與記數之間沒有 await，Node 單執行緒下同時進來的請求會一個一個輪到。
+ *
+ * 回傳 false＝已達上限，這次不要驗。true 之後驗證成功、或這次不該算失敗時，呼叫 releaseAttempt 退回。
+ */
+export function tryAttempt(limits: Array<[key: string, max: number]>, now = Date.now()): boolean {
+  if (limits.some(([k, max]) => isLimited([k], max, now))) return false;
+  recordFailure(limits.map(([k]) => k), now);
+  return true;
+}
+
+/** 退回 tryAttempt 先記的那一次（計數歸零就刪掉）。 */
+export function releaseAttempt(keys: string[], now = Date.now()): void {
+  for (const k of keys) {
+    const e = failures.get(k);
+    if (!e || e.resetAt <= now) continue;
+    if (--e.count <= 0) failures.delete(k);
   }
 }
 
