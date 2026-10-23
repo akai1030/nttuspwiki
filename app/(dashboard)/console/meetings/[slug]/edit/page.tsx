@@ -27,7 +27,11 @@ export default async function EditMeetingPage(
   await requireUser();
   const m = await getMeetingByKey(params.slug);
   if (!m) notFound();
-  if (m.slug && m.slug !== params.slug) redirect(`/console/meetings/${m.slug}/edit`);
+  // updateMeeting 退回時網址用的是 id，轉到 slug 時要帶著 error，不然錯誤訊息不會出現。
+  if (m.slug && m.slug !== params.slug) {
+    const err = searchParams?.error;
+    redirect(`/console/meetings/${m.slug}/edit${err ? `?error=${encodeURIComponent(err)}` : ""}`);
+  }
 
   return (
     <main className="mx-auto max-w-reader px-wrap-sm py-section-sm hero:px-wrap">
@@ -40,6 +44,14 @@ export default async function EditMeetingPage(
       <h1 className="mt-4 font-serif text-h2">
         {c.detail.edit}｜{m.name}
       </h1>
+      {searchParams?.error === "1" ? (
+        <p
+          role="alert"
+          className="mt-3 border border-warn-border bg-warn-surface px-3 py-2 font-sans text-caption text-warn-ink"
+        >
+          {c.form.required}
+        </p>
+      ) : null}
       {searchParams?.error === "slug" || searchParams?.error === "slugTaken" ? (
         <p className="mt-3 border border-warn-border bg-warn-surface px-3 py-2 font-sans text-caption text-warn-ink">
           {searchParams.error === "slugTaken" ? c.form.slugTaken : c.form.slugInvalid}

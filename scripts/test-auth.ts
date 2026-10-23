@@ -12,6 +12,7 @@
  *   6. 公開議事頁的查詢：程委退回的提案不出現在公開議程（讀原始碼）
  *   7. 登入次數限制：同時送來的請求不能繞過上限（tryAttempt 先記再驗）
  *   8. 籌備時程的「N 天後／今天／N 天前」照臺北日曆日算
+ *   9. 後台表單：整數超出 Postgres Int、提醒天數太大不寫進資料庫；編輯會議的必填跟建立一樣
  */
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -19,6 +20,8 @@ import path from 'node:path';
 import { safeNext } from '../lib/auth/safe-next';
 import { isLimited, MAX_FAILURES, recordFailure, releaseAttempt, tryAttempt } from '../lib/auth/rate-limit';
 import { daysBetween } from '../lib/meetings/timeline';
+import { INT_MAX, parseIntField } from '../lib/form-int';
+import { computeFireAt, MAX_REMINDER_OFFSET_DAYS } from '../lib/meetings/reminders';
 import { clampQuery, firstParam, MAX_QUERY_CHARS, parseLimit } from '../lib/search-param';
 
 let passed = 0;
@@ -159,6 +162,39 @@ test('籌備時程：天數差照臺北的日曆日算，不照時數四捨五�
   assert.equal(daysBetween(tw('2026-12-31T12:00'), tw('2027-01-07T09:00')), 7);
   // 臺北日期跟 UTC 日期不同的時段（臺北 07:00＝UTC 前一天 23:00）
   assert.equal(daysBetween(tw('2026-10-16T07:00'), tw('2026-10-16T08:30')), 0);
+});
+
+const read = (rel: string) => fs.readFileSync(path.join(__dirname, '..', rel), 'utf8');
+
+test('parseIntField：取整數，超出 Postgres Int 或不是數字就用 fallback', () => {
+  assert.equal(parseIntField('21'), 21);
+  assert.equal(parseIntField('3.9'), 3);
+  assert.equal(parseIntField('-2'), -2);
+  assert.equal(parseIntField(String(INT_MAX)), INT_MAX);
+  for (const v of ['3000000000', '1e12', '-3000000000', 'abc', 'Infinity', 'NaN']) {
+    assert.equal(parseIntField(v, 7), 7, v);
+  }
+  assert.equal(parseIntField(''), 0); // 空字串＝0，createMeeting／updateMeeting 會當成沒填退回
+});
+
+test('會前提醒：上限天數算得出日期；addReminder 擋負數與超過上限', () => {
+  const at = new Date('2026-10-16T19:00+08:00');
+  assert.ok(!Number.isNaN(computeFireAt(at, MAX_REMINDER_OFFSET_DAYS).getTime()));
+  assert.ok(Number.isNaN(computeFireAt(at, INT_MAX).getTime())); // 沒有上限時會寫進 Invalid Date
+  const src = read('app/(dashboard)/console/meetings/actions.ts');
+  const add = src.slice(src.indexOf('export async function addReminder'));
+  const guard = add.slice(0, add.indexOf('prisma.'));
+  assert.match(guard, /int\(fd, "offsetDays", -1\)/); // 解析失敗要被擋，不能落到 0 天
+  assert.match(guard, /offsetDays < 0 \|\| offsetDays > MAX_REMINDER_OFFSET_DAYS/);
+});
+
+test('編輯會議：屆別、學年度、名稱、時間跟建立時一樣必填', () => {
+  const src = read('app/(dashboard)/console/meetings/actions.ts');
+  const upd = src.slice(src.indexOf('export async function updateMeeting'), src.indexOf('export async function toggleMeetingPublic'));
+  const guard = upd.slice(0, upd.indexOf('prisma.meeting.update'));
+  assert.match(guard, /!id \|\| !meetingAt \|\| session <= 0 \|\| !academicYear \|\| !name/);
+  // 編輯頁從 id 轉到 slug 時保留 error，退回的訊息才看得到
+  assert.match(read('app/(dashboard)/console/meetings/[slug]/edit/page.tsx'), /edit\$\{err \? `\?error=/);
 });
 
 console.log(`\n全部通過 · ${passed} 項`);

@@ -8,3 +8,6 @@ export function computeFireAt(meetingAt: Date, offsetDays: number): Date {
 
 /** 常用提醒間隔（會前天數）。 */
 export const DEFAULT_OFFSETS = [7, 3, 1] as const;
+
+/** 會前提醒最多往前推幾天；超過就不收（太大的天數算不出日期）。 */
+export const MAX_REMINDER_OFFSET_DAYS = 366;
