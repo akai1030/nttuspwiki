@@ -14,6 +14,7 @@
  *   8. 籌備時程的「N 天後／今天／N 天前」照臺北日曆日算
  *   9. 後台表單：整數超出 Postgres Int、提醒天數太大不寫進資料庫；編輯會議的必填跟建立一樣
  *  10. 投票 action：參數型別不對就退回 invalid，不丟進 Prisma（讀原始碼）
+ *  11. 開表決：同一場會議同時只能有一張進行中的表決，並發也擋得住（讀原始碼）
  */
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -204,6 +205,18 @@ test('投票 action：參數型別不對直接退回 invalid', () => {
   const first = body.slice(0, body.indexOf('await '));
   for (const k of ['voteId', 'optionId']) assert.match(first, new RegExp(`typeof ${k} !== "string"`), k);
   assert.match(first, /token !== null && typeof token !== "string"/);
+});
+
+test('開表決：交易裡先鎖會議列再數進行中的表決，才建立', () => {
+  const src = read('app/(dashboard)/console/meetings/vote-actions.ts');
+  const body = src.slice(src.indexOf('export async function openVote'), src.indexOf('async function voteMeeting'));
+  const tx = body.slice(body.indexOf('prisma.$transaction'));
+  const lock = tx.indexOf('FOR UPDATE');
+  const count = tx.indexOf('tx.vote.count');
+  const create = tx.indexOf('tx.vote.create');
+  assert.ok(lock > 0 && lock < count && count < create, '順序要是 鎖 → 數 → 建');
+  assert.match(tx.slice(0, lock), /FROM "Meeting" WHERE "id" = \$\{m\.id\}/);
+  assert.ok(!/prisma\.vote\.create/.test(body), '建立要在交易裡（tx），不能用外面的 prisma');
 });
 
 console.log(`\n全部通過 · ${passed} 項`);

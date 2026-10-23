@@ -87,20 +87,28 @@ export async function openVote(fd: FormData) {
     labels = [...MOTION_OPTIONS];
   }
 
-  await prisma.vote.create({
-    data: {
-      meetingId: m.id,
-      proposalId,
-      kind,
-      secret,
-      title,
-      seats,
-      matterType,
-      eligibleIds: eligible,
-      openedById: user.sub,
-      options: { create: labels.map((label, order) => ({ label, order })) },
-    },
+  // 上面的 count 只是先擋一般情況。同時按兩次「開始表決」時兩個請求都會數到 0，
+  // 所以在交易裡先鎖住這場會議的列再數一次：第二個請求要等第一個交易結束，才數得到它開的那張。
+  const opened = await prisma.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT 1 FROM "Meeting" WHERE "id" = ${m.id} FOR UPDATE`;
+    if ((await tx.vote.count({ where: { meetingId: m.id, status: "open" } })) > 0) return false;
+    await tx.vote.create({
+      data: {
+        meetingId: m.id,
+        proposalId,
+        kind,
+        secret,
+        title,
+        seats,
+        matterType,
+        eligibleIds: eligible,
+        openedById: user.sub,
+        options: { create: labels.map((label, order) => ({ label, order })) },
+      },
+    });
+    return true;
   });
+  if (!opened) back(m, "alreadyOpen");
   await prisma.meeting.update({ where: { id: m.id }, data: { liveUpdatedAt: new Date() } });
   revalidateLive();
   back(m);
