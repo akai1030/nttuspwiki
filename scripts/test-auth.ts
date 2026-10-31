@@ -15,6 +15,7 @@
  *   9. 後台表單：整數超出 Postgres Int、提醒天數太大不寫進資料庫；編輯會議的必填跟建立一樣
  *  10. 投票 action：參數型別不對就退回 invalid，不丟進 Prisma（讀原始碼）
  *  11. 開表決：同一場會議同時只能有一張進行中的表決，並發也擋得住（讀原始碼）
+ *  12. 成員管理：對象已被別的管理員刪掉、或同時新增同一個 email，不 500（讀原始碼）
  */
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -217,6 +218,14 @@ test('開表決：交易裡先鎖會議列再數進行中的表決，才建立',
   assert.ok(lock > 0 && lock < count && count < create, '順序要是 鎖 → 數 → 建');
   assert.match(tx.slice(0, lock), /FROM "Meeting" WHERE "id" = \$\{m\.id\}/);
   assert.ok(!/prisma\.vote\.create/.test(body), '建立要在交易裡（tx），不能用外面的 prisma');
+});
+
+test('成員管理：改密碼／改角色／刪除找不到人不 500，並發新增撞唯一鍵照重複處理', () => {
+  const src = read('app/(dashboard)/console/members/actions.ts');
+  // update／delete 找不到列會丟 P2025；名單頁開著時另一位管理員可能已經刪掉這個人
+  assert.ok(!/prisma\.user\.(update|delete)\(/.test(src), '用 updateMany／deleteMany');
+  const create = src.slice(src.indexOf('export async function createMember'), src.indexOf('export async function resetMemberPassword'));
+  assert.match(create, /e\.code === "P2002"\) redirect\(`\$\{BASE\}\?err=dup`\)/);
 });
 
 console.log(`\n全部通過 · ${passed} 項`);
