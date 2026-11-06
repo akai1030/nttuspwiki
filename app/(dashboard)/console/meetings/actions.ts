@@ -179,7 +179,9 @@ export async function updateProposalResolution(fd: FormData) {
   await requireUser();
   const id = str(fd, "id");
   if (!id) return;
-  await prisma.proposal.update({
+  // updateMany：同一頁開著時別人可能已經刪掉這案，update 找不到會丟 P2025 變 500。
+  // 找不到就什麼都不做，重新整理後畫面上也不會再有它。下面幾支 updateMany／deleteMany 同理。
+  await prisma.proposal.updateMany({
     where: { id },
     data: { resolution: optStr(fd, "resolution") },
   });
@@ -204,7 +206,7 @@ export async function setProposalReview(fd: FormData) {
   const orderRaw = str(fd, "order");
   // matterType 一併在這裡改：擬案當下未必分得出類型，會前確認議程時再補是常態。
   const matterType = fd.has("matterType") ? optStr(fd, "matterType") : undefined;
-  await prisma.proposal.update({
+  await prisma.proposal.updateMany({
     where: { id },
     data: {
       reviewStatus,
@@ -220,7 +222,7 @@ export async function deleteProposal(fd: FormData) {
   const id = str(fd, "id");
   const meetingId = str(fd, "meetingId");
   if (id) {
-    await prisma.proposal.delete({ where: { id } });
+    await prisma.proposal.deleteMany({ where: { id } });
     revalidateMeetingRoutes();
   }
 }
@@ -292,7 +294,7 @@ export async function deleteNotice(fd: FormData) {
   const id = str(fd, "id");
   const meetingId = str(fd, "meetingId");
   if (id) {
-    await prisma.meetingNotice.delete({ where: { id } });
+    await prisma.meetingNotice.deleteMany({ where: { id } });
     revalidateMeetingRoutes();
   }
 }
@@ -323,7 +325,7 @@ export async function markReminderDone(fd: FormData) {
   const id = str(fd, "id");
   const meetingId = str(fd, "meetingId");
   if (id) {
-    await prisma.meetingReminder.update({ where: { id }, data: { sentAt: new Date() } });
+    await prisma.meetingReminder.updateMany({ where: { id }, data: { sentAt: new Date() } });
     revalidateMeetingRoutes();
   }
 }
@@ -333,7 +335,7 @@ export async function unmarkReminderDone(fd: FormData) {
   const id = str(fd, "id");
   const meetingId = str(fd, "meetingId");
   if (id) {
-    await prisma.meetingReminder.update({ where: { id }, data: { sentAt: null } });
+    await prisma.meetingReminder.updateMany({ where: { id }, data: { sentAt: null } });
     revalidateMeetingRoutes();
   }
 }
@@ -343,7 +345,7 @@ export async function deleteReminder(fd: FormData) {
   const id = str(fd, "id");
   const meetingId = str(fd, "meetingId");
   if (id) {
-    await prisma.meetingReminder.delete({ where: { id } });
+    await prisma.meetingReminder.deleteMany({ where: { id } });
     revalidateMeetingRoutes();
   }
 }
@@ -366,7 +368,7 @@ export async function deleteMilestone(fd: FormData) {
   const id = str(fd, "id");
   const meetingId = str(fd, "meetingId");
   if (id) {
-    await prisma.meetingMilestone.delete({ where: { id } });
+    await prisma.meetingMilestone.deleteMany({ where: { id } });
     revalidateMeetingRoutes();
   }
 }
@@ -395,7 +397,7 @@ export async function toggleRecipient(fd: FormData) {
   if (!id) return;
   const r = await prisma.recipient.findUnique({ where: { id } });
   if (r) {
-    await prisma.recipient.update({ where: { id }, data: { active: !r.active } });
+    await prisma.recipient.updateMany({ where: { id }, data: { active: !r.active } });
     revalidatePath("/console/meetings/recipients");
   }
 }
@@ -406,7 +408,7 @@ export async function updateRecipient(fd: FormData) {
   const name = str(fd, "name");
   const email = str(fd, "email");
   if (!id || !name || !email) return;
-  await prisma.recipient.update({
+  await prisma.recipient.updateMany({
     where: { id },
     data: {
       name,
@@ -422,7 +424,7 @@ export async function deleteRecipient(fd: FormData) {
   await requireRole(["admin", "officer"]);
   const id = str(fd, "id");
   if (id) {
-    await prisma.recipient.delete({ where: { id } });
+    await prisma.recipient.deleteMany({ where: { id } });
     revalidatePath("/console/meetings/recipients");
   }
 }

@@ -173,7 +173,8 @@ export async function applyVoteToResolution(fd: FormData) {
   if (!p) return;
   const prev = p.resolution?.trim() ?? "";
   if (prev.includes(line)) back(vote.meeting); // 重複按不重複寫
-  await prisma.proposal.update({
+  // findFirst 到這裡之間這案可能被別人刪掉；updateMany 找不到不丟 P2025。
+  await prisma.proposal.updateMany({
     where: { id: p.id },
     data: { resolution: prev ? `${prev}\n${line}` : line },
   });
@@ -193,7 +194,8 @@ export async function updateRecipientLogin(fd: FormData) {
   const studentId = str(fd, "studentId").replace(/\s+/g, "") || null;
   const phone = str(fd, "phone") || null;
   try {
-    await prisma.recipient.update({ where: { id }, data: { studentId, phone } });
+    // updateMany：名冊頁開著時這位議員可能已經被別人刪掉（同 actions.ts 的 deleteRecipient）。
+    await prisma.recipient.updateMany({ where: { id }, data: { studentId, phone } });
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
       redirect("/console/meetings/recipients?loginError=taken");
@@ -208,6 +210,6 @@ export async function reissueVoteLink(fd: FormData) {
   await requireRole(["admin", "officer"]);
   const id = str(fd, "id");
   if (!id) return;
-  await prisma.recipient.update({ where: { id }, data: { voteLinkVersion: { increment: 1 } } });
+  await prisma.recipient.updateMany({ where: { id }, data: { voteLinkVersion: { increment: 1 } } });
   revalidatePath("/console/meetings/recipients");
 }
