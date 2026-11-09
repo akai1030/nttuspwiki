@@ -1,7 +1,7 @@
 # Coolify 部署設定
 
 2026-10-22 起，本站跑在轉駅自己的主機（Contabo，日本東京機房），用 Coolify v4 管理，前面是 Cloudflare 代理；
-網址是 `codex.transtation.org`（轉駅的 Cloudflare 加 DNS；之後買專用網域再換）。
+網址是 `nttuspcodex.transtation.org`（2026-11-09 起；轉駅的 Cloudflare 加 DNS；之後買專用網域再換）。
 合併進 `main` 由 GitHub 的 push webhook 觸發 Coolify 建置與部署。這份是這個服務在 Coolify 上的設定值。
 
 ## 建置與啟動
@@ -39,7 +39,7 @@ Coolify 只在 Advanced 打開 Include Source Commit in Build 時建置階段才
 
 建置時也要有的（Coolify 勾成建置時可用）：
 
-- `SITE_URL`：設 `https://codex.transtation.org`。`app/robots.ts` 在建置時產生、`app/sitemap.ts` 在執行時讀，兩邊都要。沒設會退回程式裡的預設值（同一個網址）。
+- `SITE_URL`：設 `https://nttuspcodex.transtation.org`。`app/robots.ts` 在建置時產生、`app/sitemap.ts` 在執行時讀，兩邊都要。沒設會退回程式裡的預設值（同一個網址）。
 - `NIXPACKS_NODE_VERSION`：`22`
 
 執行時：
@@ -55,6 +55,6 @@ ARCHITECTURE.md（2026-07 的架構草案）寫的 cron worker 沒有實作。`.
 
 ## 網域
 
-- `codex.transtation.org` 指到 Coolify。寄出去的連結（會議通知、投票連結）用 `lib/site-origin.ts` 從請求的 Host 組，換網域後自動跟著換。
-- 使用分析（PostHog）只在 `lib/posthog.ts` 的 `PROD_HOSTS` 裡的網域啟動，只有 `codex.transtation.org`。
+- `nttuspcodex.transtation.org` 與 `codex.transtation.org` 都指到 Coolify（Coolify 的網域欄兩個都填，nttuspcodex 排第一）。`codex` 是 10/22～11/9 的網址，`next.config.mjs` 的 `redirects()` 把它整站 308 轉到 `nttuspcodex`，路徑與查詢字串照帶；已寄出的通知與投票連結因此還能用。兩個網域的登入 cookie 不共用，換網域後幹部要重新登入一次。寄出去的連結（會議通知、投票連結）用 `lib/site-origin.ts` 從請求的 Host 組，換網域後自動跟著換。
+- 使用分析（PostHog）只在 `lib/posthog.ts` 的 `PROD_HOSTS` 裡的網域啟動，只有 `nttuspcodex.transtation.org`（轉址前的 `codex` 不會載入網頁，不必列）。
 - 舊網址已經停用，10/28 常會前通知議員新網址。

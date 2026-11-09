@@ -59,7 +59,7 @@ design/              # tokens.json（設計規範）、baseline.json（棘輪基
 - `npm run build` 不再跑 `prisma migrate deploy`。2026-10-16 起資料庫只開內部連線（舊主機商第二次資安事件後關掉對外埠），建置階段不一定連得到資料庫，建置裡有遷移就會整個失敗。現在資料庫在 Coolify 主機上，同樣不對外開放連線。`next build` 本身不查資料庫（本機用沒設定、沒展開、連不到三種 DATABASE_URL 都建置成功）。
 - 加了新的 migration：合併部署之後，在 Coolify 這個服務的 Terminal 跑一次 `./node_modules/.bin/prisma migrate deploy`（不用 npx，理由見 `docs/coolify.md`），確認輸出寫 applied 再用新功能。沒有新 migration 的部署不必跑。
 - 遷移是部署之後的獨立步驟，不要放回 `next build`。
-- 2026-10-22 起部署在 Coolify（轉駅自己的主機，Contabo 日本東京機房；合併進 `main` 由 GitHub 的 push webhook 觸發部署），網址是 `codex.transtation.org`：建置設定、環境變數名稱、遷移怎麼跑見 `docs/coolify.md`。
+- 2026-10-22 起部署在 Coolify（轉駅自己的主機，Contabo 日本東京機房；合併進 `main` 由 GitHub 的 push webhook 觸發部署），網址是 `nttuspcodex.transtation.org`（2026-11-09 起；舊的 `codex.transtation.org` 由 `next.config.mjs` 轉過來）：建置設定、環境變數名稱、遷移怎麼跑見 `docs/coolify.md`。
 
 ## 政策頁
 - 目前沒有隱私權政策頁：網站上沒有公開的聯絡窗口，建頁前要昀楷確認聯絡方式（2026-10-04）。網站使用分析的說明暫放頁尾（`copy.foot.analytics`），跟 `lib/posthog.ts` 的行為一致，改一邊就改另一邊。
