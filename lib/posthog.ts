@@ -21,8 +21,9 @@
 import type { CaptureResult, PostHog } from "posthog-js";
 
 const TOKEN = "phc_yZUKsvCpCgWyzLLzGQbsvsxp2YegZEw4bU8CTbdyLwXz";
-// 正式站只有 codex.transtation.org（轉駅的網域）。訪客編號不跨子網域（下面的 cross_subdomain_cookie: false），不會跟轉駅其他站共用。
-const PROD_HOSTS = ["codex.transtation.org"];
+// 正式站只有 nttuspcodex.transtation.org（轉駅的網域；2026-11-09 起，舊的 codex.transtation.org 由 next.config.mjs 轉過來）。
+// 訪客編號不跨子網域（下面的 cross_subdomain_cookie: false），不會跟轉駅其他站共用。
+const PROD_HOSTS = ["nttuspcodex.transtation.org"];
 
 /** 不記的路徑。/v/<權杖> 是發給議員個人的投票連結，網址本身就是憑證，絕對不能送出去 */
 const EXCLUDED = ["/console", "/login", "/v/", "/vote", "/styleguide"];
@@ -140,7 +141,7 @@ export function syncPostHog(pathname: string): void {
           capture_pageleave: true, // 停留時間
           capture_exceptions: true, // 前端錯誤
           respect_dnt: true, // 上面已經擋過，留著當第二道
-          // 訪客編號只存在本站網域，轉駅各站一致（2026-10）：codex.transtation.org 跟轉駅其他站同在 transtation.org 底下，
+          // 訪客編號只存在本站網域，轉駅各站一致（2026-10）：nttuspcodex.transtation.org 跟轉駅其他站同在 transtation.org 底下，
           // 不跨子網域才不會共用訪客編號
           cross_subdomain_cookie: false,
           session_recording: {

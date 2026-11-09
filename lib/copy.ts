@@ -830,6 +830,12 @@ export const copy = {
     lede: "這個網站每次上線改了什麼，照日期列在這裡。",
     entries: [
       {
+        date: "2026-11-09",
+        items: [
+          "網站網址改為 nttuspcodex.transtation.org。舊網址 codex.transtation.org 會自動轉過去，之前寄出的開會通知與投票連結照樣點得開。",
+        ],
+      },
+      {
         date: "2026-10-04",
         items: [
           "加了網站使用分析（PostHog），看大家怎麼查法規、哪裡出錯，用來改網站。後台、登入頁與投票頁不記錄。",

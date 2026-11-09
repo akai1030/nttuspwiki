@@ -64,6 +64,15 @@ const nextConfig = {
   skipTrailingSlashRedirect: true,
   async redirects() {
     return [
+      // 2026-11-09 主網址改成 nttuspcodex.transtation.org。舊網址 codex.transtation.org 整站轉過去，路徑與查詢字串照帶，
+      // 之前寄出的開會通知、投票連結（/v/<權杖>）都還點得開。308 保留原本的請求方法（POST 不會變成 GET）。
+      // 放在第一條，一次轉到新網域；`/:path*` 不帶結尾斜線（/law/ 轉成 …/law），不會再多轉一次。
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "codex.transtation.org" }],
+        destination: "https://nttuspcodex.transtation.org/:path*",
+        permanent: true,
+      },
       // 等同 Next 內建的去尾斜線轉址（node_modules/next/dist/lib/load-custom-routes.js，trailingSlash: false 那段），
       // 參數寫法照抄 Next 自己 trailingSlash: true 那段的 `(?:[^/]+/)*[^/]+`，目的地才保得住中間的斜線。
       { source: "/:path((?!ingest/)(?:[^/]+/)*[^/]+)/", destination: "/:path", permanent: true },
