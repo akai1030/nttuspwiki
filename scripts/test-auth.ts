@@ -16,6 +16,7 @@
  *  10. 投票 action：參數型別不對就退回 invalid，不丟進 Prisma（讀原始碼）
  *  11. 開表決：同一場會議同時只能有一張進行中的表決，並發也擋得住（讀原始碼）
  *  12. 成員管理：對象已被別的管理員刪掉、或同時新增同一個 email，不 500（讀原始碼）
+ *  13. 會議後台：提案、通知、提醒、里程碑、收件人已被別人刪掉時，改或刪不 500（讀原始碼）
  */
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -226,6 +227,16 @@ test('成員管理：改密碼／改角色／刪除找不到人不 500，並發�
   assert.ok(!/prisma\.user\.(update|delete)\(/.test(src), '用 updateMany／deleteMany');
   const create = src.slice(src.indexOf('export async function createMember'), src.indexOf('export async function resetMemberPassword'));
   assert.match(create, /e\.code === "P2002"\) redirect\(`\$\{BASE\}\?err=dup`\)/);
+});
+
+test('會議後台：可以被刪掉的列（提案、通知、提醒、里程碑、收件人）改或刪都用 updateMany／deleteMany', () => {
+  // 兩位幹部開著同一頁，一位先刪掉，另一位再按同一列的按鈕：update／delete 找不到列會丟 P2025 變 500。
+  // 會議本身後台刪不掉，meeting.update 不在這條的範圍。
+  const src = read('app/(dashboard)/console/meetings/actions.ts') + read('app/(dashboard)/console/meetings/vote-actions.ts');
+  const bad = src.match(/prisma\.(proposal|meetingNotice|meetingReminder|meetingMilestone|recipient)\.(update|delete)\(/g);
+  assert.equal(bad, null, String(bad));
+  // 學號撞名的 P2002 處理要留著（updateMany 撞唯一鍵一樣會丟 P2002）
+  assert.match(src, /recipient\.updateMany\(\{ where: \{ id \}, data: \{ studentId, phone \} \}\);\n  \} catch/);
 });
 
 console.log(`\n全部通過 · ${passed} 項`);
