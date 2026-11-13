@@ -9,7 +9,9 @@ import { copy } from "@/lib/copy";
 export function SiteHeader({ breadcrumb }: { breadcrumb?: ReactNode }) {
   return (
     <header className="sticky top-0 z-20 flex items-center justify-between gap-4 border-b border-line-soft bg-paper-blur px-wrap-sm py-3.5 backdrop-blur hero:px-wrap">
-      <a href="/" className="shrink-0 font-serif text-brand text-ink">
+      {/* 手機寬度品牌名可以換行（min-w-0）：放不下一行時，登入鈕才不會被擠成直排、條文頁才不會橫向捲動。
+          hero 以上一行放得下，維持 shrink-0，讓長麵包屑自己截斷。 */}
+      <a href="/" className="min-w-0 font-serif text-brand text-ink hero:shrink-0">
         {copy.home.org}
         <span className="text-accent"> · </span>
         {copy.home.sys}
@@ -23,7 +25,7 @@ export function SiteHeader({ breadcrumb }: { breadcrumb?: ReactNode }) {
           {breadcrumb}
         </nav>
       ) : (
-        <nav aria-label="主要導覽" className="flex items-center gap-6">
+        <nav aria-label="主要導覽" className="flex shrink-0 items-center gap-6">
           <a
             href="/law"
             className="hidden font-sans text-nav text-ink opacity-[.72] transition-opacity hover:text-accent hover:opacity-100 hero:inline"
@@ -44,7 +46,7 @@ export function SiteHeader({ breadcrumb }: { breadcrumb?: ReactNode }) {
           </a>
           <a
             href="/login"
-            className="border border-ink px-4 py-2 font-ui text-caption font-medium leading-none tracking-snug text-ink transition-colors hover:border-accent hover:text-accent"
+            className="shrink-0 whitespace-nowrap border border-ink px-4 py-2 font-ui text-caption font-medium leading-none tracking-snug text-ink transition-colors hover:border-accent hover:text-accent"
           >
             {copy.nav.login}
           </a>
