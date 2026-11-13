@@ -77,3 +77,7 @@ jobs:
 
       - name: next build（佔位 DATABASE_URL、不跑 migrate）
         run: npx next build
+
+      # 起 next start 打一個不存在的網址，確認是中文找不到頁（app/not-found.tsx）。路由層判定、不查資料庫
+      - name: 頁面實跑（找不到頁、頁首）
+        run: npm run test:pages
