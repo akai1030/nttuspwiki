@@ -1,5 +1,5 @@
 /**
- * 頁面實跑測試：要先 next build。目前測找不到頁面（app/not-found.tsx）。
+ * 頁面實跑測試：要先 next build。測找不到頁面（app/not-found.tsx）與全站頁首（components/SiteHeader.tsx）。
  * 起 next start、打一個不存在的網址，確認回 404、是中文頁（lang、標題、回站內的連結），不是 Next 內建的英文 404。
  * 不存在的網址在路由層就判定，不查資料庫，所以 CI 用佔位 DATABASE_URL 也跑得動。
  *
@@ -47,6 +47,18 @@ try {
   assert.match(html, /<meta name="robots" content="noindex/, '找不到頁不讓搜尋引擎收錄');
   passed++;
   console.log('  ✓ 不存在的網址：404、中文找不到頁、附回全部法規／搜尋／首頁的連結');
+
+  // 頁首：手機寬度品牌名放不下一行時要讓它換行，不能擠「議會登入」。
+  // 2026-11-14 前品牌名是 shrink-0、登入鈕可換行，手機上登入鈕被擠成直排四個字。
+  // 這裡沒有瀏覽器量不到版面，只確認這兩個 class 還在（拿掉任一個就會回到舊問題）。
+  const login = html.match(/<a href="\/login" class="([^"]*)"/);
+  const brand = html.match(/<header[^>]*><a href="\/" class="([^"]*)"/);
+  assert.ok(login && brand, '頁首要有品牌名與登入連結');
+  assert.match(login[1], /(^| )whitespace-nowrap( |$)/, '登入鈕不換行');
+  assert.match(login[1], /(^| )shrink-0( |$)/, '登入鈕不被擠窄');
+  assert.match(brand[1], /(^| )min-w-0( |$)/, '品牌名在手機上可以換行');
+  passed++;
+  console.log('  ✓ 頁首：登入鈕不換行、品牌名在手機上可以換行');
 } finally {
   server.kill();
 }
