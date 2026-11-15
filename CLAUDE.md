@@ -23,7 +23,7 @@
 - Node 22（Coolify 的 `NIXPACKS_NODE_VERSION=22`；`package.json` 的 `engines` 是 `>=22.12.0`）；`proxy.ts`＝Next 16 前的 middleware
 - Cloudflare R2（上傳待檢核文件）
 - 全文檢索：`nodejieba` 應用端斷詞 → Postgres `tsvector`/GIN（**免資料庫擴充、可攜**為主力）；`pgvector` 語意檢索為輔助（資料庫用有 pgvector 的映像，見 `docs/coolify.md`）
-- 排程：沒有。會前提醒在後台產生草稿、人工送出（`lib/meetings/reminders.ts`）
+- 排程：只有一支。Coolify 排程任務跑 `node scripts/line-dispatch.mjs`（建議每 15 分鐘，設定見 `docs/coolify.md`），把到期的會前提醒推到選定的 LINE 群組（`lib/line/`，2026-11 起；沒設 LINE 環境變數就整段關閉）。Email 照舊只生草稿、人工寄出
 - LLM（可選）：Gemini Flash 免費層 / Claude Sonnet 5 + Prompt Caching（付費）
 
 ## 檔案結構約定

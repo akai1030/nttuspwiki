@@ -69,7 +69,7 @@ function guards(file: string): Record<string, string> {
 const OFFICER = /^await require(Role\(\["admin", "officer"\]\)|Admin\(\));$/;
 
 test('後台 action：每一支第一個 await 都是守衛', () => {
-  for (const file of ['meetings/actions.ts', 'meetings/vote-actions.ts', 'members/actions.ts']) {
+  for (const file of ['meetings/actions.ts', 'meetings/vote-actions.ts', 'members/actions.ts', 'line/actions.ts']) {
     const g = guards(file);
     assert.ok(Object.keys(g).length > 0, `${file} 沒有讀到任何 action`);
     for (const [fn, line] of Object.entries(g)) {

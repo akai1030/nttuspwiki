@@ -294,15 +294,35 @@ model MeetingNotice {
 }
 
 model MeetingReminder {
-  id         String    @id @default(cuid())
-  meetingId  String
-  meeting    Meeting   @relation(fields: [meetingId], references: [id], onDelete: Cascade)
-  offsetDays Int // 會前幾天
-  fireAt     DateTime // meetingAt - offset
-  channel    String    @default("inapp") // inapp（先做）/ email_draft
-  sentAt     DateTime?
+  id            String    @id @default(cuid())
+  meetingId     String
+  meeting       Meeting   @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  offsetDays    Int // 會前幾天
+  fireAt        DateTime // meetingAt - offset（建立當下算的；改了會議時間不會跟著改，發送時以會議時間重算，見 lib/line/dispatch.ts）
+  channel       String    @default("inapp") // 舊欄位：inapp / email_draft。LINE 發送不看這欄
+  sentAt        DateTime? // 有值＝處理完了，不再發。由誰處理看 sentVia
+  // ── LINE 推播（2026-11，lib/line/dispatch.ts）──
+  // sentVia：line＝機器人發到群組；skipped＝到期時同一場還有更接近開會的提醒一起到期，只發那一則；
+  //          NULL 而 sentAt 有值＝祕書處在後台按「標記已處理」。
+  sentVia       String?
+  claimedAt     DateTime? // 發送中的鎖。兩支排程同時跑時只有搶到的那支會發
+  attempts      Int       @default(0) // 已嘗試發送幾次；到上限就停，等後台按「重試」
+  lastError     String? // 最近一次發送失敗的原因（給後台看，不含金鑰）
+  lineRequestId String? // LINE 回的 x-line-request-id，到 LINE 後台對帳用
 
   @@index([fireAt])
+}
+
+/// LINE 機器人所在的群組。機器人被加進群組（或群組裡有人發言）時由 /api/line/webhook 記下，
+/// 祕書處在 /console/line 選定一個當作提醒的發送對象（selectedAt 最新的那個；被移出群組的不算）。
+model LineGroup {
+  id          String    @id // LINE 的 groupId（C 開頭、33 字）
+  name        String? // 群組名稱（向 LINE 查；查不到就空著）
+  joinedAt    DateTime  @default(now())
+  leftAt      DateTime? // 機器人被移出群組的時間；重新加入時清空
+  lastEventAt DateTime  @default(now())
+  selectedAt  DateTime?
+  selectedBy  String? // 選定的人（email）
 }
 
 model MeetingMilestone {
