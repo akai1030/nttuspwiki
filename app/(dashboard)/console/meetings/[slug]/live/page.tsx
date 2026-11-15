@@ -14,8 +14,10 @@ import {
   setLiveProposal,
   setLiveAttendance,
   setLiveNote,
+  setMeetingStatus,
   updateProposalResolution,
 } from "../../actions";
+import { MeetingShell, btn, btnSolid, field } from "../_parts/shell";
 import { openVote, closeVote, voidVote, applyVoteToResolution } from "../../vote-actions";
 import { loadVoteViews, sessionMembers } from "@/lib/meetings/vote-queries";
 import { idList, secretFromLawMethod } from "@/lib/meetings/voting";
@@ -31,12 +33,6 @@ const c = copy.meetings.live;
 const v = copy.meetings.voteRule;
 const vt = copy.meetings.vote;
 
-const btn =
-  "border border-line px-3 py-1.5 font-ui text-caption font-medium leading-none tracking-snug text-ink transition-colors hover:border-accent hover:text-accent";
-const btnSolid =
-  "border border-ink bg-ink px-4 py-2 font-ui text-caption font-medium leading-none tracking-snug text-white transition-colors hover:border-accent hover:bg-accent";
-const field =
-  "rounded-sm border border-line bg-paper px-2.5 py-1.5 font-sans text-caption text-ink focus:border-accent";
 
 /**
  * 現場議事控制台（祕書／議長）。
@@ -75,30 +71,12 @@ export default async function LiveConsolePage(props: {
   const lawSecret = secretFromLawMethod(rule?.method);
 
   return (
-    <main className="mx-auto max-w-wrap px-wrap-sm py-section-sm hero:px-wrap">
-      <a href={`/console/meetings/${key}`} className="font-sans text-caption text-accent hover:underline">
-        ← {m.name}
-      </a>
+    <MeetingShell m={m} step="live" aside={<AutoRefresh seconds={10} />}>
+      <p className="mt-2 max-w-reader font-sans text-caption text-meta">{c.lead}</p>
 
-      <div className="mt-4 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="font-ui text-chip uppercase tracking-kicker text-accent">{c.consoleTitle}</p>
-          <h1 className="mt-1 font-serif text-h2">{m.name}</h1>
-          <p className="mt-1 font-sans text-caption text-meta">{rocDateTimeFull(m.meetingAt)}</p>
-        </div>
-        <AutoRefresh seconds={10} />
-      </div>
-
-      <p className="mt-3 font-sans text-caption text-meta">{c.lead}</p>
-
-      {/* 開會流程：四步做到哪，一眼看得出來（祕書處忘了開現場議事或點名時，議員那端就投不了） */}
-      <section className="mt-4 border border-line bg-paper2 px-4 py-3">
-        <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <p className="font-sans text-caption font-medium text-ink">{vt.flow.title}</p>
-          <a href="/console/meetings/guide" target="_blank" rel="noreferrer" className="font-sans text-caption text-accent hover:underline">
-            {vt.guideLink}
-          </a>
-        </div>
+      {/* 開會流程：做到哪一眼看得出來（忘了開現場議事或點名，議員那端就投不了） */}
+      <section className="mt-5 border border-line bg-paper2 px-4 py-3">
+        <p className="font-sans text-caption font-medium text-ink">{vt.flow.title}</p>
         <ol className="mt-1.5 flex flex-col gap-1">
           {[
             { done: m.liveOpen, text: m.liveOpen ? vt.flow.live[0] : vt.flow.live[1] },
@@ -124,7 +102,7 @@ export default async function LiveConsolePage(props: {
       </section>
 
       {/* 開關與分享連結 */}
-      <section className="mt-6 border border-line border-l-[3px] border-l-accent bg-paper p-card">
+      <section className="mt-5 border border-line border-l-4 border-l-accent bg-paper p-card">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="font-sans text-body font-medium text-ink">
             {m.liveOpen ? c.openState : c.closedState}
@@ -180,64 +158,102 @@ export default async function LiveConsolePage(props: {
               </ul>
             </>
           ) : null}
-          <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
-            {members.length === 0 ? (
-              <label className="font-sans text-caption text-meta">
-                {v.present}
-                <input
-                  name="present"
-                  type="number"
-                  min={0}
-                  defaultValue={m.livePresent ?? ""}
-                  className={`ml-1.5 w-20 ${field}`}
-                />
-              </label>
-            ) : null}
-            <label className="font-sans text-caption text-meta">
-              {v.totalMembers}
+          {members.length === 0 ? (
+            <label className="mt-3 block font-sans text-caption text-meta">
+              {v.present}
               <input
-                name="total"
+                name="present"
                 type="number"
                 min={0}
-                defaultValue={m.liveTotal ?? ""}
+                defaultValue={m.livePresent ?? ""}
                 className={`ml-1.5 w-20 ${field}`}
               />
             </label>
-            <label className="font-sans text-caption text-meta">
-              {c.totalBasis}
-              <select name="totalBasis" defaultValue={m.liveTotalBasis ?? ""} className={`ml-1.5 ${field}`}>
-                <option value="">{c.totalBasisNone}</option>
-                <option value="2.3-4-2">{c.totalBasisLabel["2.3-4-2"]}</option>
-                <option value="2.0-13-1">{c.totalBasisLabel["2.0-13-1"]}</option>
-              </select>
-            </label>
-            <button type="submit" className={btn}>
-              {c.saveAttendance}
-            </button>
-          </div>
-        </form>
-        <p className="mt-2 font-sans text-caption text-meta">{c.totalBasisHint}</p>
-      </section>
-
-      {/* 主席公告 */}
-      <section className="mt-5 border border-line bg-paper p-card">
-        <p className="font-sans text-body font-medium text-ink">{c.note}</p>
-        <form action={setLiveNote} className="mt-3 flex flex-wrap items-center gap-2">
-          <input type="hidden" name="id" value={m.id} />
-          <input
-            name="note"
-            defaultValue={m.liveNote ?? ""}
-            placeholder={c.notePlaceholder}
-            className={`min-w-0 flex-1 ${field}`}
-          />
-          <button type="submit" className={btn}>
-            {c.saveNote}
+          ) : null}
+          {/* 議員總額與採用的定義只在換算門檻時用到，平常收起來。 */}
+          <details className="mt-3" open={m.liveTotal != null}>
+            <summary className="cursor-pointer font-sans text-caption font-medium text-accent hover:underline">
+              {c.attendanceMore}
+            </summary>
+            <div className="mt-2 flex flex-col gap-2">
+              <label className="font-sans text-caption text-meta">
+                {v.totalMembers}
+                <input
+                  name="total"
+                  type="number"
+                  min={0}
+                  defaultValue={m.liveTotal ?? ""}
+                  className={`ml-1.5 w-20 ${field}`}
+                />
+              </label>
+              <label className="flex flex-col gap-1 font-sans text-caption text-meta">
+                {c.totalBasis}
+                <select name="totalBasis" defaultValue={m.liveTotalBasis ?? ""} className={`w-full max-w-full ${field}`}>
+                  <option value="">{c.totalBasisNone}</option>
+                  <option value="2.3-4-2">{c.totalBasisLabel["2.3-4-2"]}</option>
+                  <option value="2.0-13-1">{c.totalBasisLabel["2.0-13-1"]}</option>
+                </select>
+              </label>
+              <p className="font-sans text-caption text-meta">{c.totalBasisHint}</p>
+            </div>
+          </details>
+          <button type="submit" className={`mt-3 ${btnSolid}`}>
+            {c.saveAttendance}
           </button>
         </form>
       </section>
 
+      {/* 議程推進 */}
+      <section className="mt-5 border border-line bg-paper p-card">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="font-sans text-body font-medium text-ink">{c.agenda}</p>
+          <form action={setLiveProposal}>
+            <input type="hidden" name="id" value={m.id} />
+            <input type="hidden" name="proposalId" value="" />
+            <button type="submit" className={btn}>
+              {c.clearCurrent}
+            </button>
+          </form>
+        </div>
+
+        {listed.length === 0 ? (
+          <p className="mt-3 font-sans text-caption text-meta">{copy.meetings.proposal.empty}</p>
+        ) : (
+          <ul className="mt-3 divide-y divide-line-soft">
+            {listed.map((p) => {
+              const active = p.id === m.liveProposalId;
+              return (
+                <li
+                  key={p.id}
+                  className={`flex flex-wrap items-center gap-x-3 gap-y-1.5 border-l-2 py-2.5 pl-2.5 ${
+                    active ? "border-l-accent bg-paper2" : "border-l-transparent"
+                  }`}
+                >
+                  <span className="tnum shrink-0 font-sans text-caption text-meta">附件{p.serialNo}</span>
+                  <span className="shrink-0 font-ui text-chip text-accent">{p.section}</span>
+                  <span className="min-w-0 flex-1 font-sans text-body text-ink">{p.title}</span>
+                  {p.resolution?.trim() ? (
+                    <span className="shrink-0 font-ui text-chip text-accent">{c.done}</span>
+                  ) : null}
+                  {active ? (
+                    <span className="shrink-0 font-ui text-chip text-accent">{c.current}</span>
+                  ) : (
+                    <form action={setLiveProposal}>
+                      <input type="hidden" name="id" value={m.id} />
+                      <input type="hidden" name="proposalId" value={p.id} />
+                      <button type="submit" className={btn}>
+                        {c.setCurrent}
+                      </button>
+                    </form>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
       {/* 現在討論的議案：案由、法定表決方式、所需票數、決議 —— 一頁完成 */}
-      <section className="mt-5 border border-line border-l-[3px] border-l-accent bg-paper p-card">
+      <section className="mt-5 border border-line border-l-4 border-l-accent bg-paper p-card">
         <p className="font-ui text-chip uppercase tracking-kicker text-accent">{c.current}</p>
         {current ? (
           <>
@@ -333,7 +349,7 @@ export default async function LiveConsolePage(props: {
       </section>
 
       {/* 線上表決 */}
-      <section id="vote" className="mt-5 scroll-mt-20 border border-line border-l-[3px] border-l-accent bg-paper p-card">
+      <section id="vote" className="mt-5 scroll-mt-20 border border-line border-l-4 border-l-accent bg-paper p-card">
         <p className="font-ui text-chip uppercase tracking-kicker text-accent">{vt.sectionTitle}</p>
         <p className="mt-1.5 font-sans text-caption text-meta">
           {vt.lead}
@@ -410,7 +426,7 @@ export default async function LiveConsolePage(props: {
             </fieldset>
             {/* 選「選舉」才出現候選人欄（純 CSS :has，不用 client JS）。 */}
             <div className="hidden flex-wrap gap-3 group-has-[#kind-election:checked]:flex">
-              <label className="flex min-w-[14rem] flex-1 flex-col gap-1 font-sans text-caption text-meta">
+              <label className="flex min-w-56 flex-1 flex-col gap-1 font-sans text-caption text-meta">
                 {vt.candidates}
                 <textarea name="candidates" rows={4} className={field} />
               </label>
@@ -465,55 +481,50 @@ export default async function LiveConsolePage(props: {
         </div>
       </section>
 
-      {/* 議程推進 */}
+      {/* 主席公告 */}
       <section className="mt-5 border border-line bg-paper p-card">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="font-sans text-body font-medium text-ink">{c.agenda}</p>
-          <form action={setLiveProposal}>
-            <input type="hidden" name="id" value={m.id} />
-            <input type="hidden" name="proposalId" value="" />
-            <button type="submit" className={btn}>
-              {c.clearCurrent}
-            </button>
-          </form>
-        </div>
-
-        {listed.length === 0 ? (
-          <p className="mt-3 font-sans text-caption text-meta">{copy.meetings.proposal.empty}</p>
-        ) : (
-          <ul className="mt-3 divide-y divide-line-soft">
-            {listed.map((p) => {
-              const active = p.id === m.liveProposalId;
-              return (
-                <li
-                  key={p.id}
-                  className={`flex flex-wrap items-center gap-x-3 gap-y-1.5 border-l-2 py-2.5 pl-2.5 ${
-                    active ? "border-l-accent bg-paper2" : "border-l-transparent"
-                  }`}
-                >
-                  <span className="tnum shrink-0 font-sans text-caption text-meta">附件{p.serialNo}</span>
-                  <span className="shrink-0 font-ui text-chip text-accent">{p.section}</span>
-                  <span className="min-w-0 flex-1 font-sans text-body text-ink">{p.title}</span>
-                  {p.resolution?.trim() ? (
-                    <span className="shrink-0 font-ui text-chip text-accent">{c.done}</span>
-                  ) : null}
-                  {active ? (
-                    <span className="shrink-0 font-ui text-chip text-accent">{c.current}</span>
-                  ) : (
-                    <form action={setLiveProposal}>
-                      <input type="hidden" name="id" value={m.id} />
-                      <input type="hidden" name="proposalId" value={p.id} />
-                      <button type="submit" className={btn}>
-                        {c.setCurrent}
-                      </button>
-                    </form>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-        )}
+        <p className="font-sans text-body font-medium text-ink">{c.note}</p>
+        <form action={setLiveNote} className="mt-3 flex flex-wrap items-center gap-2">
+          <input type="hidden" name="id" value={m.id} />
+          <input
+            name="note"
+            defaultValue={m.liveNote ?? ""}
+            placeholder={c.notePlaceholder}
+            className={`min-w-0 flex-1 ${field}`}
+          />
+          <button type="submit" className={btn}>
+            {c.saveNote}
+          </button>
+        </form>
       </section>
-    </main>
+
+      {/* 會議結束：關閉現場議事後改狀態，前往第 5 步 */}
+      <section className="mt-5 border border-line bg-paper2 p-card">
+        <p className="font-sans text-body font-medium text-ink">{c.endTitle}</p>
+        <p className="mt-1 font-sans text-caption text-meta">{c.endHint}</p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {m.liveOpen ? (
+            <form action={toggleMeetingLive}>
+              <input type="hidden" name="id" value={m.id} />
+              <button type="submit" className={btn}>
+                {c.close}
+              </button>
+            </form>
+          ) : null}
+          {m.status === "HELD" || m.status === "CLOSED" ? (
+            <p className="font-sans text-caption text-ink">{copy.meetings.noticeStep.sentAlready(copy.meetings.status[m.status])}</p>
+          ) : (
+            <form action={setMeetingStatus}>
+              <input type="hidden" name="id" value={m.id} />
+              <input type="hidden" name="status" value="HELD" />
+              <input type="hidden" name="next" value="after" />
+              <button type="submit" className={btnSolid}>
+                {c.endBtn}
+              </button>
+            </form>
+          )}
+        </div>
+      </section>
+    </MeetingShell>
   );
 }

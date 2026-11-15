@@ -1,7 +1,7 @@
 import { copy } from "@/lib/copy";
 import { versionLabel } from "@/lib/version";
 
-/** SiteFooter — 全站頁尾：中文站名 + 建置版本 + EN 版權（mono, tnum）；下一行是網站使用分析的說明與更新紀錄連結。 */
+/** SiteFooter — 全站頁尾：中文站名 + 建置版本 + EN 版權（mono, tnum）；下一行是網站使用分析的說明、更新紀錄與開放原始碼連結。 */
 export function SiteFooter() {
   const version = versionLabel();
   return (
@@ -23,6 +23,9 @@ export function SiteFooter() {
           {copy.foot.analytics}
           <a href="/updates" className="ml-2 whitespace-nowrap text-accent hover:underline">
             {copy.foot.updates}
+          </a>
+          <a href="/open-source" className="ml-2 whitespace-nowrap text-accent hover:underline">
+            {copy.foot.openSource}
           </a>
         </p>
       </div>
