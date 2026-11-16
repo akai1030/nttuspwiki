@@ -186,7 +186,7 @@ model MeetingReminder {   // 會前提醒（錨定 Meeting.meetingAt）
 | Kai 的需求 | 落地 | 依賴 | 紅線 |
 |---|---|---|---|
 | 1 議程表自動化 | Proposal 依 section 分節排序 → 生成議程（附件1 版式）→ 匯出 | Meeting/Proposal/AgendaItem | 否 |
-| 2 會前提醒 | MeetingReminder 由 meetingAt 往前推 → 站內看板 + 到期提醒 | Meeting + 提醒 worker | 否 |
+| 2 會前提醒 | MeetingReminder 由 meetingAt 往前推 → 站內看板 + 到期提醒。2026-11 起到期由 LINE 機器人推到選定群組（`lib/line/`，`/console/line` 設定） | Meeting + 排程（`scripts/line-dispatch.mjs`） | 否 |
 | 3 會議資料統整 | Proposal 附件集中、依序命名、一鍵打包（附件2-N） | R2 上傳 | 否（檔案存取需權限） |
 | 4 郵件自動化 | 套 §1 公版 + 勾選 Recipient → **生成草稿** | Meeting/Recipient/公版 | ⚠️ 對外發送 |
 

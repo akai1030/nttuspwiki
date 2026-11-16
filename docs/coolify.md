@@ -47,11 +47,25 @@ Coolify 只在 Advanced 打開 Include Source Commit in Build 時建置階段才
 - `DATABASE_URL`
 - `AUTH_SECRET`（16 字以上）
 - `ADMIN_EMAIL`、`ADMIN_PASSWORD`（環境變數引導的管理員登入）
+- `LINE_CHANNEL_ACCESS_TOKEN`、`LINE_CHANNEL_SECRET`（LINE 會前提醒，可選；兩個都有才啟用，見下方「排程」）
+- `LINE_CRON_SECRET`（排程呼叫 `/api/line/dispatch` 的密鑰，16 字以上；沒設＝排程端點關閉）
 
 ## 排程
 
-沒有。會前提醒只在後台產生草稿、人工送出（`lib/meetings/reminders.ts`），沒有 cron；
-ARCHITECTURE.md（2026-07 的架構草案）寫的 cron worker 沒有實作。`.github/workflows/ci.yml` 只在 push／PR 時跑。
+只有一支：LINE 會前提醒（2026-11 起，`lib/line/`）。設在這個服務的 Scheduled Tasks：
+
+| 項目 | 值 |
+|---|---|
+| Name | `line-reminders` |
+| Command | `node scripts/line-dispatch.mjs` |
+| Frequency | `*/15 * * * *`（每小時 :00、:15、:30、:45） |
+| Container | 留空（就是網站本身的容器） |
+
+腳本從容器內部打 `http://127.0.0.1:$PORT/api/line/dispatch`，帶 `LINE_CRON_SECRET`。到期、還沒發的提醒推到後台 `/console/line` 選定的群組，
+發完寫入 `sentAt`；重跑、兩支同時跑都不會重發（`lib/line/dispatch.ts` 檔頭）。執行紀錄每次一行 JSON：`sent`／`skipped`／`failed` 各幾則。
+沒設 `LINE_CRON_SECRET` 時腳本直接結束（結束碼 1）；token 或 secret 沒設時端點回 `{"status":"disabled"}`，沒選群組時回 `{"status":"no-group"}`，都不發任何訊息。
+
+Email 照舊只生草稿、人工寄出，沒有排程。`.github/workflows/ci.yml` 只在 push／PR 時跑。
 
 ## 網域
 

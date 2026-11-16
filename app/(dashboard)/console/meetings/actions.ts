@@ -298,8 +298,12 @@ export async function deleteNotice(fd: FormData) {
 }
 
 // —— 提醒 ——
+// 2026-11 起提醒到時間會由 LINE 機器人推到群組（依群組人數計則數，lib/line/），
+// 新增、標記、取消、刪除都只給 admin/officer，viewer 不能動。
+// 寫入一律用 createMany／updateMany／deleteMany：不回傳整列，部署後到跑 migration 前不會因為新欄位 500；
+// 找不到列（別人剛刪掉）也不丟 P2025。
 export async function addReminder(fd: FormData) {
-  await requireUser();
+  await requireRole(["admin", "officer"]);
   const meetingId = str(fd, "meetingId");
   // fallback 給 -1：不是數字或超出範圍就整個不收，不要變成「會前 0 天」存進去。
   const offsetDays = int(fd, "offsetDays", -1);
@@ -307,43 +311,43 @@ export async function addReminder(fd: FormData) {
   if (!meetingId || offsetDays < 0 || offsetDays > MAX_REMINDER_OFFSET_DAYS) return;
   const meeting = await prisma.meeting.findUnique({ where: { id: meetingId } });
   if (!meeting) return;
-  await prisma.meetingReminder.create({
-    data: {
-      meetingId,
-      offsetDays,
-      fireAt: computeFireAt(meeting.meetingAt, offsetDays),
-      channel: "inapp",
-    },
+  await prisma.meetingReminder.createMany({
+    data: [
+      {
+        meetingId,
+        offsetDays,
+        fireAt: computeFireAt(meeting.meetingAt, offsetDays),
+        channel: "inapp",
+      },
+    ],
   });
   revalidateMeetingRoutes();
 }
 
 export async function markReminderDone(fd: FormData) {
-  await requireUser();
+  await requireRole(["admin", "officer"]);
   const id = str(fd, "id");
-  const meetingId = str(fd, "meetingId");
   if (id) {
-    await prisma.meetingReminder.update({ where: { id }, data: { sentAt: new Date() } });
+    await prisma.meetingReminder.updateMany({ where: { id, sentAt: null }, data: { sentAt: new Date() } });
     revalidateMeetingRoutes();
   }
 }
 
+// 只取消「手動標記」的（sentVia 為空）。LINE 已發出或略過的不能改回未處理，免得再推一次。
 export async function unmarkReminderDone(fd: FormData) {
-  await requireUser();
+  await requireRole(["admin", "officer"]);
   const id = str(fd, "id");
-  const meetingId = str(fd, "meetingId");
   if (id) {
-    await prisma.meetingReminder.update({ where: { id }, data: { sentAt: null } });
+    await prisma.meetingReminder.updateMany({ where: { id, sentVia: null }, data: { sentAt: null } });
     revalidateMeetingRoutes();
   }
 }
 
 export async function deleteReminder(fd: FormData) {
-  await requireUser();
+  await requireRole(["admin", "officer"]);
   const id = str(fd, "id");
-  const meetingId = str(fd, "meetingId");
   if (id) {
-    await prisma.meetingReminder.delete({ where: { id } });
+    await prisma.meetingReminder.deleteMany({ where: { id } });
     revalidateMeetingRoutes();
   }
 }

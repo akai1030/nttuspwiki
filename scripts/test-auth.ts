@@ -69,7 +69,7 @@ function guards(file: string): Record<string, string> {
 const OFFICER = /^await require(Role\(\["admin", "officer"\]\)|Admin\(\));$/;
 
 test('後台 action：每一支第一個 await 都是守衛', () => {
-  for (const file of ['meetings/actions.ts', 'meetings/vote-actions.ts', 'members/actions.ts']) {
+  for (const file of ['meetings/actions.ts', 'meetings/vote-actions.ts', 'members/actions.ts', 'line/actions.ts']) {
     const g = guards(file);
     assert.ok(Object.keys(g).length > 0, `${file} 沒有讀到任何 action`);
     for (const [fn, line] of Object.entries(g)) {
@@ -78,9 +78,9 @@ test('後台 action：每一支第一個 await 都是守衛', () => {
   }
 });
 
-test('後台 action：名冊與點名只給 admin/officer（viewer 不能改）', () => {
+test('後台 action：名冊、點名、會前提醒只給 admin/officer（viewer 不能改；提醒會推 LINE、計則數）', () => {
   const g = guards('meetings/actions.ts');
-  for (const fn of ['addRecipient', 'toggleRecipient', 'updateRecipient', 'deleteRecipient', 'setLiveAttendance']) {
+  for (const fn of ['addRecipient', 'toggleRecipient', 'updateRecipient', 'deleteRecipient', 'setLiveAttendance', 'addReminder', 'markReminderDone', 'unmarkReminderDone', 'deleteReminder']) {
     assert.ok(fn in g, `找不到 ${fn}`);
     assert.match(g[fn], OFFICER, `${fn} 的守衛是「${g[fn]}」`);
   }

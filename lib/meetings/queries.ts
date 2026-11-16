@@ -21,7 +21,12 @@ export function getMeetingByKey(key: string) {
     include: {
       proposals: { orderBy: [{ order: "asc" }, { serialNo: "asc" }] },
       notices: { orderBy: { createdAt: "desc" }, take: 5 },
-      reminders: { orderBy: { fireAt: "asc" } },
+      // 只選這幾欄：LINE 推播加的欄位（20261115120000_add_line_reminders）在部署後、跑 migration 前還不存在，
+      // 全選的話會議頁、編輯頁、現場議事頁那幾分鐘都會 500。要 LINE 狀態的畫面自己查（components/LineReminderPanel.tsx）。
+      reminders: {
+        orderBy: { fireAt: "asc" },
+        select: { id: true, meetingId: true, offsetDays: true, fireAt: true, channel: true, sentAt: true },
+      },
       milestones: { orderBy: { at: "asc" } },
     },
   });
