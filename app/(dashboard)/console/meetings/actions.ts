@@ -8,6 +8,7 @@ import { parseTaipeiLocal } from "@/lib/meetings/roc";
 import { generateNotice, type NoticeKind, type MeetingForNotice } from "@/lib/meetings/notice";
 import { computeFireAt, MAX_REMINDER_OFFSET_DAYS } from "@/lib/meetings/reminders";
 import { buildMeetingSlug, normalizeSlug, pickAvailableSlug, validateSlug } from "@/lib/meetings/slug";
+import { parseStep, stepHref } from "@/lib/meetings/steps";
 import { sessionMembers } from "@/lib/meetings/vote-queries";
 import { siteOrigin } from "@/lib/site-origin";
 import { parseIntField } from "@/lib/form-int";
@@ -81,7 +82,7 @@ export async function createMeeting(fd: FormData) {
       createdById: user.sub,
     },
   });
-  redirect(`/console/meetings/${m.slug ?? m.id}`);
+  redirect(stepHref(m.slug ?? m.id, "info"));
 }
 
 export async function updateMeeting(fd: FormData) {
@@ -122,7 +123,7 @@ export async function updateMeeting(fd: FormData) {
       notes: optStr(fd, "notes"),
     },
   });
-  redirect(`/console/meetings/${slug ?? id}`);
+  redirect(stepHref(slug ?? id, "info"));
 }
 
 export async function toggleMeetingPublic(fd: FormData) {
@@ -142,8 +143,15 @@ export async function setMeetingStatus(fd: FormData) {
   const statusRaw = str(fd, "status");
   const ok = (["DRAFT", "NOTICED", "HELD", "CLOSED"] as const).includes(statusRaw as never);
   if (id && ok) {
-    await prisma.meeting.update({ where: { id }, data: { status: statusRaw as never } });
+    const m = await prisma.meeting.update({
+      where: { id },
+      data: { status: statusRaw as never },
+      select: { id: true, slug: true },
+    });
     revalidateMeetingRoutes();
+    // 各步驟的「已寄出」「會議結束」帶 next，改完狀態直接前往下一步。
+    const next = parseStep(str(fd, "next"));
+    if (next) redirect(stepHref(m.slug ?? m.id, next));
   }
 }
 

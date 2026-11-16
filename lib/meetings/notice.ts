@@ -257,3 +257,11 @@ export function generateNotice(
     html: renderNoticeHtml(lines),
   };
 }
+
+/**
+ * 「格式預覽」iframe 的 srcDoc：把 renderNoticeHtml 的結果包成 Gmail 撰寫視窗的樣子。
+ * 顏色照 Gmail 預設（這個檔不吃設計 token，見 DESIGN.md「不檢查的地方」）。
+ */
+export function noticePreviewDoc(html: string): string {
+  return `<meta charset="utf-8"><div style="font-family:Arial,'Noto Sans TC',sans-serif;font-size:small;line-height:1.4;color:#222;background:#fff;padding:8px">${html}</div>`;
+}
