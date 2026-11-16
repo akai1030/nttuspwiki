@@ -8,7 +8,8 @@
  *      改了會議時間以新時間重算
  *   4. retry key：同一則同一群組固定、換群組或重發時換一把、符合 UUID 格式
  *   5. 提醒狀態與訊息文字
- *   6. 原始碼檢查：webhook 先驗簽才解析與寫庫；發送端點先比密鑰；LINE 後台 action 只給 admin/officer
+ *   6. 原始碼檢查：webhook 先驗簽才解析與寫庫；發送端點先比密鑰；LINE 後台 action 只給 admin/officer；
+ *      LINE_API_BASE 只在非正式環境生效
  */
 import assert from 'node:assert/strict';
 import { createHmac } from 'node:crypto';
@@ -236,6 +237,13 @@ test('發送：搶鎖在推播之前，成功與 409 都寫 sentAt，失敗放�
   assert.match(loop, /res\.ok \|\| res\.status === 409/);
   assert.match(loop, /data: \{ claimedAt: null, lastError: err \}/);
   assert.match(loop, /retryKeyFor\(r\.id, group\.id, r\.lineRequestId\)/);
+});
+
+test('LINE_API_BASE（本機測試指到模擬伺服器）在正式環境不生效', () => {
+  const src = read('lib/line/client.ts');
+  const decl = src.slice(src.indexOf('const API ='), src.indexOf(';', src.indexOf('const API =')));
+  assert.match(decl, /process\.env\.NODE_ENV !== "production" && process\.env\.LINE_API_BASE/);
+  assert.match(decl, /: "https:\/\/api\.line\.me"$/);
 });
 
 console.log(`\n全部通過 · ${passed} 項`);

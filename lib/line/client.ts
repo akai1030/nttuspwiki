@@ -6,7 +6,12 @@
  */
 import { isLineGroupId } from "./plan";
 
-const API = "https://api.line.me";
+// LINE_API_BASE 只在非正式環境生效：本機測試時指到模擬伺服器，看得到送出的內容與 retry key。
+// 正式環境（NODE_ENV=production）一律打 api.line.me，設了也不理。
+const API =
+  process.env.NODE_ENV !== "production" && process.env.LINE_API_BASE
+    ? process.env.LINE_API_BASE.replace(/\/+$/, "")
+    : "https://api.line.me";
 const TIMEOUT_MS = 10_000;
 /** 單則文字訊息上限 5,000 字，留一點餘裕。 */
 export const MAX_TEXT_LENGTH = 4_900;

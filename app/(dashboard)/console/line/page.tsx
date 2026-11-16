@@ -32,6 +32,10 @@ const btn =
 const btnPrimary =
   "border border-ink bg-ink px-4 py-2.5 font-ui text-caption font-medium leading-none tracking-snug text-white transition-colors hover:border-accent hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50";
 
+// 手機上下排（標籤在上），寬螢幕左右兩欄。
+const dlCls = "mt-4 grid grid-cols-1 gap-x-6 gap-y-0.5 font-sans text-body hero:grid-cols-[max-content_1fr] hero:gap-y-2";
+const dtCls = "mt-2 text-meta hero:mt-0";
+
 type SP = { ok?: string | string[]; err?: string | string[]; status?: string | string[]; sent?: string | string[]; skipped?: string | string[]; failed?: string | string[] };
 
 function n(v: string | string[] | undefined): number {
@@ -118,7 +122,7 @@ export default async function LineSettingsPage(props: { searchParams?: Promise<S
             {c.config.cronOff}
           </p>
         ) : null}
-        <dl className="mt-4 grid grid-cols-[max-content_1fr] gap-x-6 gap-y-2 font-sans text-body">
+        <dl className={dlCls}>
           {(
             [
               [c.config.token, status.token],
@@ -127,11 +131,11 @@ export default async function LineSettingsPage(props: { searchParams?: Promise<S
             ] as const
           ).map(([label, on]) => (
             <div key={label} className="contents">
-              <dt className="text-meta">{label}</dt>
+              <dt className={dtCls}>{label}</dt>
               <dd className={on ? "text-ink" : "text-warn-ink"}>{on ? c.config.set : c.config.unset}</dd>
             </div>
           ))}
-          <dt className="text-meta">{c.config.webhook}</dt>
+          <dt className={dtCls}>{c.config.webhook}</dt>
           <dd className="flex flex-wrap items-center gap-3">
             <span className="break-all text-ink">{webhookUrl}</span>
             <CopyButton text={webhookUrl} />
@@ -208,12 +212,12 @@ export default async function LineSettingsPage(props: { searchParams?: Promise<S
       {cfg ? (
         <section className="mt-6 border border-line bg-paper p-card">
           <h2 className="font-serif text-h4">{c.usage.title}</h2>
-          <dl className="mt-4 grid grid-cols-[max-content_1fr] gap-x-6 gap-y-2 font-sans text-body">
-            <dt className="text-meta">{c.usage.members}</dt>
+          <dl className={dlCls}>
+            <dt className={dtCls}>{c.usage.members}</dt>
             <dd className="tnum text-ink">{members !== null ? c.usage.membersN(members) : c.usage.unknown}</dd>
-            <dt className="text-meta">{c.usage.used}</dt>
+            <dt className={dtCls}>{c.usage.used}</dt>
             <dd className="tnum text-ink">{used !== null ? c.usage.count(used) : c.usage.unknown}</dd>
-            <dt className="text-meta">{c.usage.limit}</dt>
+            <dt className={dtCls}>{c.usage.limit}</dt>
             <dd className="tnum text-ink">
               {quota === null
                 ? c.usage.unknown
@@ -221,7 +225,7 @@ export default async function LineSettingsPage(props: { searchParams?: Promise<S
                   ? c.usage.count(quota.value)
                   : c.usage.unlimited}
             </dd>
-            <dt className="text-meta">{c.usage.remaining}</dt>
+            <dt className={dtCls}>{c.usage.remaining}</dt>
             <dd className="tnum text-ink">
               {remainingReminders !== null ? c.usage.remainingN(remainingReminders) : c.usage.unknown}
             </dd>
