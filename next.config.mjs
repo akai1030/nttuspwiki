@@ -39,6 +39,8 @@ function appVersion() {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // 不送 x-powered-by。
+  poweredByHeader: false,
   env: {
     NEXT_PUBLIC_APP_VERSION: appVersion(),
     NEXT_PUBLIC_BUILD_SHA: buildSha(),
@@ -91,13 +93,17 @@ const nextConfig = {
     // 有按鈕會改資料的頁面禁止被別站嵌進 iframe（點擊劫持）。
     // 公開法規頁不擋：可能有人嵌在學生會網站上，嵌了也無害。
     const noFrame = { key: "X-Frame-Options", value: "DENY" };
+    // 不公開的頁面不給搜尋引擎收錄（robots.txt 不列這些路徑，見 app/robots.ts）。
+    const noIndex = { key: "X-Robots-Tag", value: "noindex, nofollow" };
     return [
       { source: "/:path*", headers: base },
-      { source: "/console/:path*", headers: [noFrame] },
-      { source: "/console", headers: [noFrame] },
-      { source: "/login", headers: [noFrame] },
-      { source: "/v/:path*", headers: [noFrame] },
-      { source: "/vote", headers: [noFrame] },
+      { source: "/console/:path*", headers: [noFrame, noIndex] },
+      { source: "/console", headers: [noFrame, noIndex] },
+      { source: "/login", headers: [noFrame, noIndex] },
+      { source: "/v/:path*", headers: [noFrame, noIndex] },
+      { source: "/vote", headers: [noFrame, noIndex] },
+      { source: "/styleguide", headers: [noIndex] },
+      { source: "/api/:path*", headers: [noIndex] },
     ];
   },
   experimental: {

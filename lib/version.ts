@@ -7,7 +7,9 @@
  *   NEXT_PUBLIC_BUILD_TIME   建置當下的 UTC 時間
  *
  * 建置時間是最可靠的一項：SHA 在某些建置環境抓不到，但時間一定有。
- * 推完之後如果頁尾的時間沒變，就是那次部署沒生效。
+ * 推完之後如果後台頁尾的時間沒變，就是那次部署沒生效。
+ *
+ * 公開頁尾只放版本號：repo 公開，commit 對得回確切的套件版本。commit 與建置時間只在後台頁尾。
  */
 export const APP_VERSION = process.env.NEXT_PUBLIC_APP_VERSION ?? "";
 export const BUILD_SHA = process.env.NEXT_PUBLIC_BUILD_SHA ?? "";
@@ -31,7 +33,12 @@ export function buildTimeTaipei(): string {
   return `${p.month}/${p.day} ${p.hour}:${p.minute}`;
 }
 
-/** 頁尾用的一行標記，例：v0.2.0 · f0e7e79 · 08/28 22:15 */
+/** 公開頁尾用，例：v0.2.0 */
+export function versionShort(): string {
+  return APP_VERSION ? `v${APP_VERSION}` : "";
+}
+
+/** 後台頁尾用的一行標記，例：v0.2.0 · f0e7e79 · 08/28 22:15 */
 export function versionLabel(): string {
   return [APP_VERSION ? `v${APP_VERSION}` : "", BUILD_SHA, buildTimeTaipei()]
     .filter(Boolean)
